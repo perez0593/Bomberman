@@ -9,6 +9,7 @@ package md.games.bomberman.scenario;
  *
  * @author mpasc
  */
-public class Scenario {
+public class Scenario
+{
     
 }
