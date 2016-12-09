@@ -5,13 +5,16 @@
  */
 package md.games.bomberman.scenario;
 
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.util.Iterator;
 import md.games.bomberman.geom.Vector2;
 
 /**
  *
  * @author mpasc
  */
-public class TileManager
+public class TileManager implements Iterable<Tile>
 {
     private final Tile[] tiles;
     private final int rows;
@@ -59,7 +62,7 @@ public class TileManager
             throw new IllegalArgumentException();
         return new Vector2(
                 position.x + tileSize.x * column,
-                position.y = tileSize.y * row
+                position.y + tileSize.y * row
         );
     }
     
@@ -83,5 +86,38 @@ public class TileManager
     {
         tileSize.x = size.x / columns;
         tileSize.y = size.y / rows;
+    }
+    
+    public final void update(double delta)
+    {
+        for(Tile tile : tiles)
+            tile.update(delta);
+    }
+    
+    public final void draw(Graphics2D g)
+    {
+        for(Tile tile : tiles)
+        {
+            tile.draw(g,
+                    position.x + tileSize.x * tile.getColumn(),
+                    position.y + tileSize.y * tile.getRow(),
+                    tileSize.x,
+                    tileSize.y
+            );
+        }
+    }
+
+    @Override
+    public final Iterator<Tile> iterator() { return new TileIterator(); }
+    
+    private final class TileIterator implements Iterator<Tile>
+    {
+        private int it = 0;
+
+        @Override
+        public final boolean hasNext() { return it < tiles.length; }
+
+        @Override
+        public final Tile next() { return tiles[it++]; }
     }
 }

@@ -5,6 +5,8 @@
  */
 package md.games.bomberman.scenario;
 
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.sprites.Sprite;
 
@@ -34,4 +36,16 @@ public final class Tile
     public final void setSprite(Sprite sprite) { this.sprite = sprite; }
     
     public final Vector2 getPosition() { return manager.getTilePosition(row,column); }
+    
+    final void update(double delta)
+    {
+        if(sprite != null)
+            sprite.update(delta);
+    }
+    
+    final void draw(Graphics2D g, double x, double y, double w, double h)
+    {
+        if(sprite != null)
+            sprite.draw(g,x,y,w,h);
+    }
 }
