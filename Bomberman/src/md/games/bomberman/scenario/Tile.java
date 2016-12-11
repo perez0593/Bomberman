@@ -6,7 +6,6 @@
 package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.sprites.Sprite;
 
@@ -20,6 +19,7 @@ public final class Tile
     private final int row;
     private final int column;
     private Sprite sprite;
+    
     
     Tile(TileManager manager, int row, int column)
     {

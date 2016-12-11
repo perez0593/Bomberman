@@ -6,7 +6,6 @@
 package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.util.Iterator;
 import md.games.bomberman.geom.Vector2;
 
