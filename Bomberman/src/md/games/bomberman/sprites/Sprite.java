@@ -11,11 +11,7 @@ import java.awt.geom.AffineTransform;
 
 public abstract class Sprite<A extends Sprite<A>>
 {
-    
-    public Sprite()
-    {
-        
-    }
+    private String tag = null;
     
     public abstract int width();
     public abstract int height();
@@ -102,4 +98,7 @@ public abstract class Sprite<A extends Sprite<A>>
         af.scale(w/width(),h/height());
         draw(g,af);
     }
+    
+    public final void setSpriteTag(String tag) { this.tag = tag; }
+    public final String getSpriteTag() { return tag; }
 }

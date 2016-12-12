@@ -10,6 +10,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import md.games.bomberman.sprites.AnimatedSprite;
+import md.games.bomberman.sprites.SpriteUtils;
+import md.games.bomberman.sprites.StaticSprite;
 
 /**
  *
@@ -38,9 +41,24 @@ public final class Resource
         return file;
     }
     
-    public final BufferedImage loadImage(String path) throws FileNotFoundException, IOException
+    public final BufferedImage loadRawImage(String path) throws FileNotFoundException, IOException
     {
         return ImageIO.read(getFile(path));
+    }
+    
+    public final StaticSprite loadStaticSprite(String path) throws IOException
+    {
+        StaticSprite s = new StaticSprite(loadRawImage(path));
+        s.setSpriteTag(path);
+        return s;
+    }
+    
+    public final AnimatedSprite loadAnimatedSprite(String path, int width, int height, int count) throws IOException
+    {
+        BufferedImage[] imgs = SpriteUtils.arrayImages(width,height,count,loadRawImage(path));
+        AnimatedSprite as = new AnimatedSprite(imgs);
+        as.setSpriteTag(path);
+        return as;
     }
     
     /* FILES */

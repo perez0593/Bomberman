@@ -7,9 +7,10 @@ package md.games.bomberman.object;
 
 import java.awt.Graphics2D;
 import java.util.HashMap;
-import md.games.bomberman.util.Constants;
+import md.games.bomberman.util.Conversor;
 import nt.dal.build.DALDataBlockBuilder;
 import nt.dal.data.DALBlock;
+import nt.dal.data.DALData;
 import nt.lpl.LPLRuntimeException;
 import nt.lpl.types.LPLFunction;
 import nt.lpl.types.LPLObject;
@@ -29,8 +30,6 @@ public abstract class GameObject extends LPLObject
         localData = new HashMap<>();
         tag = "";
     }
-    
-    public abstract GameObjectClass getGameObjectClass();
     
     public final void setTag(String tag)
     {
@@ -88,7 +87,7 @@ public abstract class GameObject extends LPLObject
     public abstract void draw(Graphics2D g);
     
     /* Input/Output */
-    public final DALDataBlockBuilder serialize()
+    /*public final DALDataBlockBuilder serialize()
     {
         DALDataBlockBuilder base = new DALDataBlockBuilder();
         innserSerialize(base);
@@ -101,8 +100,14 @@ public abstract class GameObject extends LPLObject
     
     public final void unserialize(DALBlock base)
     {
-        
+        tag = base.getAttribute(DALData.valueOf("object.tag")).toJavaString();
+        base.getAttribute(DALData.valueOf("object.localData"))
+                .toJavaMap().entrySet().stream().forEach(e -> {
+                    localData.put(e.getKey().toJavaString(),Conversor.valueOf(e.getKey()));
+        });
+        innerUnserialize(base);
     }
+    protected abstract void innerUnserialize(DALBlock base);*/
     
     
     /* LPL */
