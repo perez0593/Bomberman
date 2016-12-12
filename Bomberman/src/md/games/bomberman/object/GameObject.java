@@ -8,7 +8,9 @@ package md.games.bomberman.object;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 import md.games.bomberman.util.Constants;
+import nt.dal.build.DALDataBlockBuilder;
 import nt.dal.data.DALBlock;
+import nt.lpl.LPLRuntimeException;
 import nt.lpl.types.LPLFunction;
 import nt.lpl.types.LPLObject;
 import nt.lpl.types.LPLValue;
@@ -42,8 +44,10 @@ public abstract class GameObject extends LPLObject
     {
         if(key == null || value == null)
             throw new NullPointerException();
+        checkLPLType(value);
         localData.put(key,value);
     }
+    public final void setLocalNull(String key) { setLocalValue(key,NULL); }
     public final void setLocalInt(String key, int value) { setLocalValue(key,valueOf(value)); }
     public final void setLocalLong(String key, long value) { setLocalValue(key,valueOf(value)); }
     public final void setLocalFloat(String key, float value) { setLocalValue(key,valueOf(value)); }
@@ -64,6 +68,8 @@ public abstract class GameObject extends LPLObject
     public final boolean getLocalBoolean(String key) { return getLocalValue(key).toJavaBoolean(); }
     public final String getLocalString(String key) { return getLocalValue(key).toJavaString(); }
     
+    public final boolean isLocalValueNull(String key) { return getLocalValue(key) == NULL; }
+    
     public final boolean hasLocalValue(String key)
     {
         if(key == null)
@@ -82,10 +88,19 @@ public abstract class GameObject extends LPLObject
     public abstract void draw(Graphics2D g);
     
     /* Input/Output */
-    protected final DALBlock serialize()
+    public final DALDataBlockBuilder serialize()
     {
-        DALBlock base = DALBlock.asObject();
-        base.setAttribute(Constants.DAL_STR_CLASS,getGameObjectClass().nameAsDal());
+        DALDataBlockBuilder base = new DALDataBlockBuilder();
+        innserSerialize(base);
+        base.assign("object.__class",getGameObjectClass().name());
+        base.assign("object.tag",tag);
+        base.assign("object.localData",localData);
+        return base;
+    }
+    protected abstract void innserSerialize(DALDataBlockBuilder base);
+    
+    public final void unserialize(DALBlock base)
+    {
         
     }
     
@@ -108,6 +123,19 @@ public abstract class GameObject extends LPLObject
     }
     protected abstract LPLValue getAttribute(String key);
     
+    private static void checkLPLType(LPLValue value)
+    {
+        switch(value.getType())
+        {
+            default: throw new LPLRuntimeException("Expected only number, boolean, string or null");
+            case NULL:
+            case NUMBER:
+            case BOOLEAN:
+            case STRING:
+                break;
+        }
+    }
+    
     
     
     /* LPL Functions */
@@ -116,6 +144,7 @@ public abstract class GameObject extends LPLObject
         return value == null ? arg2 : value;
     });
     private static final LPLValue SET_LOCAL_VALUE = LPLFunction.createVFunction((arg0, arg1, arg2) -> {
+        checkLPLType(arg2);
         arg0.<GameObject>toLPLObject().localData.put(arg1.toJavaString(),arg2);
     });
     private static final LPLValue HAS_LOCAL_VALUE = LPLFunction.createFunction((arg0, arg1) -> {
