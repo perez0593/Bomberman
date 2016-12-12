@@ -21,6 +21,7 @@ public class TileManager implements Iterable<Tile>
     private final Vector2 position;
     private final Vector2 size;
     private final Vector2 tileSize;
+    private final Explosion explosion;
     
     public TileManager(int rows, int columns)
     {
@@ -28,10 +29,11 @@ public class TileManager implements Iterable<Tile>
             throw new IllegalArgumentException();
         this.rows = rows;
         this.columns = columns;
+        explosion = Explosion.getManager();
         tiles = new Tile[rows * columns];
         for(int r=0;r<rows;r++)
             for(int c=0;c<columns;c++)
-                tiles[r * rows + c] = new Tile(this,r,c);
+                tiles[r * rows + c] = new Tile(this,r,c,explosion.getReference());
         position = new Vector2();
         size = new Vector2(1,1);
         tileSize = new Vector2();

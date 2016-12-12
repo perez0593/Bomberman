@@ -42,4 +42,8 @@ public final class Resource
     {
         return ImageIO.read(getFile(path));
     }
+    
+    /* FILES */
+    
+    public static final Resource SPRITES = new Resource("bin/sprites");
 }

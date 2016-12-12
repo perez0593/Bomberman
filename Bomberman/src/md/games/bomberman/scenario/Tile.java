@@ -7,6 +7,7 @@ package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
 import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.scenario.Explosion.ExplosionReference;
 import md.games.bomberman.sprites.Sprite;
 
 /**
@@ -18,14 +19,16 @@ public final class Tile
     private final TileManager manager;
     private final int row;
     private final int column;
+    private final ExplosionReference explosion;
     private Sprite sprite;
     
     
-    Tile(TileManager manager, int row, int column)
+    Tile(TileManager manager, int row, int column, ExplosionReference explosion)
     {
         this.manager = manager;
         this.row = row;
         this.column = column;
+        this.explosion = explosion;
     }
     
     public final TileManager getManager() { return manager; }
