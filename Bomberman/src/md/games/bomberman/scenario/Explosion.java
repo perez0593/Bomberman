@@ -59,7 +59,8 @@ public final class Explosion
         {
             if(explosionId == null)
                 throw new NullPointerException();
-            this.explosionId = explosionId;
+            this.explosionId = explosionId != ExplosionId.CROSS && explosionId != this.explosionId
+                    ? ExplosionId.CROSS : explosionId;
             delay = maxDelay;
             end = false;
             iterator = 0;
