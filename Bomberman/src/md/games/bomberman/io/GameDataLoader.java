@@ -5,14 +5,16 @@
  */
 package md.games.bomberman.io;
 
-import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import md.games.bomberman.object.GameObject;
-import md.games.bomberman.sprites.StaticSprite;
+import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.scenario.ScenarioTheme;
+import md.games.bomberman.sprites.Sprite;
 
 /**
  *
@@ -20,32 +22,67 @@ import md.games.bomberman.sprites.StaticSprite;
  */
 public final class GameDataLoader extends DataInputStream
 {
-    private final HashMap<String,Constructor<? extends GameObject>> objCache;
-    private final HashMap<String,BufferedImage> imgCache;
-    private final HashMap<String,StaticSprite> staticSpriteCache;
+    private final HashMap<String,Constructor<? extends SerializableObject>> objCache;
+    private final ScenarioTheme theme;
+    private final ClassLoader classLoader;
     
-    public GameDataLoader(InputStream in)
+    public GameDataLoader(BufferedInputStream in, ScenarioTheme theme)
     {
         super(in);
+        if(theme == null)
+            throw new NullPointerException();
         objCache = new HashMap<>();
-        imgCache = new HashMap<>();
-        staticSpriteCache = new HashMap<>();
+        this.theme = theme;
+        classLoader = GameDataLoader.class.getClassLoader();
+    }
+    public GameDataLoader(InputStream in, int bufferLength, ScenarioTheme theme)
+    {
+        this(new BufferedInputStream(in,bufferLength),theme);
+    }
+    public GameDataLoader(InputStream in, ScenarioTheme theme)
+    {
+        this(new BufferedInputStream(in),theme);
     }
     
-    public final <GO extends GameObject> GO readGameObject() throws IOException
+    public final <SO extends SerializableObject> SO readSerializableObject() throws IOException
     {
         String clazz = readUTF();
-        Constructor<? extends GameObject> cns = objCache.get(clazz);
+        Constructor<? extends SerializableObject> cns = objCache.get(clazz);
         if(cns == null)
         {
             try
             {
-                
+                Class<? extends SerializableObject> cl =
+                        (Class<? extends SerializableObject>) classLoader.loadClass(clazz);
+                cns = cl.getConstructor();
+                cns.setAccessible(true);
+                objCache.put(clazz,cns);
             }
-            catch(Exception ex)
+            catch(ClassNotFoundException | NoSuchMethodException | SecurityException ex)
             {
                 throw new IOException(ex);
             }
         }
+        try
+        {
+            SerializableObject so = cns.newInstance();
+            so.unserialize(this);
+            return (SO) so;
+        }
+        catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex)
+        {
+            throw new IOException(ex);
+        }
+    }
+    
+    public final Vector2 readVector2() throws IOException
+    {
+        return new Vector2(readDouble(),readDouble());
+    }
+    
+    public final Sprite readSprite() throws IOException
+    {
+        String tag = readUTF();
+        return theme.getSprite(tag);
     }
 }
