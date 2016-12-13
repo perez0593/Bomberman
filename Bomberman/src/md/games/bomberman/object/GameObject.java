@@ -7,6 +7,8 @@ package md.games.bomberman.object;
 
 import java.awt.Graphics2D;
 import java.util.HashMap;
+import md.games.bomberman.geom.BoundingBox;
+import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.util.Conversor;
 import nt.dal.build.DALDataBlockBuilder;
 import nt.dal.data.DALBlock;
@@ -23,13 +25,31 @@ import nt.lpl.types.LPLValue;
 public abstract class GameObject extends LPLObject
 {
     private final HashMap<String,LPLValue> localData;
+    private final Vector2 position;
+    private double theta;
+    private BoundingBox boundingBox;
     private String tag;
     
     public GameObject()
     {
         localData = new HashMap<>();
+        position = new Vector2();
+        theta = 0;
+        boundingBox = null;
         tag = "";
     }
+    
+    public final void setPositionX(double x) { position.x = x; }
+    public final void setPositionY(double y) { position.y = y; }
+    public final void setPosition(double x, double y) { position.set(x,y); }
+    public final void setPosition(Vector2 position) { this.position.set(position); }
+    public final Vector2 getPosition() { return position.copy(); }
+    public final double getPositionX() { return position.x; }
+    public final double getPositionY() { return position.y; }
+    public final void translate(double x, double y) { position.add(x,y); }
+    public final void translate(Vector2 p) { position.add(p); }
+    
+    public final void 
     
     public final void setTag(String tag)
     {
