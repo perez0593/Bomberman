@@ -8,6 +8,7 @@ package md.games.bomberman.object;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 import md.games.bomberman.geom.BoundingBox;
+import md.games.bomberman.geom.DirectionUtils;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.util.Conversor;
 import nt.dal.build.DALDataBlockBuilder;
@@ -26,7 +27,7 @@ public abstract class GameObject extends LPLObject
 {
     private final HashMap<String,LPLValue> localData;
     private final Vector2 position;
-    private double theta;
+    private double direction;
     private BoundingBox boundingBox;
     private String tag;
     
@@ -34,7 +35,7 @@ public abstract class GameObject extends LPLObject
     {
         localData = new HashMap<>();
         position = new Vector2();
-        theta = 0;
+        direction = 0;
         boundingBox = null;
         tag = "";
     }
@@ -49,7 +50,23 @@ public abstract class GameObject extends LPLObject
     public final void translate(double x, double y) { position.add(x,y); }
     public final void translate(Vector2 p) { position.add(p); }
     
-    public final void 
+    public final double getDirection() { return direction / StrictMath.PI * 180d; }
+    public final double getDirectionInRadians() { return direction; }
+    public final void setDirection(double degrees) { direction = DirectionUtils.degToRad(degrees); }
+    public final void setDirection(int degrees) { direction = DirectionUtils.degToRad(degrees); }
+    
+    @SuppressWarnings("empty-statement")
+    public final void setDirectionInRadians(double radians)
+    {
+        if(radians < 0)
+            while((radians += DirectionUtils.PI2) < 0);
+        else if(radians > 0)
+            while((radians -= DirectionUtils.PI2) >= DirectionUtils.PI2);
+        direction = radians;
+    }
+    
+    public final void rotate(double degrees) { setDirection(getDirection() + degrees); }
+    public final void rotateInRadians(double radians) { setDirectionInRadians(direction + radians); }
     
     public final void setTag(String tag)
     {

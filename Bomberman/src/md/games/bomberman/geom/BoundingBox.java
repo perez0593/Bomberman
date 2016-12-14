@@ -52,6 +52,11 @@ public class BoundingBox implements SerializableObject
         return new BoundingBox(x, y, x1 - x0 + x, y1 - y0 + y);
     }
     
+    public static final BoundingBox situate(double x, double y, double size)
+    {
+        return new BoundingBox(x, y, x);
+    }
+    
     public boolean hasCollision(BoundingBox other)
     {
         return x0 <= other.x1 && y0 <= other.y1 &&
