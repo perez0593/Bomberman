@@ -205,6 +205,8 @@ public abstract class GameObject
             case "getSize": return GET_SIZE;
             case "getWidth": return GET_WIDTH;
             case "getHeight": return GET_HEIGHT;
+            case "setDirection": return SET_DIRECTION;
+            case "getDirection": return GET_DIRECTION;
         }
     }
     protected abstract LPLValue getAttribute(String key);
@@ -284,5 +286,11 @@ public abstract class GameObject
     });
     private static final LPLValue GET_HEIGHT = LPLFunction.createFunction((arg0) -> {
         return valueOf(arg0.<GameObject>toLPLObject().size.y);
+    });
+    private static final LPLValue SET_DIRECTION = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<GameObject>toLPLObject().setDirection(arg1.toJavaDouble());
+    });
+    private static final LPLValue GET_DIRECTION = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<GameObject>toLPLObject().getDirection());
     });
 }
