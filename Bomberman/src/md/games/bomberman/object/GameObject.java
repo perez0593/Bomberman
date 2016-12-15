@@ -30,6 +30,7 @@ public abstract class GameObject
 {
     private final HashMap<String,LPLValue> localData;
     private final Vector2 position;
+    private final Vector2 size;
     private double direction;
     private BoundingBox boundingBox;
     private String tag;
@@ -38,6 +39,7 @@ public abstract class GameObject
     {
         localData = new HashMap<>();
         position = new Vector2();
+        size = new Vector2();
         direction = 0;
         boundingBox = null;
         tag = "";
@@ -52,6 +54,22 @@ public abstract class GameObject
     public final double getPositionY() { return position.y; }
     public final void translate(double x, double y) { position.add(x,y); }
     public final void translate(Vector2 p) { position.add(p); }
+    
+    public final void setWidth(double width) { size.x = width < 0 ? 0 : width; }
+    public final void setHeight(double height) { size.y = height < 0 ? 0 : height; }
+    public final void setSize(double width, double height)
+    {
+        size.x = width < 0 ? 0 : width;
+        size.y = height < 0 ? 0 : height;
+    }
+    public final void setSize(Vector2 size)
+    {
+        this.size.x = size.x < 0 ? 0 : size.x;
+        this.size.y = size.y < 0 ? 0 : size.y;
+    }
+    public final Vector2 getSize() { return size.copy(); }
+    public final double getWidth() { return size.x; }
+    public final double getHeight() { return size.y; }
     
     public final double getDirection() { return direction / StrictMath.PI * 180d; }
     public final double getDirectionInRadians() { return direction; }
@@ -132,6 +150,7 @@ public abstract class GameObject
     {
         gds.writeUTF(tag);
         gds.writeVector2(position);
+        gds.writeVector2(size);
         gds.writeDouble(direction);
         gds.writeIfNonNull(boundingBox,() -> gds.writeSerializableObject(boundingBox));
         gds.writeInt(localData.size());
@@ -149,6 +168,7 @@ public abstract class GameObject
     {
         tag = gdl.readUTF();
         position.set(gdl.readVector2());
+        size.set(gdl.readVector2());
         direction = gdl.readDouble();
         gdl.readIfNonNull(() -> boundingBox = gdl.readSerializableObject());
         int len = gdl.readInt();
@@ -173,6 +193,18 @@ public abstract class GameObject
             case "deleteLocalValue": return DELETE_LOCAL_VALUE;
             case "getTag": return GET_TAG;
             case "setTag": return SET_TAG;
+            case "setPositionX": return SET_POSITION_X;
+            case "setPositionY": return SET_POSITION_Y;
+            case "setPosition": return SET_POSITION;
+            case "getPosition": return GET_POSITION;
+            case "getPositionX": return GET_POSITION_X;
+            case "getPositionY": return GET_POSITION_Y;
+            case "setWidth": return SET_WIDTH;
+            case "setHeight": return SET_HEIGHT;
+            case "setSize": return SET_SIZE;
+            case "getSize": return GET_SIZE;
+            case "getWidth": return GET_WIDTH;
+            case "getHeight": return GET_HEIGHT;
         }
     }
     protected abstract LPLValue getAttribute(String key);
@@ -212,5 +244,45 @@ public abstract class GameObject
     });
     private static final LPLValue SET_TAG = LPLFunction.createVFunction((arg0, arg1) -> {
         arg0.<GameObject>toLPLObject().tag = arg1.toJavaString();
+    });
+    private static final LPLValue SET_POSITION_X = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<GameObject>toLPLObject().position.x = arg1.toJavaDouble();
+    });
+    private static final LPLValue SET_POSITION_Y = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<GameObject>toLPLObject().position.y = arg1.toJavaDouble();
+    });
+    private static final LPLValue SET_POSITION = LPLFunction.createVFunction((arg0, arg1, arg2) -> {
+        if(arg2 == UNDEFINED)
+            arg0.<GameObject>toLPLObject().setPosition(arg1.toLPLObject());
+        else arg0.<GameObject>toLPLObject().setPosition(arg1.toJavaDouble(),arg2.toJavaDouble());
+    });
+    private static final LPLValue GET_POSITION = LPLFunction.createFunction((arg0) -> {
+        return arg0.<GameObject>toLPLObject().position.copy();
+    });
+    private static final LPLValue GET_POSITION_X = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<GameObject>toLPLObject().position.x);
+    });
+    private static final LPLValue GET_POSITION_Y = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<GameObject>toLPLObject().position.y);
+    });
+    private static final LPLValue SET_WIDTH = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<GameObject>toLPLObject().size.x = arg1.toJavaDouble();
+    });
+    private static final LPLValue SET_HEIGHT = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<GameObject>toLPLObject().size.y = arg1.toJavaDouble();
+    });
+    private static final LPLValue SET_SIZE = LPLFunction.createVFunction((arg0, arg1, arg2) -> {
+        if(arg2 == UNDEFINED)
+            arg0.<GameObject>toLPLObject().setSize(arg1.toLPLObject());
+        else arg0.<GameObject>toLPLObject().setSize(arg1.toJavaDouble(),arg2.toJavaDouble());
+    });
+    private static final LPLValue GET_SIZE = LPLFunction.createFunction((arg0) -> {
+        return arg0.<GameObject>toLPLObject().size.copy();
+    });
+    private static final LPLValue GET_WIDTH = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<GameObject>toLPLObject().size.x);
+    });
+    private static final LPLValue GET_HEIGHT = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<GameObject>toLPLObject().size.y);
     });
 }
