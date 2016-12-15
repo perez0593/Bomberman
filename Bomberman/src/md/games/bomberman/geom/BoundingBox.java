@@ -52,9 +52,24 @@ public class BoundingBox implements SerializableObject
         return new BoundingBox(x, y, x1 - x0 + x, y1 - y0 + y);
     }
     
+    public static final BoundingBox situate(Vector2 position, double size)
+    {
+        return situate(position.x, position.y, size);
+    }
+    public static final BoundingBox situate(Vector2 position, Vector2 size)
+    {
+        return situate(position.x, position.y, size.x, size.y);
+    }
+    public static final BoundingBox situate(double x, double y, double sizeX, double sizeY)
+    {
+        double sizeX2 = sizeX / 2d;
+        double sizeY2 = sizeY / 2d;
+        return new BoundingBox(x - sizeX2, y - sizeY2, x + sizeX2, y + sizeY2);
+    }
     public static final BoundingBox situate(double x, double y, double size)
     {
-        return new BoundingBox(x, y, x);
+        double size2 = size / 2d;
+        return new BoundingBox(x - size2, y - size2, x + size2, y + size2);
     }
     
     public boolean hasCollision(BoundingBox other)

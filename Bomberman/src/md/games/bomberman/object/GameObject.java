@@ -6,14 +6,15 @@
 package md.games.bomberman.object;
 
 import java.awt.Graphics2D;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.DirectionUtils;
 import md.games.bomberman.geom.Vector2;
-import md.games.bomberman.util.Conversor;
-import nt.dal.build.DALDataBlockBuilder;
-import nt.dal.data.DALBlock;
-import nt.dal.data.DALData;
+import md.games.bomberman.io.GameDataLoader;
+import md.games.bomberman.io.GameDataSaver;
+import md.games.bomberman.io.SerializableObject;
 import nt.lpl.LPLRuntimeException;
 import nt.lpl.types.LPLFunction;
 import nt.lpl.types.LPLObject;
@@ -23,7 +24,9 @@ import nt.lpl.types.LPLValue;
  *
  * @author Asus
  */
-public abstract class GameObject extends LPLObject
+public abstract class GameObject
+        extends LPLObject
+        implements SerializableObject
 {
     private final HashMap<String,LPLValue> localData;
     private final Vector2 position;
@@ -124,27 +127,36 @@ public abstract class GameObject extends LPLObject
     public abstract void draw(Graphics2D g);
     
     /* Input/Output */
-    /*public final DALDataBlockBuilder serialize()
+    @Override
+    public final void serialize(GameDataSaver gds) throws IOException
     {
-        DALDataBlockBuilder base = new DALDataBlockBuilder();
-        innserSerialize(base);
-        base.assign("object.__class",getGameObjectClass().name());
-        base.assign("object.tag",tag);
-        base.assign("object.localData",localData);
-        return base;
+        gds.writeUTF(tag);
+        gds.writeVector2(position);
+        gds.writeDouble(direction);
+        gds.writeIfNonNull(boundingBox,() -> gds.writeSerializableObject(boundingBox));
+        gds.writeInt(localData.size());
+        for(Map.Entry<String, LPLValue> e : localData.entrySet())
+        {
+            gds.writeUTF(e.getKey());
+            gds.writeLPL(e.getValue());
+        }
+        innserSerialize(gds);
     }
-    protected abstract void innserSerialize(DALDataBlockBuilder base);
+    protected abstract void innserSerialize(GameDataSaver gds);
     
-    public final void unserialize(DALBlock base)
+    @Override
+    public final void unserialize(GameDataLoader gdl) throws IOException
     {
-        tag = base.getAttribute(DALData.valueOf("object.tag")).toJavaString();
-        base.getAttribute(DALData.valueOf("object.localData"))
-                .toJavaMap().entrySet().stream().forEach(e -> {
-                    localData.put(e.getKey().toJavaString(),Conversor.valueOf(e.getKey()));
-        });
-        innerUnserialize(base);
+        tag = gdl.readUTF();
+        position.set(gdl.readVector2());
+        direction = gdl.readDouble();
+        gdl.readIfNonNull(() -> boundingBox = gdl.readSerializableObject());
+        int len = gdl.readInt();
+        for(int i=0;i<len;i++)
+            localData.put(gdl.readUTF(),gdl.readLPL());
+        innerUnserialize(gdl);
     }
-    protected abstract void innerUnserialize(DALBlock base);*/
+    protected abstract void innerUnserialize(GameDataLoader gdl);
     
     
     /* LPL */
