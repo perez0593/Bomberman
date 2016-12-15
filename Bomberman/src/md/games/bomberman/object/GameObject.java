@@ -15,6 +15,7 @@ import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
+import md.games.bomberman.scenario.Scenario;
 import nt.lpl.LPLRuntimeException;
 import nt.lpl.types.LPLFunction;
 import nt.lpl.types.LPLObject;
@@ -34,6 +35,7 @@ public abstract class GameObject
     private double direction;
     private BoundingBox boundingBox;
     private String tag;
+    private Scenario scenario;
     
     public GameObject()
     {
@@ -43,7 +45,11 @@ public abstract class GameObject
         direction = 0;
         boundingBox = null;
         tag = "";
+        scenario = null;
     }
+    
+    public final void setScenarioReference(Scenario scenario) { this.scenario = scenario; }
+    public final Scenario getScenarioReference() { return scenario; }
     
     public final void setPositionX(double x)
     {

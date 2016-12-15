@@ -14,6 +14,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.scenario.ScenarioTheme;
+import md.games.bomberman.script.Script;
+import md.games.bomberman.script.ScriptManager;
 import md.games.bomberman.sprites.Sprite;
 import nt.lpl.types.LPLType;
 import nt.lpl.types.LPLValue;
@@ -29,6 +31,7 @@ public final class GameDataLoader extends DataInputStream
     private static final LPLType[] LPL_TYPES = LPLType.values();
     private final HashMap<String,Constructor<? extends SerializableObject>> objCache;
     private final ScenarioTheme theme;
+    private ScriptManager scripts;
     private final ClassLoader classLoader;
     
     public GameDataLoader(BufferedInputStream in, ScenarioTheme theme)
@@ -131,6 +134,13 @@ public final class GameDataLoader extends DataInputStream
             }
             default: throw new IOException("Invalid LPL type");
         }
+    }
+    
+    public final Script readScript() throws IOException
+    {
+        if(scripts == null)
+            throw new IllegalStateException("Scripts manager not found");
+        return scripts.getScript(readUTF());
     }
     
     

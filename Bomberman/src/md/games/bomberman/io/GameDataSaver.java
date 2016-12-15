@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.script.Script;
 import md.games.bomberman.sprites.Sprite;
 import nt.lpl.types.LPLNumber;
 import nt.lpl.types.LPLType;
@@ -132,6 +133,11 @@ public final class GameDataSaver extends DataOutputStream
                 }
             }
         }
+    }
+    
+    public final void writeScript(Script script) throws IOException
+    {
+        writeUTF(script.getName());
     }
     
     
