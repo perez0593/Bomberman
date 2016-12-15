@@ -13,15 +13,17 @@ import nt.lpl.types.LPLValue;
  *
  * @author Asus
  */
-public class Script extends LPLObject
+public class Script
 {
+    private final ScriptManager manager;
     private String name;
     private LPLFunction closure;
     private String code;
     private boolean compiled;
     
-    Script(String name)
+    Script(ScriptManager manager, String name)
     {
+        this.manager = manager;
         this.name = name;
         closure = null;
         code = "";
@@ -48,6 +50,9 @@ public class Script extends LPLObject
     {
         if(executor == null)
             throw new NullPointerException();
-        return closure.call(this,executor).arg0();
+        return manager.executeScript(executor,this);
     }
+    final LPLValue execute() { return closure.call().arg0(); }
+    
+    public static final LPLObject OBJECT_INVALID = new LPLObject();
 }
