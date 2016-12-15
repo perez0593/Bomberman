@@ -40,16 +40,39 @@ public class BoundingBox implements SerializableObject
     }
     public BoundingBox translate(double x, double y)
     {
-        return new BoundingBox(x0 + x, y0 + y, x1 + x, y1 + y);
+        x0 += x;
+        y0 += y;
+        x1 += x;
+        y1 += y;
+        return this;
     }
     
-    public BoundingBox situate(Vector2 position)
+    public final BoundingBox resituate(Vector2 position, double size)
     {
-        return situate(position.x, position.y);
+        return resituate(position.x, position.y, size);
     }
-    public BoundingBox situate(double x, double y)
+    public final BoundingBox resituate(Vector2 position, Vector2 size)
     {
-        return new BoundingBox(x, y, x1 - x0 + x, y1 - y0 + y);
+        return resituate(position.x, position.y, size.x, size.y);
+    }
+    public final BoundingBox resituate(double x, double y, double sizeX, double sizeY)
+    {
+        double sizeX2 = sizeX / 2d;
+        double sizeY2 = sizeY / 2d;
+        x0 = x - sizeX2;
+        y0 = y - sizeY2;
+        x1 = x + sizeX2;
+        y1 = y + sizeY2;
+        return this;
+    }
+    public final BoundingBox resituate(double x, double y, double size)
+    {
+        double size2 = size / 2d;
+        x0 = x - size2;
+        y0 = y - size2;
+        x1 = x + size2;
+        y1 = y + size2;
+        return this;
     }
     
     public static final BoundingBox situate(Vector2 position, double size)

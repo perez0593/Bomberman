@@ -45,27 +45,66 @@ public abstract class GameObject
         tag = "";
     }
     
-    public final void setPositionX(double x) { position.x = x; }
-    public final void setPositionY(double y) { position.y = y; }
-    public final void setPosition(double x, double y) { position.set(x,y); }
+    public final void setPositionX(double x)
+    {
+        position.x = x;
+        if(boundingBox != null)
+            boundingBox.resituate(position,size);
+    }
+    public final void setPositionY(double y)
+    {
+        position.y = y;
+        if(boundingBox != null)
+            boundingBox.resituate(position,size);
+    }
+    public final void setPosition(double x, double y)
+    {
+        position.set(x,y);
+        if(boundingBox != null)
+            boundingBox.resituate(position,size);
+    }
     public final void setPosition(Vector2 position) { this.position.set(position); }
     public final Vector2 getPosition() { return position.copy(); }
     public final double getPositionX() { return position.x; }
     public final double getPositionY() { return position.y; }
-    public final void translate(double x, double y) { position.add(x,y); }
-    public final void translate(Vector2 p) { position.add(p); }
+    public final void translate(double x, double y)
+    {
+        position.add(x,y);
+        if(boundingBox != null)
+            boundingBox.translate(x,y);
+    }
+    public final void translate(Vector2 p)
+    {
+        position.add(p);
+        if(boundingBox != null)
+            boundingBox.translate(position);
+    }
     
-    public final void setWidth(double width) { size.x = width < 0 ? 0 : width; }
-    public final void setHeight(double height) { size.y = height < 0 ? 0 : height; }
+    public final void setWidth(double width)
+    {
+        size.x = width < 0 ? 0 : width;
+        if(boundingBox != null)
+            boundingBox.resituate(position,size);
+    }
+    public final void setHeight(double height)
+    {
+        size.y = height < 0 ? 0 : height;
+        if(boundingBox != null)
+            boundingBox.resituate(position,size);
+    }
     public final void setSize(double width, double height)
     {
         size.x = width < 0 ? 0 : width;
         size.y = height < 0 ? 0 : height;
+        if(boundingBox != null)
+            boundingBox.resituate(position,size);
     }
     public final void setSize(Vector2 size)
     {
         this.size.x = size.x < 0 ? 0 : size.x;
         this.size.y = size.y < 0 ? 0 : size.y;
+        if(boundingBox != null)
+            boundingBox.resituate(position,size);
     }
     public final Vector2 getSize() { return size.copy(); }
     public final double getWidth() { return size.x; }
@@ -88,6 +127,9 @@ public abstract class GameObject
     
     public final void rotate(double degrees) { setDirection(getDirection() + degrees); }
     public final void rotateInRadians(double radians) { setDirectionInRadians(direction + radians); }
+    
+    public final void createBoundingBox() { boundingBox = BoundingBox.situate(position,size); }
+    public final void destroyBoundingBox() { boundingBox = null; }
     
     public final void setTag(String tag)
     {
@@ -220,6 +262,8 @@ public abstract class GameObject
             case NUMBER:
             case BOOLEAN:
             case STRING:
+            case ARRAY:
+            case OBJECT:
                 break;
         }
     }
@@ -248,10 +292,10 @@ public abstract class GameObject
         arg0.<GameObject>toLPLObject().tag = arg1.toJavaString();
     });
     private static final LPLValue SET_POSITION_X = LPLFunction.createVFunction((arg0, arg1) -> {
-        arg0.<GameObject>toLPLObject().position.x = arg1.toJavaDouble();
+        arg0.<GameObject>toLPLObject().setPositionX(arg1.toJavaDouble());
     });
     private static final LPLValue SET_POSITION_Y = LPLFunction.createVFunction((arg0, arg1) -> {
-        arg0.<GameObject>toLPLObject().position.y = arg1.toJavaDouble();
+        arg0.<GameObject>toLPLObject().setPositionY(arg1.toJavaDouble());
     });
     private static final LPLValue SET_POSITION = LPLFunction.createVFunction((arg0, arg1, arg2) -> {
         if(arg2 == UNDEFINED)
@@ -268,10 +312,10 @@ public abstract class GameObject
         return valueOf(arg0.<GameObject>toLPLObject().position.y);
     });
     private static final LPLValue SET_WIDTH = LPLFunction.createVFunction((arg0, arg1) -> {
-        arg0.<GameObject>toLPLObject().size.x = arg1.toJavaDouble();
+        arg0.<GameObject>toLPLObject().setWidth(arg1.toJavaDouble());
     });
     private static final LPLValue SET_HEIGHT = LPLFunction.createVFunction((arg0, arg1) -> {
-        arg0.<GameObject>toLPLObject().size.y = arg1.toJavaDouble();
+        arg0.<GameObject>toLPLObject().setHeight(arg1.toJavaDouble());
     });
     private static final LPLValue SET_SIZE = LPLFunction.createVFunction((arg0, arg1, arg2) -> {
         if(arg2 == UNDEFINED)
