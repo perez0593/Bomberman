@@ -10,10 +10,10 @@ package md.games.bomberman.object;
  * @author David
  */
 public enum PlayerColor {
-    white,
-    red,
-    blue,
-    black,
-    green,
-    yellow;
+    WHITE,
+    RED,
+    BLUE,
+    BLACK,
+    GREEN,
+    YELLOW;
 }

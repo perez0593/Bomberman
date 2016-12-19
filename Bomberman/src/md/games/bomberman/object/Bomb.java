@@ -6,7 +6,6 @@
 package md.games.bomberman.object;
 
 import java.awt.Graphics2D;
-import java.util.HashMap;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import nt.lpl.types.LPLValue;
@@ -15,17 +14,9 @@ import nt.lpl.types.LPLValue;
  *
  * @author David
  */
-public class Player extends GameObject {
+public class Bomb extends GameObject {
     
-    private String name;
-    private PlayerColor color;
-    
-    /*stats*/
-    private int lives;
-    private double speed;
-    private int maxbombs;
-    
-    /*stats*/
+    private BombType type;
 
     @Override
     public void update(double delta) {
