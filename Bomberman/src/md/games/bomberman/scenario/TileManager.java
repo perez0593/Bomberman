@@ -15,9 +15,9 @@ import md.games.bomberman.geom.Vector2;
  */
 public class TileManager implements Iterable<Tile>
 {
-    private final Tile[] tiles;
-    private final int rows;
-    private final int columns;
+    private Tile[] tiles;
+    private int rows;
+    private int columns;
     private final Vector2 position;
     private final Vector2 size;
     private final Vector2 tileSize;
@@ -106,6 +106,25 @@ public class TileManager implements Iterable<Tile>
                     tileSize.y
             );
         }
+    }
+    
+    public final void resize(int rows, int columns)
+    {
+        if(rows < 1 || columns < 1)
+            throw new IllegalArgumentException();
+        int oldRows = this.rows;
+        int oldColumns = this.columns;
+        Tile[] aux = tiles;
+        this.rows = rows;
+        this.columns = columns;
+        tiles = new Tile[rows * columns];
+        for(int r=0;r<rows;r++)
+            for(int c=0;c<columns;c++)
+            {
+                tiles[r * rows + c] = r < oldRows && c < oldColumns
+                        ? aux[r * oldRows + c]
+                        : new Tile(this,r,c,explosion.getReference());
+            }
     }
 
     @Override

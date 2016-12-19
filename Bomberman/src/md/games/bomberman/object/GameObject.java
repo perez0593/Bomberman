@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.DirectionUtils;
 import md.games.bomberman.geom.Vector2;
@@ -29,6 +30,7 @@ public abstract class GameObject
         extends LPLObject
         implements SerializableObject
 {
+    private final UUID uid = UUID.randomUUID();
     private final HashMap<String,LPLValue> localData;
     private final Vector2 position;
     private final Vector2 size;
@@ -47,6 +49,8 @@ public abstract class GameObject
         tag = "";
         scenario = null;
     }
+    
+    public final UUID getId() { return uid; }
     
     public final void setScenarioReference(Scenario scenario) { this.scenario = scenario; }
     public final Scenario getScenarioReference() { return scenario; }
