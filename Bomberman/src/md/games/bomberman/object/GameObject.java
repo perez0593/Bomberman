@@ -54,6 +54,7 @@ public abstract class GameObject
     
     public final void setScenarioReference(Scenario scenario) { this.scenario = scenario; }
     public final Scenario getScenarioReference() { return scenario; }
+    public final boolean hasScenarioReference() { return scenario != null; }
     
     public final void setPositionX(double x)
     {

@@ -112,6 +112,8 @@ public final class Explosion
         END_DOWN,
         END_LEFT,
         END_RIGHT,
+        VERTICAL,
+        HORIZONTAL,
         CROSS;
         
         private final int id = ordinal();

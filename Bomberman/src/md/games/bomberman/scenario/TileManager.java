@@ -8,6 +8,7 @@ package md.games.bomberman.scenario;
 import java.awt.Graphics2D;
 import java.util.Iterator;
 import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.scenario.Explosion.ExplosionId;
 
 /**
  *
@@ -48,7 +49,7 @@ public class TileManager implements Iterable<Tile>
     {
         if(row < 0 || row >= rows || column < 0 || columns >= columns)
             throw new IllegalArgumentException();
-        return tiles[row * rows + column];
+        return tiles[row * columns + column];
     }
     public final Tile getTile(int index)
     {
@@ -56,6 +57,15 @@ public class TileManager implements Iterable<Tile>
             throw new IllegalArgumentException();
         return tiles[index];
     }
+    public final Tile getTileByPosition(double x, double y)
+    {
+        int row = (int) ((y - position.y) / tileSize.y);
+        int column = (int) ((x - position.x) / tileSize.x);
+        return row < 0 || row >= rows || column < 0 || column >= columns
+                ? null
+                : tiles[row * columns + column];
+    }
+    public final Tile getTileByPosition(Vector2 position) { return getTileByPosition(position.x,position.y); }
     
     public final Vector2 getTilePosition(int row, int column)
     {
@@ -87,6 +97,52 @@ public class TileManager implements Iterable<Tile>
     {
         tileSize.x = size.x / columns;
         tileSize.y = size.y / rows;
+    }
+    
+    public final double getTileWidth() { return tileSize.x; }
+    public final double getTileHeight() { return tileSize.y; }
+    public final Vector2 getTileSize() { return tileSize.copy(); }
+    
+    public final void createCrossExplosion(int row, int column, int range)
+    {
+        if(row < 0 || row >= rows || column < 0 || column >= columns || range < 1)
+            throw new IllegalArgumentException();
+        int len = range * 2 - 1;
+        int r0 = row - (range - 1);
+        int c0 = column - (range - 1);
+        
+        for(int r=r0;r<len&&r<rows;r++)
+            tiles[r * columns + column].createExplosion(r == r0 
+                    ? ExplosionId.END_UP : r == r0+len||r0==rows-1 ? ExplosionId.END_DOWN : ExplosionId.VERTICAL);
+        for(int c=c0;c<len&&c<columns;c++)
+            tiles[row * columns + c].createExplosion(c == c0 
+                    ? ExplosionId.END_LEFT : c == c0+len||c0==columns-1 ? ExplosionId.END_RIGHT : ExplosionId.HORIZONTAL);
+    }
+    
+    public final void createSquareExplosion(int row, int column, int range)
+    {
+        if(row < 0 || row >= rows || column < 0 || column >= columns || range < 1)
+            throw new IllegalArgumentException();
+        int r0 = row - (range - 1);
+        int c0 = column - (range - 1);
+        int len = range * 2 - 1;
+        int rowsLen = r0 + len >= rows ? len - ((r0 + len + 1) - rows) : len;
+        int columnsLen = c0 + len >= columns ? len - ((c0 + len + 1) - columns) : len;
+        
+        for(int r=r0;r<rowsLen;r++)
+        {
+            tiles[r * columns + c0].createExplosion(r == r0 
+                    ? ExplosionId.END_UP : r == r0+len||r0==rows-1 ? ExplosionId.END_DOWN : ExplosionId.VERTICAL);
+            tiles[r * columns + c0 + columnsLen - 1].createExplosion(r == r0 
+                    ? ExplosionId.END_UP : r == r0+len||r0==rows-1 ? ExplosionId.END_DOWN : ExplosionId.VERTICAL);
+        }
+        for(int c=c0;c<columnsLen;c++)
+        {
+            tiles[r0 * columns + c].createExplosion(c == c0 
+                    ? ExplosionId.END_LEFT : c == c0+len||c0==columns-1 ? ExplosionId.END_RIGHT : ExplosionId.HORIZONTAL);
+            tiles[(r0 + rowsLen - 1) * columns + c].createExplosion(c == c0 
+                    ? ExplosionId.END_LEFT : c == c0+len||c0==columns-1 ? ExplosionId.END_RIGHT : ExplosionId.HORIZONTAL);
+        }
     }
     
     public final void update(double delta)
