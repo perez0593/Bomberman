@@ -72,6 +72,9 @@ public class Bomb extends Placeable
     public final boolean hasExploited() { return exploited; }
     
     @Override
+    public final void onExplodeHit() { explode(); }
+    
+    @Override
     public void update(double delta)
     {
         if(!exploited)

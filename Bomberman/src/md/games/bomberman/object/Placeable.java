@@ -50,4 +50,6 @@ public abstract class Placeable extends GameObject
         }
         return false;
     }
+    
+    public abstract void onExplodeHit();
 }

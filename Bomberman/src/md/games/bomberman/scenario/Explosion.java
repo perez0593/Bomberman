@@ -117,5 +117,42 @@ public final class Explosion
         CROSS;
         
         private final int id = ordinal();
+        
+        public final ExplosionId join(ExplosionId id)
+        {
+            switch(this)
+            {
+                default: throw new IllegalStateException();
+                case END_UP:
+                    switch(id)
+                    {
+                        case END_UP: return END_UP;
+                        case END_DOWN: case VERTICAL: return VERTICAL;
+                        default: return CROSS;
+                    }
+                case END_DOWN:
+                    switch(id)
+                    {
+                        case END_DOWN: return END_DOWN;
+                        case END_UP: case VERTICAL: return VERTICAL;
+                        default: return CROSS;
+                    }
+                case END_LEFT:
+                    switch(id)
+                    {
+                        case END_LEFT: return END_LEFT;
+                        case END_RIGHT: case HORIZONTAL: return HORIZONTAL;
+                        default: return CROSS;
+                    }
+                case END_RIGHT:
+                    switch(id)
+                    {
+                        case END_RIGHT: return END_RIGHT;
+                        case END_LEFT: case HORIZONTAL: return HORIZONTAL;
+                        default: return CROSS;
+                    }
+                case CROSS: return CROSS;
+            }
+        }
     }
 }
