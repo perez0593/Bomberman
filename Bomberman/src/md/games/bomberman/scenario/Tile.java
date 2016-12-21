@@ -7,8 +7,8 @@ package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
 import md.games.bomberman.geom.Vector2;
-import md.games.bomberman.object.GameObject;
 import md.games.bomberman.object.Placeable;
+import md.games.bomberman.object.Player;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 import md.games.bomberman.scenario.Explosion.ExplosionReference;
 import md.games.bomberman.sprites.Sprite;
@@ -46,6 +46,12 @@ public final class Tile
     
     public final void createExplosion(ExplosionId explosionId) { explosion.explode(explosionId); }
     
+    public final void doOnPlayerCollide(Player player)
+    {
+        if(placeable != null)
+            placeable.onPlayerCollide(player);
+    }
+    
     public final void putPlaceable(Placeable placeable)
     {
         if(placeable == null)
@@ -59,7 +65,7 @@ public final class Tile
             position.add(manager.getTileWidth()/2,manager.getTileHeight()/2);
             placeable.setPosition(position);
         }
-        else placeable.putInTile(row,column);
+        else placeable.putOnTile(row,column);
     }
     public final Placeable getPlaceable() { return placeable; }
     public final boolean canPutPlaceable() { return placeable == null; }
@@ -76,14 +82,22 @@ public final class Tile
     {
         if(sprite != null)
             sprite.update(delta);
+        if(placeable != null)
+            placeable.update(delta);
         if(!explosion.isEnd())
+        {
             explosion.update(delta);
+            if(placeable != null)
+                placeable.onExplodeHit();
+        }
     }
     
     final void draw(Graphics2D g, double x, double y, double w, double h)
     {
         if(sprite != null)
             sprite.draw(g,x,y,w,h);
+        if(placeable != null)
+            placeable.draw(g);
         if(!explosion.isEnd())
             explosion.draw(g,x,y,w,h);
     }

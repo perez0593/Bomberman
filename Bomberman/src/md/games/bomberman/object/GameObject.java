@@ -214,7 +214,7 @@ public abstract class GameObject
         }
         innserSerialize(gds);
     }
-    protected abstract void innserSerialize(GameDataSaver gds);
+    protected abstract void innserSerialize(GameDataSaver gds) throws IOException;
     
     @Override
     public final void unserialize(GameDataLoader gdl) throws IOException
@@ -229,7 +229,7 @@ public abstract class GameObject
             localData.put(gdl.readUTF(),gdl.readLPL());
         innerUnserialize(gdl);
     }
-    protected abstract void innerUnserialize(GameDataLoader gdl);
+    protected abstract void innerUnserialize(GameDataLoader gdl) throws IOException;
     
     
     /* LPL */
@@ -239,7 +239,10 @@ public abstract class GameObject
         String skey = key.toJavaString();
         switch(skey)
         {
-            default: return getAttribute(skey);
+            default: {
+                LPLValue value = getAttribute(skey);
+                return value == null ? UNDEFINED : value;
+            }
             case "getLocalValue": return GET_LOCAL_VALUE;
             case "setLocalValue": return SET_LOCAL_VALUE;
             case "hasLocalValue": return HAS_LOCAL_VALUE;

@@ -107,41 +107,85 @@ public class TileManager implements Iterable<Tile>
     {
         if(row < 0 || row >= rows || column < 0 || column >= columns || range < 1)
             throw new IllegalArgumentException();
-        int len = range * 2 - 1;
-        int r0 = row - (range - 1);
-        int c0 = column - (range - 1);
+        Tile tile = tiles[row * columns + column];
+        if(!tile.canPutPlaceable())
+            return;
+        tile.createExplosion(ExplosionId.CROSS);
+        boolean[] block = new boolean[4];
         
-        for(int r=r0;r<len&&r<rows;r++)
-            tiles[r * columns + column].createExplosion(r == r0 
-                    ? ExplosionId.END_UP : r == r0+len||r0==rows-1 ? ExplosionId.END_DOWN : ExplosionId.VERTICAL);
-        for(int c=c0;c<len&&c<columns;c++)
-            tiles[row * columns + c].createExplosion(c == c0 
-                    ? ExplosionId.END_LEFT : c == c0+len||c0==columns-1 ? ExplosionId.END_RIGHT : ExplosionId.HORIZONTAL);
+        for(int i=1;i<range;i++)
+        {
+            if(!block[0])
+            {
+                if(row - i < 0)
+                    block[0] = true;
+                else {
+                    tile = tiles[(row - i) * columns + column];
+                    if(!tile.canPutPlaceable())
+                        block[0] = true;
+                    else tile.createExplosion(i == range-1 ? ExplosionId.END_UP : ExplosionId.VERTICAL);
+                }
+            }
+            if(!block[1])
+            {
+                if(row + i >= rows)
+                    block[1] = true;
+                else
+                {
+                    tile = tiles[(row + i) * columns + column];
+                    if(!tile.canPutPlaceable())
+                        block[1] = true;
+                    else tile.createExplosion(i == range-1 ? ExplosionId.END_DOWN : ExplosionId.VERTICAL);
+                }
+            }
+            if(!block[2])
+            {
+                if(column - i < 0)
+                    block[2] = true;
+                else
+                {
+                    tile = tiles[row * columns + (column - i)];
+                    if(!tile.canPutPlaceable())
+                        block[2] = true;
+                    else tile.createExplosion(i == range-1 ? ExplosionId.END_LEFT : ExplosionId.HORIZONTAL);
+                }
+            }
+            if(!block[3])
+            {
+                if(column + i >= columns)
+                    block[3] = true;
+                else
+                {
+                    tile = tiles[row * columns + (column + i)];
+                    if(!tile.canPutPlaceable())
+                        block[3] = true;
+                    else tile.createExplosion(i == range-1 ? ExplosionId.END_RIGHT : ExplosionId.HORIZONTAL);
+                }
+            }
+        }
+        
     }
     
     public final void createSquareExplosion(int row, int column, int range)
     {
         if(row < 0 || row >= rows || column < 0 || column >= columns || range < 1)
             throw new IllegalArgumentException();
-        int r0 = row - (range - 1);
-        int c0 = column - (range - 1);
         int len = range * 2 - 1;
-        int rowsLen = r0 + len >= rows ? len - ((r0 + len + 1) - rows) : len;
-        int columnsLen = c0 + len >= columns ? len - ((c0 + len + 1) - columns) : len;
+        int r0 = row - range - 1;
+        int c0 = column - range - 1;
         
-        for(int r=r0;r<rowsLen;r++)
+        for(int r=r0;r<len;r++)
         {
-            tiles[r * columns + c0].createExplosion(r == r0 
-                    ? ExplosionId.END_UP : r == r0+len||r0==rows-1 ? ExplosionId.END_DOWN : ExplosionId.VERTICAL);
-            tiles[r * columns + c0 + columnsLen - 1].createExplosion(r == r0 
-                    ? ExplosionId.END_UP : r == r0+len||r0==rows-1 ? ExplosionId.END_DOWN : ExplosionId.VERTICAL);
-        }
-        for(int c=c0;c<columnsLen;c++)
-        {
-            tiles[r0 * columns + c].createExplosion(c == c0 
-                    ? ExplosionId.END_LEFT : c == c0+len||c0==columns-1 ? ExplosionId.END_RIGHT : ExplosionId.HORIZONTAL);
-            tiles[(r0 + rowsLen - 1) * columns + c].createExplosion(c == c0 
-                    ? ExplosionId.END_LEFT : c == c0+len||c0==columns-1 ? ExplosionId.END_RIGHT : ExplosionId.HORIZONTAL);
+            if(r < 0 || r >= rows)
+                continue;
+            for(int c=c0;c<len;c++)
+            {
+                if(c < 0 || c >= columns)
+                    continue;
+                Tile tile = tiles[r * columns + c];
+                if(tile.canPutPlaceable())
+                    tile.createExplosion(ExplosionId.CROSS);
+            }
         }
     }
     

@@ -5,6 +5,9 @@
  */
 package md.games.bomberman.object.bomb;
 
+import java.util.HashMap;
+import nt.lpl.types.LPLValue;
+
 /**
  *
  * @author David
@@ -22,4 +25,30 @@ public enum BombType {
     ICEBOMB, // Bomba que te paraliza si te toca
     TELEPORT; // Bomba que se teletransporta a otro punto del mapa aleatorio y explota
     
+    
+    private static final BombType[] VALUES = values();
+    private static final HashMap<String,BombType> CACHE = new HashMap<>();
+    
+    static {
+        for(BombType bt : VALUES)
+        {
+            CACHE.put(bt.name(),bt);
+            CACHE.put(bt.name().toLowerCase(),bt);
+        }
+    }
+    
+    public static final BombType decode(LPLValue value)
+    {
+        if(value.isNumber())
+        {
+            int id = value.toJavaInt();
+            if(id < 0 || id >= VALUES.length)
+                throw new IllegalArgumentException("Invalid BombType Id " + id);
+            return VALUES[id];
+        }
+        BombType bt = CACHE.get(value.toJavaString());
+        if(bt == null)
+            throw new IllegalArgumentException("Invalid BombType name " + value);
+        return bt;
+    }
 }

@@ -59,8 +59,8 @@ public final class Explosion
         {
             if(explosionId == null)
                 throw new NullPointerException();
-            this.explosionId = explosionId != ExplosionId.CROSS && explosionId != this.explosionId
-                    ? ExplosionId.CROSS : explosionId;
+            this.explosionId = this.explosionId != null
+                    ? this.explosionId.join(explosionId) : explosionId;
             delay = maxDelay;
             end = false;
             iterator = 0;
@@ -122,7 +122,6 @@ public final class Explosion
         {
             switch(this)
             {
-                default: throw new IllegalStateException();
                 case END_UP:
                     switch(id)
                     {
@@ -151,7 +150,20 @@ public final class Explosion
                         case END_LEFT: case HORIZONTAL: return HORIZONTAL;
                         default: return CROSS;
                     }
-                case CROSS: return CROSS;
+                case VERTICAL:
+                    switch(id)
+                    {
+                        case END_UP: case END_DOWN: case VERTICAL: return VERTICAL;
+                        default: return CROSS;
+                    }
+                case HORIZONTAL:
+                    switch(id)
+                    {
+                        case END_LEFT: case END_RIGHT: case HORIZONTAL: return HORIZONTAL;
+                        default: return CROSS;
+                    }
+                case CROSS:
+                default: return CROSS;
             }
         }
     }

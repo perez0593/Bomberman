@@ -5,13 +5,13 @@
  */
 package md.games.bomberman.object;
 
-import md.games.bomberman.object.bomb.BombType;
 import java.awt.Graphics2D;
+import java.io.IOException;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
+import nt.lpl.types.LPLFunction;
 import nt.lpl.types.LPLValue;
 
 /**
@@ -20,14 +20,17 @@ import nt.lpl.types.LPLValue;
  */
 public class Bomb extends Placeable
 {
-    protected final int range;
-    protected final int damage;
-    protected final boolean timingBomb;
-    protected final boolean remoteMode;
+    protected int range;
+    protected int damage;
+    protected boolean timingBomb;
+    protected boolean remoteMode;
     private double timeRemaining;
+    private int fireResistence = 5;
     private boolean exploited = false;
     
-    public Bomb(int range, int damage, boolean remoteMode)
+    protected Bomb() {}
+    
+    public Bomb(int range, int damage, boolean remoteMode, boolean enableSprite)
     {
         if(range < 1)
             throw new IllegalArgumentException();
@@ -38,7 +41,7 @@ public class Bomb extends Placeable
         this.timeRemaining = 1d;
     }
     
-    public Bomb(int range, int damage, boolean remoteMode, double timeToExplode)
+    public Bomb(int range, int damage, boolean remoteMode, boolean enableSprite, double timeToExplode)
     {
         if(range < 1)
             throw new IllegalArgumentException();
@@ -48,6 +51,11 @@ public class Bomb extends Placeable
         this.remoteMode = remoteMode;
         this.timeRemaining = timeToExplode;
     }
+    
+    public final int getRange() { return range; }
+    public final int getDamage() { return damage; }
+    public final boolean isTimingBomb() { return timingBomb; }
+    public final boolean hasRemoteMode() { return remoteMode; }
     
     public final void explodeByRemote()
     {
@@ -72,7 +80,12 @@ public class Bomb extends Placeable
     public final boolean hasExploited() { return exploited; }
     
     @Override
-    public final void onExplodeHit() { explode(); }
+    public final void onExplodeHit()
+    {
+        if(fireResistence > 0)
+            fireResistence--;
+        else explode();
+    }
     
     @Override
     public void update(double delta)
@@ -87,6 +100,9 @@ public class Bomb extends Placeable
             }
         }
     }
+    
+    @Override
+    public void onPlayerCollide(Player player) {}
 
     @Override
     public void draw(Graphics2D g)
@@ -95,21 +111,60 @@ public class Bomb extends Placeable
     }
 
     @Override
-    protected void innserSerialize(GameDataSaver gds)
+    protected void innserSerialize(GameDataSaver gds) throws IOException
     {
-        
+        gds.writeInt(range);
+        gds.writeInt(damage);
+        gds.writeBoolean(timingBomb);
+        gds.writeBoolean(remoteMode);
+        gds.writeDouble(timeRemaining);
+        gds.writeInt(fireResistence);
+        gds.writeBoolean(exploited);
     }
 
     @Override
-    protected void innerUnserialize(GameDataLoader gdl)
+    protected void innerUnserialize(GameDataLoader gdl) throws IOException
     {
-        
+        range = gdl.readInt();
+        damage = gdl.readInt();
+        timingBomb = gdl.readBoolean();
+        remoteMode = gdl.readBoolean();
+        timeRemaining = gdl.readDouble();
+        fireResistence = gdl.readInt();
+        exploited = gdl.readBoolean();
     }
 
     @Override
     protected LPLValue getAttribute(String key)
     {
-        return null;
+        switch(key)
+        {
+            default: return super.getAttribute(key);
+            case "getRange": return GET_RANGE;
+            case "getDamage": return GET_DAMAGE;
+            case "isTimingBomb": return IS_TIMING_BOMB;
+            case "hasRemoteMode": return HAS_REMOTE_MODE;
+            case "hasExploited": return HAS_EXPLOITED;
+            case "explode": return EXPLODE;
+        }
     }
     
+    private static final LPLValue GET_RANGE = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<Bomb>toLPLObject().getRange());
+    });
+    private static final LPLValue GET_DAMAGE = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<Bomb>toLPLObject().getDamage());
+    });
+    private static final LPLValue IS_TIMING_BOMB = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<Bomb>toLPLObject().isTimingBomb());
+    });
+    private static final LPLValue HAS_REMOTE_MODE = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<Bomb>toLPLObject().hasRemoteMode());
+    });
+    private static final LPLValue HAS_EXPLOITED = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<Bomb>toLPLObject().hasExploited());
+    });
+    private static final LPLValue EXPLODE = LPLFunction.createVFunction((arg0) -> {
+        arg0.<Bomb>toLPLObject().explode();
+    });
 }
