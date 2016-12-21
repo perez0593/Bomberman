@@ -102,7 +102,10 @@ public class Bomb extends Placeable
     }
     
     @Override
-    public void onPlayerCollide(Player player) {}
+    public void onCreatureCollide(Creature creature) {}
+    
+    @Override
+    public boolean canCreatureWalk(Creature creature) { return true; }
 
     @Override
     public void draw(Graphics2D g)
@@ -132,6 +135,11 @@ public class Bomb extends Placeable
         timeRemaining = gdl.readDouble();
         fireResistence = gdl.readInt();
         exploited = gdl.readBoolean();
+    }
+    
+    public static final void initBombSprites()
+    {
+        //TODO
     }
 
     @Override

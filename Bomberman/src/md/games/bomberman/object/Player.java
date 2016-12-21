@@ -15,7 +15,7 @@ import nt.lpl.types.LPLValue;
  *
  * @author David
  */
-public class Player extends GameObject {
+public class Player extends Creature {
     
     private String name;
     private PlayerColor color;
@@ -26,6 +26,9 @@ public class Player extends GameObject {
     private int maxbombs;
     
     /*stats*/
+    
+    @Override
+    public final CreatureType getCreatureType() { return CreatureType.PLAYER; }
 
     @Override
     public void update(double delta) {

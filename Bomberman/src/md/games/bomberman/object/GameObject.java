@@ -91,13 +91,13 @@ public abstract class GameObject
             boundingBox.translate(position);
     }
     
-    public final void setWidth(double width)
+    public final void setSizeWidth(double width)
     {
         size.x = width < 0 ? 0 : width;
         if(boundingBox != null)
             boundingBox.resituate(position,size);
     }
-    public final void setHeight(double height)
+    public final void setSizeHeight(double height)
     {
         size.y = height < 0 ? 0 : height;
         if(boundingBox != null)
@@ -118,8 +118,8 @@ public abstract class GameObject
             boundingBox.resituate(position,size);
     }
     public final Vector2 getSize() { return size.copy(); }
-    public final double getWidth() { return size.x; }
-    public final double getHeight() { return size.y; }
+    public final double getSizeWidth() { return size.x; }
+    public final double getSizeHeight() { return size.y; }
     
     public final double getDirection() { return direction / StrictMath.PI * 180d; }
     public final double getDirectionInRadians() { return direction; }
@@ -255,12 +255,12 @@ public abstract class GameObject
             case "getPosition": return GET_POSITION;
             case "getPositionX": return GET_POSITION_X;
             case "getPositionY": return GET_POSITION_Y;
-            case "setWidth": return SET_WIDTH;
-            case "setHeight": return SET_HEIGHT;
+            case "setSizeWidth": return SET_SIZE_WIDTH;
+            case "setSizeHeight": return SET_SIZE_HEIGHT;
             case "setSize": return SET_SIZE;
             case "getSize": return GET_SIZE;
-            case "getWidth": return GET_WIDTH;
-            case "getHeight": return GET_HEIGHT;
+            case "getSizeWidth": return GET_SIZE_WIDTH;
+            case "getSizeHeight": return GET_SIZE_HEIGHT;
             case "setDirection": return SET_DIRECTION;
             case "getDirection": return GET_DIRECTION;
         }
@@ -325,11 +325,11 @@ public abstract class GameObject
     private static final LPLValue GET_POSITION_Y = LPLFunction.createFunction((arg0) -> {
         return valueOf(arg0.<GameObject>toLPLObject().position.y);
     });
-    private static final LPLValue SET_WIDTH = LPLFunction.createVFunction((arg0, arg1) -> {
-        arg0.<GameObject>toLPLObject().setWidth(arg1.toJavaDouble());
+    private static final LPLValue SET_SIZE_WIDTH = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<GameObject>toLPLObject().setSizeWidth(arg1.toJavaDouble());
     });
-    private static final LPLValue SET_HEIGHT = LPLFunction.createVFunction((arg0, arg1) -> {
-        arg0.<GameObject>toLPLObject().setHeight(arg1.toJavaDouble());
+    private static final LPLValue SET_SIZE_HEIGHT = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<GameObject>toLPLObject().setSizeHeight(arg1.toJavaDouble());
     });
     private static final LPLValue SET_SIZE = LPLFunction.createVFunction((arg0, arg1, arg2) -> {
         if(arg2 == UNDEFINED)
@@ -339,10 +339,10 @@ public abstract class GameObject
     private static final LPLValue GET_SIZE = LPLFunction.createFunction((arg0) -> {
         return arg0.<GameObject>toLPLObject().size.copy();
     });
-    private static final LPLValue GET_WIDTH = LPLFunction.createFunction((arg0) -> {
+    private static final LPLValue GET_SIZE_WIDTH = LPLFunction.createFunction((arg0) -> {
         return valueOf(arg0.<GameObject>toLPLObject().size.x);
     });
-    private static final LPLValue GET_HEIGHT = LPLFunction.createFunction((arg0) -> {
+    private static final LPLValue GET_SIZE_HEIGHT = LPLFunction.createFunction((arg0) -> {
         return valueOf(arg0.<GameObject>toLPLObject().size.y);
     });
     private static final LPLValue SET_DIRECTION = LPLFunction.createVFunction((arg0, arg1) -> {

@@ -6,7 +6,12 @@
 package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
+import java.io.IOException;
 import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.io.GameDataLoader;
+import md.games.bomberman.io.GameDataSaver;
+import md.games.bomberman.object.Collectible;
+import md.games.bomberman.object.Creature;
 import md.games.bomberman.object.Placeable;
 import md.games.bomberman.object.Player;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
@@ -24,6 +29,7 @@ public final class Tile
     private final int column;
     private final ExplosionReference explosion;
     private Placeable placeable;
+    private Collectible collectible;
     private Sprite sprite;
     
     
@@ -46,10 +52,15 @@ public final class Tile
     
     public final void createExplosion(ExplosionId explosionId) { explosion.explode(explosionId); }
     
-    public final void doOnPlayerCollide(Player player)
+    public final void onCreatureCollide(Creature creature)
     {
         if(placeable != null)
-            placeable.onPlayerCollide(player);
+            placeable.onCreatureCollide(creature);
+        else if(collectible != null)
+        {
+            collectible.onCollect(creature);
+            collectible = null;
+        }
     }
     
     public final void putPlaceable(Placeable placeable)
@@ -78,6 +89,22 @@ public final class Tile
         else placeable.removeFromTile();
     }
     
+    public final void putCollectible(Collectible collectible)
+    {
+        if(collectible == null)
+            throw new NullPointerException();
+        if(this.collectible != null)
+            throw new IllegalStateException();
+        this.collectible = collectible;
+    }
+    public final Collectible getCollectible() { return collectible; }
+    public final boolean canPutCollectible() { return collectible == null; }
+    public final void removeCollectible()
+    {
+        if(collectible != null)
+            collectible = null;
+    }
+    
     final void update(double delta)
     {
         if(sprite != null)
@@ -100,5 +127,19 @@ public final class Tile
             placeable.draw(g);
         if(!explosion.isEnd())
             explosion.draw(g,x,y,w,h);
+    }
+    
+    final void serialize(GameDataSaver gds) throws IOException
+    {
+        gds.writeIfNonNull(placeable,() -> gds.writeSerializableObject(placeable));
+        gds.writeIfNonNull(collectible,() -> gds.writeSerializableObject(collectible));
+        gds.writeIfNonNull(sprite,() -> gds.writeSprite(sprite));
+    }
+    
+    final void unserialize(GameDataLoader gdl) throws IOException
+    {
+        gdl.readIfNonNull(() -> placeable = gdl.readSerializableObject());
+        gdl.readIfNonNull(() -> collectible = gdl.readSerializableObject());
+        gdl.readIfNonNull(() -> sprite = gdl.readSprite());
     }
 }

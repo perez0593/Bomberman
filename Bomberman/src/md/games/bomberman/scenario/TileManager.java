@@ -6,23 +6,27 @@
 package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
+import java.io.IOException;
 import java.util.Iterator;
 import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.io.GameDataLoader;
+import md.games.bomberman.io.GameDataSaver;
+import md.games.bomberman.io.SerializableObject;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 
 /**
  *
  * @author mpasc
  */
-public class TileManager implements Iterable<Tile>
+public final class TileManager implements SerializableObject, Iterable<Tile>
 {
     private Tile[] tiles;
     private int rows;
     private int columns;
-    private final Vector2 position;
-    private final Vector2 size;
-    private final Vector2 tileSize;
-    private final Explosion explosion;
+    private Vector2 position;
+    private Vector2 size;
+    private Vector2 tileSize;
+    private final Explosion explosion = Explosion.getManager();
     
     public TileManager(int rows, int columns)
     {
@@ -30,7 +34,6 @@ public class TileManager implements Iterable<Tile>
             throw new IllegalArgumentException();
         this.rows = rows;
         this.columns = columns;
-        explosion = Explosion.getManager();
         tiles = new Tile[rows * columns];
         for(int r=0;r<rows;r++)
             for(int c=0;c<columns;c++)
@@ -40,6 +43,7 @@ public class TileManager implements Iterable<Tile>
         tileSize = new Vector2();
         computeTileSize();
     }
+    private TileManager() {}
     
     public final int getRows() { return rows; }
     public final int getColumns() { return columns; }
@@ -229,6 +233,36 @@ public class TileManager implements Iterable<Tile>
 
     @Override
     public final Iterator<Tile> iterator() { return new TileIterator(); }
+    
+    @Override
+    public final void serialize(GameDataSaver gds) throws IOException
+    {
+        gds.writeInt(rows);
+        gds.writeInt(columns);
+        for(int r=0;r<rows;r++)
+            for(int c=0;c<columns;c++)
+                tiles[r * rows + c].serialize(gds);
+        gds.writeVector2(position);
+        gds.writeVector2(size);
+    }
+
+    @Override
+    public final void unserialize(GameDataLoader gdl) throws IOException
+    {
+        rows = gdl.readInt();
+        columns = gdl.readInt();
+        tiles = new Tile[rows * columns];
+        for(int r=0;r<rows;r++)
+            for(int c=0;c<columns;c++)
+            {
+                Tile tile;
+                tiles[r * rows + c] = tile = new Tile(this,r,c,explosion.getReference());
+                tile.unserialize(gdl);
+            }
+        position = gdl.readVector2();
+        size = gdl.readVector2();
+        computeTileSize();
+    }
     
     private final class TileIterator implements Iterator<Tile>
     {

@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.UUID;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.object.GameObject;
+import md.games.bomberman.object.Player;
 
 /**
  *
@@ -74,7 +75,7 @@ public final class DeathBorder
         }
     }
     
-    public final void insertPlayer(GameObject p) //TODO: Change GameObject by Player
+    public final void insertPlayer(Player p)
     {
         if(p == null)
             throw new NullPointerException();
@@ -87,7 +88,7 @@ public final class DeathBorder
         cache.put(p.getId(),s);
     }
     
-    public final void removePlayer(GameObject p) //TODO: Change GameObject by Player
+    public final void removePlayer(Player p)
     {
         if(p == null)
             throw new NullPointerException();
@@ -96,7 +97,7 @@ public final class DeathBorder
         cache.remove(p.getId());
     }
     
-    public final void movePlayer(GameObject p, double delta) //TODO: Change GameObject by Player
+    public final void movePlayer(Player p, double delta)
     {
         if(p == null)
             throw new NullPointerException();
@@ -151,7 +152,7 @@ public final class DeathBorder
             }
         }
         
-        private void move(GameObject p, double delta) //TODO: Change GameObject by Player
+        private void move(Player p, double delta)
         {
             switch(orientation)
             {
@@ -187,7 +188,7 @@ public final class DeathBorder
             }
         }
         
-        private void changeStraight(GameObject p, boolean isLeft) //TODO: Change GameObject by Player
+        private void changeStraight(Player p, boolean isLeft)
         {
             switch(orientation)
             {

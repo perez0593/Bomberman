@@ -14,9 +14,14 @@ import nt.lpl.types.LPLValue;
  *
  * @author David
  */
-public class PowerUp extends GameObject {
+public class PowerUp extends Collectible {
     
     private PowerUpType type;
+    
+    @Override
+    public void onCollect(Creature creature) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
     @Override
     public void update(double delta) {

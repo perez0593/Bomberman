@@ -12,12 +12,12 @@ package md.games.bomberman.scenario;
 public final class Scenario
 {
     private final TileManager tiles;
-    private final DeathBorder dborder;
+    private DeathBorder dborder;
     
     private Scenario(int rows, int columns)
     {
         tiles = new TileManager(rows, columns);
-        dborder = new DeathBorder();
+        dborder = null;
     }
     
     public final TileManager getTileManager() { return tiles; }

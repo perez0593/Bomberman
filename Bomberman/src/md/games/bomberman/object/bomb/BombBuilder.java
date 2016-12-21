@@ -7,7 +7,7 @@ package md.games.bomberman.object.bomb;
 
 import java.util.Random;
 import md.games.bomberman.object.Bomb;
-import md.games.bomberman.object.Player;
+import md.games.bomberman.object.Creature;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
 
@@ -76,7 +76,7 @@ public final class BombBuilder
         private MineBomb() {}
         
         @Override
-        public void onPlayerCollide(Player player) { explode(); }
+        public void onCreatureCollide(Creature creature) { explode(); }
     }
     
     private static final class TeleportBomb extends Bomb

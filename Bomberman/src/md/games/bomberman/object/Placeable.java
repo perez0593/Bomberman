@@ -17,6 +17,7 @@ import nt.lpl.types.LPLValue;
 public abstract class Placeable extends GameObject
 {
     private Tile tile;
+    protected double height;
     
     public final boolean putOnTile(int row, int column)
     {
@@ -34,7 +35,9 @@ public abstract class Placeable extends GameObject
     {
         if(tile == null || !hasScenarioReference())
             return;
-        
+        Tile aux = tile;
+        tile = null;
+        aux.removePlaceable();
     }
     
     public final boolean putOnCurrentTile()
@@ -52,8 +55,18 @@ public abstract class Placeable extends GameObject
         return false;
     }
     
+    public final void setHeight(double height) { this.height = height < 0 ? 0 : height; }
+    public final double getHeight() { return height; }
+    public final void modifyHeight(double amount)
+    {
+        height += amount;
+        if(height < 0)
+            height = 0;
+    }
+    
     public abstract void onExplodeHit();
-    public abstract void onPlayerCollide(Player player);
+    public abstract void onCreatureCollide(Creature creature);
+    public abstract boolean canCreatureWalk(Creature creature);
     
     @Override
     protected LPLValue getAttribute(String key)
@@ -65,6 +78,9 @@ public abstract class Placeable extends GameObject
             case "putOnCurrentTile": return PUT_ON_CURRENT_TILE;
             case "getTilePlaced": return GET_TILE_PLACED;
             case "isPlacedOnTile": return IS_PLACED_ON_TILE;
+            case "setHeight": return SET_HEIGHT;
+            case "getHeight": return GET_HEIGHT;
+            case "modifyHeight": return MODIFY_HEIGHT;
         }
     }
     
@@ -80,5 +96,14 @@ public abstract class Placeable extends GameObject
     });
     private static final LPLValue IS_PLACED_ON_TILE = LPLFunction.createFunction((arg0) -> {
         return arg0.<Placeable>toLPLObject().isPlacedOnTile() ? TRUE : FALSE;
+    });
+    private static final LPLValue SET_HEIGHT = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<Placeable>toLPLObject().setHeight(arg1.toJavaDouble());
+    });
+    private static final LPLValue GET_HEIGHT = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<Placeable>toLPLObject().getHeight());
+    });
+    private static final LPLValue MODIFY_HEIGHT = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<Placeable>toLPLObject().modifyHeight(arg1.toJavaDouble());
     });
 }
