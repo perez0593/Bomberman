@@ -26,6 +26,7 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
     private Vector2 position;
     private Vector2 size;
     private Vector2 tileSize;
+    private Scenario scenario;
     private final Explosion explosion = Explosion.getManager();
     
     public TileManager(int rows, int columns)
@@ -44,6 +45,10 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
         computeTileSize();
     }
     private TileManager() {}
+    
+    public final void setScenarioReference(Scenario scenario) { this.scenario = scenario; }
+    public final Scenario getScenarioReference() { return scenario; }
+    public final boolean hasScenarioReference() { return scenario != null; }
     
     public final int getRows() { return rows; }
     public final int getColumns() { return columns; }

@@ -25,6 +25,9 @@ public class Player extends Creature {
     private double speed;
     private int maxbombs;
     
+    @Override
+    protected void innerDestroy() {}
+    
     /*stats*/
     
     @Override

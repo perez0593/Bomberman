@@ -11,5 +11,11 @@ package md.games.bomberman.object;
  */
 public abstract class Collectible extends GameObject
 {
+    @Override
+    public final boolean isCollectible() { return true; }
+    
+    @Override
+    public final int getGameObjectType() { return GameObject.GAME_OBJECT_TYPE_COLLECTIBLE; }
+    
     public abstract void onCollect(Creature creature);
 }

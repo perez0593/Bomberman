@@ -19,6 +19,9 @@ public class PowerUp extends Collectible {
     private PowerUpType type;
     
     @Override
+    protected void innerDestroy() {}
+    
+    @Override
     public void onCollect(Creature creature) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

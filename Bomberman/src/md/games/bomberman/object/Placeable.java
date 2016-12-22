@@ -19,6 +19,19 @@ public abstract class Placeable extends GameObject
     private Tile tile;
     protected double height;
     
+    @Override
+    protected void innerDestroy()
+    {
+        if(tile != null)
+            removeFromTile();
+    }
+    
+    @Override
+    public final boolean isPlaceable() { return true; }
+    
+    @Override
+    public final int getGameObjectType() { return GameObject.GAME_OBJECT_TYPE_PLACEABLE; }
+    
     public final boolean putOnTile(int row, int column)
     {
         if(!hasScenarioReference())

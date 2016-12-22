@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.DirectionUtils;
@@ -38,6 +39,7 @@ public abstract class GameObject
     private BoundingBox boundingBox;
     private String tag;
     private Scenario scenario;
+    private boolean destroid;
     
     public GameObject()
     {
@@ -55,6 +57,24 @@ public abstract class GameObject
     public final void setScenarioReference(Scenario scenario) { this.scenario = scenario; }
     public final Scenario getScenarioReference() { return scenario; }
     public final boolean hasScenarioReference() { return scenario != null; }
+    
+    public final void destroy()
+    {
+        if(!destroid)
+        {
+            destroid = true;
+            innerDestroy();
+            localData.clear();
+            destroyBoundingBox();
+        }
+    }
+    protected abstract void innerDestroy();
+    public final boolean isDestroid() { return destroid; }
+    
+    public boolean isCreature() { return false; }
+    public boolean isCollectible() { return false; }
+    public boolean isPlaceable() { return false; }
+    public abstract int getGameObjectType();
     
     public final void setPositionX(double x)
     {
@@ -232,6 +252,22 @@ public abstract class GameObject
     protected abstract void innerUnserialize(GameDataLoader gdl) throws IOException;
     
     
+    @Override
+    public final boolean equals(Object o)
+    {
+        return o instanceof GameObject &&
+                uid.equals(((GameObject)o).uid);
+    }
+
+    @Override
+    public final int hashCode()
+    {
+        int hash = 7;
+        hash = 17 * hash + Objects.hashCode(this.uid);
+        return hash;
+    }
+    
+    
     /* LPL */
     @Override
     public final LPLValue getAttribute(LPLValue key)
@@ -281,6 +317,11 @@ public abstract class GameObject
                 break;
         }
     }
+    
+    
+    public static final int GAME_OBJECT_TYPE_CREATURE = 0;
+    public static final int GAME_OBJECT_TYPE_COLLECTIBLE = 1;
+    public static final int GAME_OBJECT_TYPE_PLACEABLE = 2;
     
     
     

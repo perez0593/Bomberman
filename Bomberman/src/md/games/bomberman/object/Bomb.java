@@ -70,7 +70,7 @@ public class Bomb extends Placeable
             return;
         exploited = true;
         explode(getScenarioReference().getTileManager(),getTilePlaced());
-        removeFromTile();
+        destroy();
     }
     protected void explode(TileManager tiles, Tile tileOnPlaced)
     {

@@ -13,7 +13,6 @@ import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.object.Collectible;
 import md.games.bomberman.object.Creature;
 import md.games.bomberman.object.Placeable;
-import md.games.bomberman.object.Player;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 import md.games.bomberman.scenario.Explosion.ExplosionReference;
 import md.games.bomberman.sprites.Sprite;
@@ -69,9 +68,12 @@ public final class Tile
             throw new NullPointerException();
         if(this.placeable != null)
             throw new IllegalStateException();
+        if(!manager.hasScenarioReference())
+            throw new IllegalStateException();
         if(placeable.isPlacedOnTile())
         {
             this.placeable = placeable;
+            placeable.setScenarioReference(manager.getScenarioReference());
             Vector2 position = getPosition();
             position.add(manager.getTileWidth()/2,manager.getTileHeight()/2);
             placeable.setPosition(position);
@@ -95,6 +97,8 @@ public final class Tile
             throw new NullPointerException();
         if(this.collectible != null)
             throw new IllegalStateException();
+        if(!manager.hasScenarioReference())
+            throw new IllegalStateException();
         this.collectible = collectible;
     }
     public final Collectible getCollectible() { return collectible; }
@@ -111,6 +115,8 @@ public final class Tile
             sprite.update(delta);
         if(placeable != null)
             placeable.update(delta);
+        else if(collectible != null)
+            collectible.update(delta);
         if(!explosion.isEnd())
         {
             explosion.update(delta);
@@ -125,6 +131,8 @@ public final class Tile
             sprite.draw(g,x,y,w,h);
         if(placeable != null)
             placeable.draw(g);
+        else if(collectible != null)
+            collectible.draw(g);
         if(!explosion.isEnd())
             explosion.draw(g,x,y,w,h);
     }

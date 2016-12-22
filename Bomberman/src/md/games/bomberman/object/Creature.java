@@ -11,6 +11,12 @@ package md.games.bomberman.object;
  */
 public abstract class Creature extends GameObject
 {
+    @Override
+    public final boolean isCreature() { return true; }
+    
+    @Override
+    public final int getGameObjectType() { return GameObject.GAME_OBJECT_TYPE_CREATURE; }
+    
     public abstract CreatureType getCreatureType();
     
     public final boolean isPlayer() { return getCreatureType() == CreatureType.PLAYER; }
