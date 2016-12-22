@@ -51,4 +51,6 @@ public enum BombType {
             throw new IllegalArgumentException("Invalid BombType name " + value);
         return bt;
     }
+    
+    public static final BombType decode(int ordinal) { return VALUES[ordinal]; }
 }

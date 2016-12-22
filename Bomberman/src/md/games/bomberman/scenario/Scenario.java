@@ -43,26 +43,17 @@ public final class Scenario
     
     private Scenario() {}
     
-    public final void addGameObject(GameObject go)
+    public final void registerGameObject(GameObject go)
     {
+        if(go == null)
+            throw new NullPointerException();
         if(objectHash.containsKey(go.getId()))
             throw new IllegalArgumentException();
-        objectHash.put(go.getId(),go);
-        objects.add(go);
         go.setScenarioReference(this);
+        objectHash.put(go.getId(),go);
     }
     
-    public final void removeGameObject(UUID id)
-    {
-        if(id == null)
-            throw new NullPointerException();
-        GameObject go = objectHash.remove(id);
-        if(go == null)
-            return;
-        go.setScenarioReference(null);
-    }
-    
-    public final void removeGameObject(GameObject go)
+    public final void unregisterGameObject(GameObject go)
     {
         if(go == null)
             throw new NullPointerException();
@@ -72,6 +63,22 @@ public final class Scenario
             throw new IllegalStateException();
         objectHash.remove(go.getId());
         go.setScenarioReference(null);
+    }
+    
+    public final void unregisterGameObject(UUID id)
+    {
+        if(id == null)
+            throw new NullPointerException();
+        GameObject go = objectHash.remove(id);
+        if(go == null)
+            return;
+        go.setScenarioReference(null);
+    }
+    
+    public final void addGameObject(GameObject go)
+    {
+        registerGameObject(go);
+        objects.add(go);
     }
     
     public final GameObject getGameObject(UUID id)
@@ -104,7 +111,7 @@ public final class Scenario
             if(go.isDestroid())
             {
                 if(go.hasScenarioReference())
-                    removeGameObject(go);
+                    unregisterGameObject(go);
                 it.remove();
                 continue;
             }

@@ -88,6 +88,16 @@ public final class ScriptManager implements SerializableObject
         });
     }
     
+    public final LPLValue executeScript(LPLObject executor, String script)
+    {
+        Script s = scripts.get(script);
+        if(s != null)
+        {
+            currentExecutor = executor;
+            return s.execute();
+        }
+        return UNDEFINED;
+    }
     
     final LPLValue executeScript(LPLObject executor, Script script)
     {

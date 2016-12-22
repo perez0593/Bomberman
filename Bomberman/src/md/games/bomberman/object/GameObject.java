@@ -31,7 +31,7 @@ public abstract class GameObject
         extends LPLObject
         implements SerializableObject
 {
-    private final UUID uid = UUID.randomUUID();
+    private UUID uid = null;
     private final HashMap<String,LPLValue> localData;
     private final Vector2 position;
     private final Vector2 size;
@@ -54,7 +54,13 @@ public abstract class GameObject
     
     public final UUID getId() { return uid; }
     
-    public final void setScenarioReference(Scenario scenario) { this.scenario = scenario; }
+    public final void setScenarioReference(Scenario scenario)
+    {
+        if(this.scenario == null)
+            uid = scenario != null ? UUID.randomUUID() : null;
+        else uid = scenario == null ? null : uid;
+        this.scenario = scenario;
+    }
     public final Scenario getScenarioReference() { return scenario; }
     public final boolean hasScenarioReference() { return scenario != null; }
     
@@ -221,6 +227,10 @@ public abstract class GameObject
     @Override
     public final void serialize(GameDataSaver gds) throws IOException
     {
+        if(uid == null)
+            throw new IllegalStateException();
+        gds.writeLong(uid.getMostSignificantBits());
+        gds.writeLong(uid.getLeastSignificantBits());
         gds.writeUTF(tag);
         gds.writeVector2(position);
         gds.writeVector2(size);
@@ -239,6 +249,7 @@ public abstract class GameObject
     @Override
     public final void unserialize(GameDataLoader gdl) throws IOException
     {
+        uid = new UUID(gdl.readLong(),gdl.readLong());
         tag = gdl.readUTF();
         position.set(gdl.readVector2());
         size.set(gdl.readVector2());
