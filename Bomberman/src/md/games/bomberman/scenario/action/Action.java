@@ -8,11 +8,9 @@ package md.games.bomberman.scenario.action;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.UUID;
 import java.util.function.IntFunction;
 import md.games.bomberman.geom.Vector2;
-import md.games.bomberman.object.GameObject;
 import md.games.bomberman.object.bomb.BombType;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.script.Script;
@@ -115,15 +113,13 @@ public class Action
                 writeInt(dos,3);        //Tile row
                 writeInt(dos,4);        //Tile column
                 break;
-            case EXPLODE_BOMB:
-                writeUUID(dos,0);       //Bomb
-                break;
-            case CREATE_FIRE_EXPLOSION:
-                writeBoolean(dos,0);    //Is cross
-                writeInt(dos,1);        //Range
-                writeInt(dos,2);        //Tile row
-                writeInt(dos,3);        //Tile column
-                break;
+            case PLAYER_PUT_BOMB:
+                writeUUID(dos,0);       //Player id
+                writeUUID(dos,1);       //Bomb Id
+                writeEnum(dos,2);       //Bomb type
+                writeInt(dos,3);        //range
+                writeInt(dos,4);        //Tile row
+                writeInt(dos,5);        //Tile column
             case COLLECT_COLLECTIBLE:
                 writeUUID(dos,0);       //collectible
                 writeUUID(dos,1);       //creature
@@ -132,10 +128,6 @@ public class Action
                 writeInt(dos,0);        //Tile row
                 writeInt(dos,1);        //Tile column
                 writeUUID(dos,2);       //creature
-                break;
-            case COLLIDE_PLACEABLE:
-                writeUUID(dos,0);       //placeable
-                writeUUID(dos,1);       //creature
                 break;
             case DAMAGE_CREATURE:
                 writeUUID(dos,0);       //creature
@@ -166,23 +158,21 @@ public class Action
                 a.readVector2(dis,1);
                 break;
             case CREATE_BOMB:
-                a = new Action(aid,4);
+                a = new Action(aid,5);
                 a.readUUID(dis,0);
                 a.readEnum(dis,1,BombType::decode);
                 a.readInt(dis,2);
                 a.readInt(dis,3);
                 a.readInt(dis,4);
                 break;
-            case EXPLODE_BOMB:
-                a = new Action(aid,1);
+            case PLAYER_PUT_BOMB:
+                a = new Action(aid,6);
                 a.readUUID(dis,0);
-                break;
-            case CREATE_FIRE_EXPLOSION:
-                a = new Action(aid,3);
-                a.readByte(dis,0);
-                a.readInt(dis,1);
-                a.readInt(dis,2);
+                a.readUUID(dis,1);
+                a.readEnum(dis,2,BombType::decode);
                 a.readInt(dis,3);
+                a.readInt(dis,4);
+                a.readInt(dis,5);
                 break;
             case COLLECT_COLLECTIBLE:
                 a = new Action(aid,2);
@@ -194,11 +184,6 @@ public class Action
                 a.readInt(dis,0);
                 a.readInt(dis,1);
                 a.readUUID(dis,2);
-                break;
-            case COLLIDE_PLACEABLE:
-                a = new Action(aid,2);
-                a.readUUID(dis,0);
-                a.readUUID(dis,1);
                 break;
             case DAMAGE_CREATURE:
                 a = new Action(aid,2);
@@ -233,27 +218,22 @@ public class Action
         return new Action(ActionId.SET_OBJECT_POSITION,id,new Vector2(x,y));
     }
     
-    public static final Action createBomb(BombType type, int range, int row, int column)
+    public static final Action createBomb(UUID id, BombType type, int range, int row, int column)
     {
-        return new Action(ActionId.CREATE_BOMB,UUID.randomUUID(),type,range,row,column);
+        return new Action(ActionId.CREATE_BOMB,id,type,range,row,column);
     }
-    public static final Action createBomb(BombType type, int range, Tile tile)
+    public static final Action createBomb(UUID id, BombType type, int range, Tile tile)
     {
-        return new Action(ActionId.CREATE_BOMB,UUID.randomUUID(),type,range,tile.getRow(),tile.getColumn());
-    }
-    
-    public static final Action explodeBomb(UUID bombId)
-    {
-        return new Action(ActionId.EXPLODE_BOMB,bombId);
+        return new Action(ActionId.CREATE_BOMB,id,type,range,tile.getRow(),tile.getColumn());
     }
     
-    public static final Action createFireExplosion(boolean isCross, int range, int row, int column)
+    public static final Action playerPutBomb(UUID playerId, UUID id, BombType type, int range, int row, int column)
     {
-        return new Action(ActionId.CREATE_FIRE_EXPLOSION,isCross,range,row,column);
+        return new Action(ActionId.PLAYER_PUT_BOMB,playerId,id,type,range,row,column);
     }
-    public static final Action createFireExplosion(boolean isCross, int range, Tile tile)
+    public static final Action playerPutBomb(UUID playerId, UUID id, BombType type, int range, Tile tile)
     {
-        return new Action(ActionId.CREATE_FIRE_EXPLOSION,isCross,range,tile.getRow(),tile.getColumn());
+        return new Action(ActionId.PLAYER_PUT_BOMB,playerId,id,type,range,tile.getRow(),tile.getColumn());
     }
     
     public static final Action collectCollectible(UUID collectibleId, UUID creatureId)
@@ -268,11 +248,6 @@ public class Action
     public static final Action collectCollectibleOnTile(Tile tile, UUID creatureId)
     {
         return new Action(ActionId.COLLECT_COLLECTIBLE_ON_TILE,tile.getRow(),tile.getColumn(),creatureId);
-    }
-    
-    public static final Action collidePlaceable(UUID placeableId, UUID creatureId)
-    {
-        return new Action(ActionId.COLLIDE_PLACEABLE,placeableId,creatureId);
     }
     
     public static final Action damageCreature(UUID creatureId, int damage)

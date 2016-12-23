@@ -52,13 +52,18 @@ public abstract class GameObject
         scenario = null;
     }
     
+    /**
+     * WARNING: Este metodo no debe ser usado nunca.
+     * Esta pensado unicamente para la transferencia de objetos en el modo online.
+     * @param id 
+     */
+    public final void setId(UUID id) { uid = id; }
     public final UUID getId() { return uid; }
     
     public final void setScenarioReference(Scenario scenario)
     {
-        if(this.scenario == null)
-            uid = scenario != null ? UUID.randomUUID() : null;
-        else uid = scenario == null ? null : uid;
+        if(uid == null)
+            uid = UUID.randomUUID();
         this.scenario = scenario;
     }
     public final Scenario getScenarioReference() { return scenario; }
@@ -167,6 +172,13 @@ public abstract class GameObject
     
     public final void createBoundingBox() { boundingBox = BoundingBox.situate(position,size); }
     public final void destroyBoundingBox() { boundingBox = null; }
+    
+    public final boolean hasCollision(BoundingBox box)
+    {
+        if(boundingBox == null)
+            return false;
+        return boundingBox.hasCollision(box);
+    }
     
     public final void setTag(String tag)
     {

@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 import md.games.bomberman.io.GameDataLoader;

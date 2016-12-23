@@ -8,10 +8,13 @@ package md.games.bomberman.scenario;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
+import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
+import md.games.bomberman.object.GameObject;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 
 /**
@@ -84,6 +87,40 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                 position.x + tileSize.x * column,
                 position.y + tileSize.y * row
         );
+    }
+    
+    public final Tile getLookAtTile(GameObject go)
+    {
+        Tile current = getTileByPosition(go.getPosition());
+        int degrees = Math.abs((((int) go.getDirection()) - 45) / 90) % 4;
+        Tile tile;
+        switch(degrees)
+        {
+            case 0: tile = tile(current.getRow()-1,current.getColumn()); break;
+            case 1: tile = tile(current.getRow(),current.getColumn()-1); break;
+            case 2: tile = tile(current.getRow()+1,current.getColumn()); break;
+            case 3: tile = tile(current.getRow(),current.getColumn()+1); break;
+            default: return null;
+        }
+        
+        BoundingBox box = tile.getBoundingBox();
+        if(go.hasCollision(box))
+            switch(degrees)
+            {
+                case 0: return tile(tile.getRow()-1,tile.getColumn());
+                case 1: return tile(tile.getRow(),tile.getColumn()-1);
+                case 2: return tile(tile.getRow()+1,tile.getColumn());
+                case 3: return tile(tile.getRow(),tile.getColumn()+1);
+                default: return null;
+            }
+        return tile;
+    }
+    
+    private Tile tile(int row, int column)
+    {
+        if(row < 0 || row >= rows || column < 0 || columns >= columns)
+            return null;
+        return tiles[row * columns + column];
     }
     
     public final void setPositionX(double x) { position.x = x; }

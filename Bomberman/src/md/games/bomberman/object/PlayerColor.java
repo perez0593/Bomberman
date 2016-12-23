@@ -16,4 +16,8 @@ public enum PlayerColor {
     BLACK,
     GREEN,
     YELLOW;
+    
+    private static final PlayerColor[] VALUES = values();
+    
+    public static final PlayerColor decode(int ordinal) { return VALUES[ordinal]; }
 }

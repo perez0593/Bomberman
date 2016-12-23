@@ -7,6 +7,7 @@ package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
 import java.io.IOException;
+import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
@@ -15,7 +16,6 @@ import md.games.bomberman.object.Creature;
 import md.games.bomberman.object.Placeable;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 import md.games.bomberman.scenario.Explosion.ExplosionReference;
-import md.games.bomberman.scenario.action.Action;
 import md.games.bomberman.sprites.Sprite;
 
 /**
@@ -58,9 +58,21 @@ public final class Tile
             placeable.onCreatureCollide(creature);
         else if(collectible != null)
         {
-            manager.getScenarioReference().sendAction(Action.collectCollectible(collectible.getId(),creature.getId()));
+            collectible.onCollect(creature);
+            //manager.getScenarioReference().sendAction(Action.collectCollectible(collectible.getId(),creature.getId()));
             collectible = null;
         }
+    }
+    
+    final void situateBoundingBox(BoundingBox box)
+    {
+        box.translate(getPosition());
+    }
+    
+    final BoundingBox getBoundingBox()
+    {
+        Vector2 p = getPosition();
+        return new BoundingBox(p.x,p.y,p.x+manager.getWidth(),p.y+manager.getHeight());
     }
     
     public final void putPlaceable(Placeable placeable)

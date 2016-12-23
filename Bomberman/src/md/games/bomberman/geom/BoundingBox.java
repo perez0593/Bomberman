@@ -55,6 +55,10 @@ public class BoundingBox implements SerializableObject
     {
         return resituate(position.x, position.y, size.x, size.y);
     }
+    public final BoundingBox resituateLeftTopPoint(Vector2 point, double size)
+    {
+        return resituateLeftTopPoint(point.x, point.y, size);
+    }
     public final BoundingBox resituate(double x, double y, double sizeX, double sizeY)
     {
         double sizeX2 = sizeX / 2d;
@@ -72,6 +76,15 @@ public class BoundingBox implements SerializableObject
         y0 = y - size2;
         x1 = x + size2;
         y1 = y + size2;
+        return this;
+    }
+    
+    public final BoundingBox resituateLeftTopPoint(double x, double y, double size)
+    {
+        x0 = x;
+        y0 = y;
+        x1 = x + size;
+        y1 = y + size;
         return this;
     }
     
