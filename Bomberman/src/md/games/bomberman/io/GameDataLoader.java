@@ -12,7 +12,10 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.UUID;
 import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.object.GameObject;
+import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.ScenarioTheme;
 import md.games.bomberman.script.Script;
 import md.games.bomberman.script.ScriptManager;
@@ -32,6 +35,7 @@ public final class GameDataLoader extends DataInputStream
     private final HashMap<String,Constructor<? extends SerializableObject>> objCache;
     private final ScenarioTheme theme;
     private ScriptManager scripts;
+    private Scenario scenario;
     private final ClassLoader classLoader;
     
     public GameDataLoader(BufferedInputStream in, ScenarioTheme theme)
@@ -50,6 +54,16 @@ public final class GameDataLoader extends DataInputStream
     public GameDataLoader(InputStream in, ScenarioTheme theme)
     {
         this(new BufferedInputStream(in),theme);
+    }
+    
+    public final void setScriptManager(ScriptManager scripts)
+    {
+        this.scripts = scripts;
+    }
+    
+    public final void setScenarioReference(Scenario scenario)
+    {
+        this.scenario = scenario;
     }
     
     public final void readIfNonNull(Action a) throws IOException
@@ -87,6 +101,11 @@ public final class GameDataLoader extends DataInputStream
         {
             throw new IOException(ex);
         }
+    }
+    
+    public final <GO extends GameObject> GO readGameObjectById() throws IOException
+    {
+        return (GO) scenario.getGameObject(readUUID());
     }
     
     public final Vector2 readVector2() throws IOException
@@ -141,6 +160,11 @@ public final class GameDataLoader extends DataInputStream
         if(scripts == null)
             throw new IllegalStateException("Scripts manager not found");
         return scripts.getScript(readUTF());
+    }
+    
+    public final UUID readUUID() throws IOException
+    {
+        return new UUID(readLong(),readLong());
     }
     
     

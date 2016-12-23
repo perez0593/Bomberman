@@ -16,11 +16,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
+import md.games.bomberman.object.Collectible;
+import md.games.bomberman.object.Creature;
 import md.games.bomberman.object.GameObject;
+import md.games.bomberman.scenario.action.Action;
+import md.games.bomberman.scenario.action.ActionReceiver;
+import md.games.bomberman.scenario.action.ActionSender;
+import md.games.bomberman.script.ScriptManager;
 import md.games.bomberman.util.CriteriaIterator;
 
 /**
@@ -31,17 +38,38 @@ public final class Scenario
 {
     private TileManager tiles;
     private DeathBorder dborder;
+    private ScriptManager scripts;
     private final LinkedList<GameObject> objects = new LinkedList<>();
     private final HashMap<UUID, GameObject> objectHash = new HashMap<>();
+    private ActionSender sender;
+    private ActionReceiver receiver;
     
     private Scenario(int rows, int columns)
     {
         tiles = new TileManager(rows, columns);
         tiles.setScenarioReference(this);
+        scripts = new ScriptManager();
         dborder = null;
     }
     
     private Scenario() {}
+    
+    public final void setActionReceiver(ActionReceiver receiver)
+    {
+        if(receiver == null)
+            throw new NullPointerException();
+        this.receiver = receiver;
+    }
+    public final ActionReceiver getActionReceiver() { return receiver; }
+    
+    public final void setActionSender(ActionSender sender)
+    {
+        if(sender == null)
+            throw new NullPointerException();
+        this.sender = sender;
+    }
+    public final ActionSender getActionSender() { return sender; }
+    public final void sendAction(Action action) { sender.sendAction(action); }
     
     public final void registerGameObject(GameObject go)
     {
@@ -75,10 +103,16 @@ public final class Scenario
         go.setScenarioReference(null);
     }
     
-    public final void addGameObject(GameObject go)
+    public final void addCreature(Creature creature)
     {
-        registerGameObject(go);
-        objects.add(go);
+        registerGameObject(creature);
+        objects.add(creature);
+    }
+    
+    public final void addCollectible(Collectible collectible)
+    {
+        registerGameObject(collectible);
+        objects.add(collectible);
     }
     
     public final GameObject getGameObject(UUID id)
@@ -177,10 +211,14 @@ public final class Scenario
         if(scenario == null)
             throw new NullPointerException();
         GameDataSaver gds = new GameDataSaver(out);
+        gds.writeSerializableObject(scenario.scripts);
+        gds.writeInt(scenario.objectHash.size());
+        for(GameObject go : scenario.objectHash.values())
+            gds.writeSerializableObject(go);
         gds.writeSerializableObject(scenario.tiles);
         gds.writeInt(scenario.objects.size());
         for(GameObject go : scenario.objects)
-            gds.writeSerializableObject(go);
+            gds.writeUUID(go.getId());
     }
     public static final void store(Scenario scenario, File file) throws IOException
     {
@@ -194,12 +232,21 @@ public final class Scenario
     {
         GameDataLoader gdl = new GameDataLoader(in,theme);
         Scenario scenario = new Scenario();
-        scenario.tiles = gdl.readSerializableObject();
+        gdl.setScenarioReference(scenario);
+        scenario.scripts = gdl.readSerializableObject();
+        gdl.setScriptManager(scenario.scripts);
         int len = gdl.readInt();
         for(int i=0;i<len;i++)
         {
             GameObject go = gdl.readSerializableObject();
-            scenario.addGameObject(go);
+            scenario.objectHash.put(go.getId(),go);
+        }
+        scenario.tiles = gdl.readSerializableObject();
+        len = gdl.readInt();
+        for(int i=0;i<len;i++)
+        {
+            GameObject go = scenario.objectHash.get(gdl.readUUID());
+            scenario.objects.add(go);
         }
         return scenario;
     }

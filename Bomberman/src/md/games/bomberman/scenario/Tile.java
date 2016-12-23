@@ -15,6 +15,7 @@ import md.games.bomberman.object.Creature;
 import md.games.bomberman.object.Placeable;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 import md.games.bomberman.scenario.Explosion.ExplosionReference;
+import md.games.bomberman.scenario.action.Action;
 import md.games.bomberman.sprites.Sprite;
 
 /**
@@ -57,7 +58,7 @@ public final class Tile
             placeable.onCreatureCollide(creature);
         else if(collectible != null)
         {
-            collectible.onCollect(creature);
+            manager.getScenarioReference().sendAction(Action.collectCollectible(collectible.getId(),creature.getId()));
             collectible = null;
         }
     }
@@ -139,15 +140,15 @@ public final class Tile
     
     final void serialize(GameDataSaver gds) throws IOException
     {
-        gds.writeIfNonNull(placeable,() -> gds.writeSerializableObject(placeable));
-        gds.writeIfNonNull(collectible,() -> gds.writeSerializableObject(collectible));
+        gds.writeIfNonNull(placeable,() -> gds.writeUUID(placeable.getId()));
+        gds.writeIfNonNull(collectible,() -> gds.writeUUID(collectible.getId()));
         gds.writeIfNonNull(sprite,() -> gds.writeSprite(sprite));
     }
     
     final void unserialize(GameDataLoader gdl) throws IOException
     {
-        gdl.readIfNonNull(() -> placeable = gdl.readSerializableObject());
-        gdl.readIfNonNull(() -> collectible = gdl.readSerializableObject());
+        gdl.readIfNonNull(() -> placeable = gdl.readGameObjectById());
+        gdl.readIfNonNull(() -> collectible = gdl.readGameObjectById());
         gdl.readIfNonNull(() -> sprite = gdl.readSprite());
     }
 }

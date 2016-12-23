@@ -10,6 +10,8 @@ import md.games.bomberman.object.Bomb;
 import md.games.bomberman.object.Creature;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
+import md.games.bomberman.scenario.action.Action;
+import md.games.bomberman.scenario.action.ActionSender;
 
 /**
  *
@@ -60,9 +62,9 @@ public final class BombBuilder
         private SquareBomb() {}
         
         @Override
-        protected final void explode(TileManager tiles, Tile tileOnPlaced)
+        protected final void explode(ActionSender sender, Tile tileOnPlaced)
         {
-            tiles.createSquareExplosion(tileOnPlaced.getRow(),tileOnPlaced.getColumn(),range);
+            sender.sendAction(Action.createFireExplosion(false,range,tileOnPlaced));
         }
     }
     
@@ -94,11 +96,12 @@ public final class BombBuilder
         private TeleportBomb() {}
         
         @Override
-        protected final void explode(TileManager tiles, Tile tileOnPlaced)
+        protected final void explode(ActionSender sender, Tile tileOnPlaced)
         {
+            TileManager tiles = getScenarioReference().getTileManager();
             int row = RAND.nextInt(tiles.getRows());
             int column = RAND.nextInt(tiles.getColumns());
-            tiles.createCrossExplosion(row,column,range);
+            sender.sendAction(Action.createFireExplosion(true,range,row,column));
         }
     }
 }

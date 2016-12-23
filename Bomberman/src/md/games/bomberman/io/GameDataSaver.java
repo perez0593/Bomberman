@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.script.Script;
 import md.games.bomberman.sprites.Sprite;
@@ -138,6 +139,12 @@ public final class GameDataSaver extends DataOutputStream
     public final void writeScript(Script script) throws IOException
     {
         writeUTF(script.getName());
+    }
+    
+    public final void writeUUID(UUID id) throws IOException
+    {
+        writeLong(id.getMostSignificantBits());
+        writeLong(id.getLeastSignificantBits());
     }
     
     

@@ -229,8 +229,7 @@ public abstract class GameObject
     {
         if(uid == null)
             throw new IllegalStateException();
-        gds.writeLong(uid.getMostSignificantBits());
-        gds.writeLong(uid.getLeastSignificantBits());
+        gds.writeUUID(uid);
         gds.writeUTF(tag);
         gds.writeVector2(position);
         gds.writeVector2(size);
@@ -249,7 +248,7 @@ public abstract class GameObject
     @Override
     public final void unserialize(GameDataLoader gdl) throws IOException
     {
-        uid = new UUID(gdl.readLong(),gdl.readLong());
+        uid = gdl.readUUID();
         tag = gdl.readUTF();
         position.set(gdl.readVector2());
         size.set(gdl.readVector2());

@@ -9,6 +9,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.object.GameObject;
 import nt.ntjg.NTJG;
 
 /**
@@ -197,15 +198,13 @@ public final class Camera
         pos.y += dv.y;
     }
     
-    /*public final void lookAt(GameObject go)
+    public final void lookAt(GameObject go)
     {
-        if(!go.isEntity())
-            return;
         modif = true;
         Vector2 gpos = go.getPosition();
         pos.x = gpos.x;
         pos.y = gpos.y;
-    }*/
+    }
     
     public final void setRotation(float rad_angle)
     {

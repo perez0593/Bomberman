@@ -11,6 +11,8 @@ import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
+import md.games.bomberman.scenario.action.Action;
+import md.games.bomberman.scenario.action.ActionSender;
 import nt.lpl.types.LPLFunction;
 import nt.lpl.types.LPLValue;
 
@@ -69,12 +71,12 @@ public class Bomb extends Placeable
         if(exploited || !hasScenarioReference() || !isPlacedOnTile())
             return;
         exploited = true;
-        explode(getScenarioReference().getTileManager(),getTilePlaced());
+        explode(getScenarioReference().getActionSender(),getTilePlaced());
         destroy();
     }
-    protected void explode(TileManager tiles, Tile tileOnPlaced)
+    protected void explode(ActionSender sender, Tile tileOnPlaced)
     {
-        tiles.createCrossExplosion(tileOnPlaced.getRow(),tileOnPlaced.getColumn(),range);
+        sender.sendAction(Action.createFireExplosion(true,range,tileOnPlaced));
     }
     
     public final boolean hasExploited() { return exploited; }
