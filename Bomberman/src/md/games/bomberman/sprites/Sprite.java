@@ -27,7 +27,7 @@ public abstract class Sprite<A extends Sprite<A>>
     
     public abstract SpriteKind kind();
     
-    public enum SpriteKind { STATIC, ANIMATED, MULTI }
+    public enum SpriteKind { STATIC, ANIMATED, MULTI, ANIMATION }
     
     /*Default methods*/
     
