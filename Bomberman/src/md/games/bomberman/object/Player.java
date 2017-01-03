@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Objects;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.object.bomb.BombBuilder;
@@ -30,6 +31,7 @@ public class Player extends Creature
     /*stats*/
     private int lives;
     private double speed;
+    private boolean kevlar;
     private int maxBombs;
     private int bombRange;
     private BombType primaryBombType;
@@ -45,6 +47,7 @@ public class Player extends Creature
         this.name = name;
         this.color = color;
         speed = 1f;
+        kevlar = false;
         maxBombs = 1;
         bombRange = 3;
         primaryBombType = BombType.NORMAL;
@@ -57,9 +60,49 @@ public class Player extends Creature
     public final PlayerColor getColor() { return color; }
     public final int getLives() { return lives; }
     public final double getSpeed() { return speed; }
+    public final boolean hasKevlar() { return kevlar; }
     public final int getMaxBombs() { return maxBombs; }
     public final BombType getPrimaryBombType() { return primaryBombType; }
     public final BombType getSecondaryBombType() { return secondaryBombType; }
+    
+    public final void setName(String name) { this.name = Objects.requireNonNull(name); }
+    public final void setSpeed(double speed) { this.speed = speed < 0 ? 0 : speed; }
+    public final void setMaxBombs(int max) { maxBombs = max < 0 ? 0 : max; }
+    public final void setBombRange(int range) { bombRange = range < 1 ? 1 : range; }
+    public final void setKevlar(boolean flag) { kevlar = flag; }
+    public final void setPrimaryBombType(BombType type)
+    {
+        if(type == null)
+            throw new NullPointerException();
+        primaryBombType = type;
+    }
+    public final void setSecondaryBombType(BombType type)
+    {
+        if(type == null)
+            throw new NullPointerException();
+        secondaryBombType = type;
+    }
+    
+    public final void increaseSpeed(double factor) { speed += factor < 0 ? -factor : factor; }
+    public final void decreaseSpeed(double factor)
+    {
+        speed -= factor < 0 ? -factor : factor;
+        speed = speed < 0 ? 0 : speed;
+    }
+    
+    public final void increaseMaxBombs(int amount) { maxBombs += amount < 0 ? -amount : amount; }
+    public final void decreaseMaxBombs(int amount)
+    {
+        maxBombs -= amount < 0 ? -amount : amount;
+        maxBombs = maxBombs < 0 ? 0 : maxBombs;
+    }
+    
+    public final void increaseBombRange(int amount) { bombRange += amount < 0 ? -amount : amount; }
+    public final void decreaseBombRange(int amount)
+    {
+        bombRange -= amount < 0 ? -amount : amount;
+        bombRange = bombRange < 1 ? 1 : bombRange;
+    }
     
     @Override
     protected void innerDestroy() {}
@@ -115,6 +158,7 @@ public class Player extends Creature
         gds.writeInt(color.ordinal());
         gds.writeInt(lives);
         gds.writeDouble(speed);
+        gds.writeBoolean(kevlar);
         gds.writeInt(maxBombs);
         gds.writeInt(bombRange);
         gds.writeInt(primaryBombType.ordinal());
@@ -129,6 +173,7 @@ public class Player extends Creature
         color = PlayerColor.decode(gdl.readInt());
         lives = gdl.readInt();
         speed = gdl.readDouble();
+        kevlar = gdl.readBoolean();
         maxBombs = gdl.readInt();
         bombRange = gdl.readInt();
         primaryBombType = BombType.decode(gdl.readInt());

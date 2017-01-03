@@ -5,50 +5,55 @@
  */
 package md.games.bomberman.object;
 
+import md.games.bomberman.object.powerup.PowerUpType;
 import java.awt.Graphics2D;
+import java.io.IOException;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
+import md.games.bomberman.sprites.Sprite;
 import nt.lpl.types.LPLValue;
 
 /**
  *
  * @author David
  */
-public class PowerUp extends Collectible {
-    
-    private PowerUpType type;
+public abstract class PowerUp extends Collectible
+{
+    protected Sprite sprite;
     
     @Override
     protected void innerDestroy() {}
-    
+
     @Override
-    public void onCollect(Creature creature) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void update(double delta)
+    {
+        if(sprite != null)
+            sprite.update(delta);
     }
 
     @Override
-    public void update(double delta) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void draw(Graphics2D g)
+    {
+        if(sprite != null)
+            sprite.draw(g,getPositionX(),getPositionY(),getSizeWidth(),getSizeHeight());
     }
 
     @Override
-    public void draw(Graphics2D g) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected void innserSerialize(GameDataSaver gds) throws IOException
+    {
+        gds.writeIfNonNull(sprite,() -> gds.writeSprite(sprite));
     }
 
     @Override
-    protected void innserSerialize(GameDataSaver gds) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected void innerUnserialize(GameDataLoader gdl) throws IOException
+    {
+        gdl.readIfNonNull(() -> sprite = gdl.readSprite());
     }
 
     @Override
-    protected void innerUnserialize(GameDataLoader gdl) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected LPLValue getAttribute(String key) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected LPLValue getAttribute(String key)
+    {
+        return null;
     }
     
 }
