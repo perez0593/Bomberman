@@ -7,10 +7,13 @@ package md.games.bomberman.object;
 
 import java.awt.Graphics2D;
 import java.io.IOException;
+import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
+import md.games.bomberman.sprites.Sprite;
+import md.games.bomberman.sprites.SpriteUtils;
 import nt.lpl.types.LPLFunction;
 import nt.lpl.types.LPLValue;
 
@@ -20,6 +23,7 @@ import nt.lpl.types.LPLValue;
  */
 public class Bomb extends Placeable
 {
+    private Sprite sprite;
     protected int range;
     protected int damage;
     protected boolean timingBomb;
@@ -30,7 +34,7 @@ public class Bomb extends Placeable
     
     protected Bomb() {}
     
-    public Bomb(int range, int damage, boolean remoteMode, boolean enableSprite)
+    public Bomb(int range, int damage, boolean remoteMode, Sprite sprite)
     {
         if(range < 1)
             throw new IllegalArgumentException();
@@ -39,9 +43,10 @@ public class Bomb extends Placeable
         this.timingBomb = false;
         this.remoteMode = remoteMode;
         this.timeRemaining = 1d;
+        this.sprite = sprite;
     }
     
-    public Bomb(int range, int damage, boolean remoteMode, boolean enableSprite, double timeToExplode)
+    public Bomb(int range, int damage, boolean remoteMode, Sprite sprite, double timeToExplode)
     {
         if(range < 1)
             throw new IllegalArgumentException();
@@ -50,6 +55,7 @@ public class Bomb extends Placeable
         this.timingBomb = true;
         this.remoteMode = remoteMode;
         this.timeRemaining = timeToExplode;
+        this.sprite = sprite;
     }
     
     public final int getRange() { return range; }
@@ -92,6 +98,8 @@ public class Bomb extends Placeable
     {
         if(!exploited)
         {
+            if(sprite != null)
+                sprite.update(delta);
             if(timingBomb)
             {
                 if(timeRemaining <= 0)
@@ -110,7 +118,11 @@ public class Bomb extends Placeable
     @Override
     public void draw(Graphics2D g)
     {
-        
+        if(!exploited)
+        {
+            if(sprite != null)
+                SpriteUtils.drawGameObjectSprite(this,g,sprite);
+        }
     }
 
     @Override

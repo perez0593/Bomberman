@@ -23,6 +23,7 @@ import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.object.Collectible;
 import md.games.bomberman.object.Creature;
 import md.games.bomberman.object.GameObject;
+import md.games.bomberman.object.bomb.BombBuilder;
 import md.games.bomberman.scenario.action.Action;
 import md.games.bomberman.scenario.action.ActionReceiver;
 import md.games.bomberman.scenario.action.ActionSender;
@@ -36,23 +37,31 @@ import md.games.bomberman.util.CriteriaIterator;
  */
 public final class Scenario
 {
+    private final SpriteManager spriteManager;
     private TileManager tiles;
     private DeathBorder dborder;
     private ScriptManager scripts;
+    private final BombBuilder bombBuilder;
     private final LinkedList<GameObject> objects = new LinkedList<>();
     private final HashMap<UUID, GameObject> objectHash = new HashMap<>();
     private ActionSender sender;
     private ActionReceiver receiver;
     
-    private Scenario(int rows, int columns)
+    private Scenario(SpriteManager spriteManager, int rows, int columns)
     {
+        this.spriteManager = spriteManager;
         tiles = new TileManager(rows, columns);
         tiles.setScenarioReference(this);
         scripts = new ScriptManager();
+        bombBuilder = new BombBuilder(spriteManager);
         dborder = null;
     }
     
-    private Scenario() {}
+    private Scenario(SpriteManager spriteManager)
+    {
+        this.spriteManager = spriteManager;
+        bombBuilder = new BombBuilder(spriteManager);
+    }
     
     public final void setActionReceiver(ActionReceiver receiver)
     {
@@ -202,8 +211,10 @@ public final class Scenario
         });
     }
     
+    public final SpriteManager getSpriteManager() { return spriteManager; }
     public final TileManager getTileManager() { return tiles; }
     public final DeathBorder getDeathBorder() { return dborder; }
+    public final BombBuilder getBombBuilder() { return bombBuilder; }
     
     
     public static final void store(Scenario scenario, OutputStream out) throws IOException
@@ -231,7 +242,7 @@ public final class Scenario
     public static final Scenario load(SpriteManager sprites, InputStream in) throws IOException
     {
         GameDataLoader gdl = new GameDataLoader(in,sprites);
-        Scenario scenario = new Scenario();
+        Scenario scenario = new Scenario(sprites);
         gdl.setScenarioReference(scenario);
         scenario.scripts = gdl.readSerializableObject();
         gdl.setScriptManager(scenario.scripts);

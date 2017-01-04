@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.object.GameObject;
 
 /**
  *
@@ -89,5 +91,14 @@ public final class SpriteUtils
         g.drawImage(bi,0,0,null);
         g.dispose();
         return nbi;
+    }
+    
+    public static final void drawGameObjectSprite(GameObject go, Graphics2D g, Sprite sprite)
+    {
+        Vector2 position = go.getPosition();
+        Vector2 size = go.getSize();
+        position.x -= size.x / 2d;
+        position.y -= size.y / 2d;
+        sprite.draw(g,position.x,position.y,size.x,size.y,go.getDirectionInRadians());
     }
 }

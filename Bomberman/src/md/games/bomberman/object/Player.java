@@ -115,7 +115,7 @@ public class Player extends Creature
         Tile tile = scenario.getTileManager().getLookAtTile(this);
         if(tile == null || !tile.canPutPlaceable())
             return;
-        Bomb bomb = BombBuilder.createBomb(primary ? primaryBombType : secondaryBombType,bombRange);
+        Bomb bomb = scenario.getBombBuilder().createBomb(primary ? primaryBombType : secondaryBombType,bombRange);
         scenario.registerGameObject(bomb);
         scenario.sendAction(Action.playerPutBomb(getId(),bomb.getId(),primary ? primaryBombType : secondaryBombType,bombRange,tile));
         bombs.add(bomb);

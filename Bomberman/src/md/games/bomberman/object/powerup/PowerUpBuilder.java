@@ -15,10 +15,10 @@ import md.games.bomberman.object.PowerUp;
  */
 public final class PowerUpBuilder
 {
-    public static final PowerUp createPowerUp(PowerUpType type)
+    /*public static final PowerUp createPowerUp(PowerUpType type)
     {
         
-    }
+    }*/
     
     private static final class RangeUp extends PowerUp
     {

@@ -6,6 +6,7 @@
 package md.games.bomberman.object;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

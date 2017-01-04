@@ -11,6 +11,7 @@ import java.io.IOException;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.sprites.Sprite;
+import md.games.bomberman.sprites.SpriteUtils;
 import nt.lpl.types.LPLValue;
 
 /**
@@ -35,7 +36,7 @@ public abstract class PowerUp extends Collectible
     public void draw(Graphics2D g)
     {
         if(sprite != null)
-            sprite.draw(g,getPositionX(),getPositionY(),getSizeWidth(),getSizeHeight());
+            SpriteUtils.drawGameObjectSprite(this,g,sprite);
     }
 
     @Override
