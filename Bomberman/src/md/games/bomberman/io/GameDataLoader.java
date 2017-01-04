@@ -20,6 +20,7 @@ import md.games.bomberman.scenario.ScenarioTheme;
 import md.games.bomberman.script.Script;
 import md.games.bomberman.script.ScriptManager;
 import md.games.bomberman.sprites.Sprite;
+import md.games.bomberman.sprites.SpriteManager;
 import nt.lpl.types.LPLType;
 import nt.lpl.types.LPLValue;
 import nt.lpl.types.objects.LPLMap;
@@ -33,27 +34,27 @@ public final class GameDataLoader extends DataInputStream
 {
     private static final LPLType[] LPL_TYPES = LPLType.values();
     private final HashMap<String,Constructor<? extends SerializableObject>> objCache;
-    private final ScenarioTheme theme;
+    private final SpriteManager sprites;
     private ScriptManager scripts;
     private Scenario scenario;
     private final ClassLoader classLoader;
     
-    public GameDataLoader(BufferedInputStream in, ScenarioTheme theme)
+    public GameDataLoader(BufferedInputStream in, SpriteManager sprites)
     {
         super(in);
-        if(theme == null)
+        if(sprites == null)
             throw new NullPointerException();
         objCache = new HashMap<>();
-        this.theme = theme;
+        this.sprites = sprites;
         classLoader = GameDataLoader.class.getClassLoader();
     }
-    public GameDataLoader(InputStream in, int bufferLength, ScenarioTheme theme)
+    public GameDataLoader(InputStream in, int bufferLength, SpriteManager sprites)
     {
-        this(new BufferedInputStream(in,bufferLength),theme);
+        this(new BufferedInputStream(in,bufferLength),sprites);
     }
-    public GameDataLoader(InputStream in, ScenarioTheme theme)
+    public GameDataLoader(InputStream in, SpriteManager sprites)
     {
-        this(new BufferedInputStream(in),theme);
+        this(new BufferedInputStream(in),sprites);
     }
     
     public final void setScriptManager(ScriptManager scripts)
@@ -70,6 +71,11 @@ public final class GameDataLoader extends DataInputStream
     {
         if(readBoolean())
             a.read();
+    }
+    
+    public final void readScenarioTheme() throws IOException
+    {
+        ScenarioTheme.loadTheme(sprites,readUTF());
     }
     
     public final <SO extends SerializableObject> SO readSerializableObject() throws IOException
@@ -116,7 +122,7 @@ public final class GameDataLoader extends DataInputStream
     public final Sprite readSprite() throws IOException
     {
         String tag = readUTF();
-        return theme.getSprite(tag);
+        return sprites.getSprite(tag);
     }
     
     public final LPLValue readLPL() throws IOException

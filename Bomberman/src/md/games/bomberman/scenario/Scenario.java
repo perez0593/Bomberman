@@ -27,6 +27,7 @@ import md.games.bomberman.scenario.action.Action;
 import md.games.bomberman.scenario.action.ActionReceiver;
 import md.games.bomberman.scenario.action.ActionSender;
 import md.games.bomberman.script.ScriptManager;
+import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.CriteriaIterator;
 
 /**
@@ -227,9 +228,9 @@ public final class Scenario
         }
     }
     
-    public static final Scenario load(ScenarioTheme theme, InputStream in) throws IOException
+    public static final Scenario load(SpriteManager sprites, InputStream in) throws IOException
     {
-        GameDataLoader gdl = new GameDataLoader(in,theme);
+        GameDataLoader gdl = new GameDataLoader(in,sprites);
         Scenario scenario = new Scenario();
         gdl.setScenarioReference(scenario);
         scenario.scripts = gdl.readSerializableObject();
@@ -249,11 +250,11 @@ public final class Scenario
         }
         return scenario;
     }
-    public static final Scenario load(ScenarioTheme theme, File file) throws IOException
+    public static final Scenario load(SpriteManager sprites, File file) throws IOException
     {
         try(FileInputStream fis = new FileInputStream(file))
         {
-            return load(theme,fis);
+            return load(sprites,fis);
         }
     }
 }

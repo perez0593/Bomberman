@@ -5,16 +5,12 @@
  */
 package md.games.bomberman.scenario;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedList;
 import md.games.bomberman.io.Resource;
-import md.games.bomberman.sprites.AnimatedSprite;
-import md.games.bomberman.sprites.Sprite;
-import md.games.bomberman.sprites.SpriteUtils;
-import md.games.bomberman.sprites.StaticSprite;
+import md.games.bomberman.sprites.SpriteManager;
 import nt.dal.DAL;
 import nt.dal.DALParseException;
 import nt.dal.DALUtils;
@@ -32,21 +28,25 @@ public final class ScenarioTheme
     private static final Routines ROUTINES = initRoutines();
     
     private final String name;
-    private final HashMap<String,BufferedImage> rawCache;
-    private final HashMap<String,Sprite> spriteCache;
+    private final SpriteManager smanager;
+    private final LinkedList<String> cache;
     
-    private ScenarioTheme(String name)
+    private ScenarioTheme(SpriteManager smanager, String name)
     {
         if(name == null)
             throw new NullPointerException();
+        if(smanager == null)
+            throw new NullPointerException();
         this.name = name;
-        rawCache = new HashMap<>();
-        spriteCache = new HashMap<>();
+        this.smanager = smanager;
+        cache = new LinkedList<>();
     }
     
-    public static final ScenarioTheme loadTheme(String name) throws FileNotFoundException, IOException
+    public final Iterable<String> getIterableTags() { return cache; }
+    
+    public static final ScenarioTheme loadTheme(SpriteManager smanager, String name) throws FileNotFoundException, IOException
     {
-        ScenarioTheme theme = new ScenarioTheme(name);
+        ScenarioTheme theme = new ScenarioTheme(smanager,name);
         DALBlock env = DALBlock.asObject();
         env.setAttribute(STR_SCENARIO,new DALUserdata(theme));
         File initFile = new File(Resource.THEMES.getAbsolutePath() + "/" + name + "/.theme");
@@ -55,11 +55,6 @@ public final class ScenarioTheme
         try { DAL.execute(initFile,env,ROUTINES); }
         catch(DALParseException ex) { throw new IOException(ex); }
         return theme;
-    }
-    
-    public final <S extends Sprite> S getSprite(String tag)
-    {
-        return (S) spriteCache.get(tag);
     }
     
     private static final DALData STR_SCENARIO = DALData.valueOf("__scenario__");
@@ -72,10 +67,12 @@ public final class ScenarioTheme
             ScenarioTheme theme = env.getAttribute(STR_SCENARIO).<ScenarioTheme>asDALUserdata().get();
             String path = pars.getParameter(0).toJavaString();
             String tag = pars.getParameter(1).toJavaString();
-            BufferedImage raw = theme.loadRaw(path);
-            StaticSprite ss = new StaticSprite(raw);
-            ss.setSpriteTag(tag);
-            theme.spriteCache.put(tag,ss);
+            try { theme.smanager.loadStaticSprite(Resource.THEMES,path,tag); }
+            catch(IOException ex)
+            {
+                throw new RuntimeException(ex);
+            }
+            theme.cache.add(tag);
         });
         
         routines.putRoutine("sprite.animated",(rou,env,pars) -> {
@@ -98,34 +95,14 @@ public final class ScenarioTheme
                 height = pars.getParameter(3).toJavaInt();
                 count = pars.getParameter(4).toJavaInt();
             }
-            BufferedImage raw = theme.loadRaw(path);
-            BufferedImage[] raws = SpriteUtils.arrayImages(x,y,width,height,count,raw);
-            AnimatedSprite as = new AnimatedSprite(raws);
-            as.setSpriteTag(tag);
-            theme.spriteCache.put(tag,as);
+            try { theme.smanager.loadAnimatedSprite(Resource.THEMES,path,tag,x,y,width,height,count); }
+            catch(IOException ex)
+            {
+                throw new RuntimeException(ex);
+            }
+            theme.cache.add(tag);
         });
         
         return routines;
-    }
-    private BufferedImage loadRaw(String path)
-    {
-        try
-        {
-            BufferedImage raw = rawCache.get(path);
-            if(raw == null)
-            {
-                try { raw = Resource.THEMES.loadRawImage(name + "/" + path); }
-                catch(IOException ex)
-                {
-                    raw = Resource.THEMES.loadRawImage(path);
-                }
-                rawCache.put(path,raw);
-            }
-            return raw;
-        }
-        catch(IOException ex)
-        {
-            throw new RuntimeException(ex);
-        }
     }
 }
