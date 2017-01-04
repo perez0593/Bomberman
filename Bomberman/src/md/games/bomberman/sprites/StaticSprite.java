@@ -104,6 +104,9 @@ public class StaticSprite extends Sprite<StaticSprite>
     
     @Override
     public final boolean isStaticSprite() { return true; }
+    
+    @Override
+    public boolean isAnimation() { return false; }
 
     @Override
     public Sprite duplicate()

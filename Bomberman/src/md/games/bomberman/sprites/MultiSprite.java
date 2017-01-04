@@ -60,6 +60,9 @@ public final class MultiSprite extends Sprite<MultiSprite>
     
     @Override
     public final boolean isStaticSprite() { return false; }
+    
+    @Override
+    public boolean isAnimation() { return false; }
 
     @Override
     public final Sprite duplicate()

@@ -171,6 +171,9 @@ public class AnimatedSprite
     
     @Override
     public final boolean isStaticSprite() { return false; }
+    
+    @Override
+    public boolean isAnimation() { return false; }
 
     @Override
     public Iterator<BufferedImage> iterator()

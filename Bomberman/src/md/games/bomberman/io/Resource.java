@@ -10,9 +10,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import md.games.bomberman.sprites.AnimatedSprite;
-import md.games.bomberman.sprites.SpriteUtils;
-import md.games.bomberman.sprites.StaticSprite;
+import md.games.bomberman.sprites.Animation;
+import nt.adm.AnimationData;
 
 /**
  *
@@ -46,6 +45,12 @@ public final class Resource
     public final BufferedImage loadRawImage(String path) throws FileNotFoundException, IOException
     {
         return ImageIO.read(getFile(path));
+    }
+    
+    public final Animation loadAnimation(String path, int width, int height) throws FileNotFoundException, IOException
+    {
+        AnimationData ad = AnimationData.load(getFile(path));
+        return new Animation(ad,width,height);
     }
     
     /* FILES */

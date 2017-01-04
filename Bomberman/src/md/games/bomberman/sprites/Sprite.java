@@ -22,6 +22,7 @@ public abstract class Sprite<A extends Sprite<A>>
     public abstract boolean isAnimatedSprite();
     public abstract boolean isMultiSprite();
     public abstract boolean isStaticSprite();
+    public abstract boolean isAnimation();
     
     public abstract Sprite duplicate();
     
