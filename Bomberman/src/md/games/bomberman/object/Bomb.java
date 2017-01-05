@@ -126,7 +126,7 @@ public class Bomb extends Placeable
     }
 
     @Override
-    protected void innserSerialize(GameDataSaver gds) throws IOException
+    protected void innerSerialize(GameDataSaver gds) throws IOException
     {
         gds.writeInt(range);
         gds.writeInt(damage);

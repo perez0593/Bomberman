@@ -164,6 +164,19 @@ public final class Scenario
                 continue;
             }
             go.update(delta);
+            if(go.isCreature())
+            {
+                Creature c = (Creature) go;
+                if(!c.isAlive())
+                {
+                    c.die();
+                    if(!c.isDestroid())
+                        c.destroy();
+                    if(go.hasScenarioReference())
+                        unregisterGameObject(go);
+                    it.remove();
+                }
+            }
         }
     }
             

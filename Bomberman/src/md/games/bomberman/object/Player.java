@@ -12,7 +12,10 @@ import java.util.ListIterator;
 import java.util.Objects;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.object.bomb.BombBuilder;
+import md.games.bomberman.object.Bomb;
+import md.games.bomberman.object.Creature;
+import md.games.bomberman.object.CreatureType;
+import md.games.bomberman.object.PlayerColor;
 import md.games.bomberman.object.bomb.BombType;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
@@ -29,8 +32,6 @@ public class Player extends Creature
     private PlayerColor color;
     
     /*stats*/
-    private int lives;
-    private double speed;
     private boolean kevlar;
     private int maxBombs;
     private int bombRange;
@@ -46,7 +47,6 @@ public class Player extends Creature
             throw new NullPointerException();
         this.name = name;
         this.color = color;
-        speed = 1f;
         kevlar = false;
         maxBombs = 1;
         bombRange = 3;
@@ -58,15 +58,12 @@ public class Player extends Creature
     
     public final String getName() { return name; }
     public final PlayerColor getColor() { return color; }
-    public final int getLives() { return lives; }
-    public final double getSpeed() { return speed; }
     public final boolean hasKevlar() { return kevlar; }
     public final int getMaxBombs() { return maxBombs; }
     public final BombType getPrimaryBombType() { return primaryBombType; }
     public final BombType getSecondaryBombType() { return secondaryBombType; }
     
     public final void setName(String name) { this.name = Objects.requireNonNull(name); }
-    public final void setSpeed(double speed) { this.speed = speed < 0 ? 0 : speed; }
     public final void setMaxBombs(int max) { maxBombs = max < 0 ? 0 : max; }
     public final void setBombRange(int range) { bombRange = range < 1 ? 1 : range; }
     public final void setKevlar(boolean flag) { kevlar = flag; }
@@ -81,13 +78,6 @@ public class Player extends Creature
         if(type == null)
             throw new NullPointerException();
         secondaryBombType = type;
-    }
-    
-    public final void increaseSpeed(double factor) { speed += factor < 0 ? -factor : factor; }
-    public final void decreaseSpeed(double factor)
-    {
-        speed -= factor < 0 ? -factor : factor;
-        speed = speed < 0 ? 0 : speed;
     }
     
     public final void increaseMaxBombs(int amount) { maxBombs += amount < 0 ? -amount : amount; }
@@ -150,14 +140,19 @@ public class Player extends Creature
     {
         
     }
+    
+    @Override
+    public final void die()
+    {
+        
+    }
 
     @Override
-    protected void innserSerialize(GameDataSaver gds) throws IOException
+    protected void innerSerialize(GameDataSaver gds) throws IOException
     {
+        super.innerSerialize(gds);
         gds.writeUTF(name);
         gds.writeInt(color.ordinal());
-        gds.writeInt(lives);
-        gds.writeDouble(speed);
         gds.writeBoolean(kevlar);
         gds.writeInt(maxBombs);
         gds.writeInt(bombRange);
@@ -168,11 +163,9 @@ public class Player extends Creature
     @Override
     protected void innerUnserialize(GameDataLoader gdl) throws IOException
     {
-        
+        super.innerUnserialize(gdl);
         name = gdl.readUTF();
         color = PlayerColor.decode(gdl.readInt());
-        lives = gdl.readInt();
-        speed = gdl.readDouble();
         kevlar = gdl.readBoolean();
         maxBombs = gdl.readInt();
         bombRange = gdl.readInt();

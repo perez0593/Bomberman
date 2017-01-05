@@ -31,6 +31,10 @@ public class PeripheralController
     {
         lists.remove(index);
     }
+    public void removeListener(PeripheralListener listener)
+    {
+        lists.remove(listener);
+    }
     
     public void addAbstractController(AbstractPeripheral device)
     {

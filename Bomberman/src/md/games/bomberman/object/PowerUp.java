@@ -40,7 +40,7 @@ public abstract class PowerUp extends Collectible
     }
 
     @Override
-    protected void innserSerialize(GameDataSaver gds) throws IOException
+    protected void innerSerialize(GameDataSaver gds) throws IOException
     {
         gds.writeIfNonNull(sprite,() -> gds.writeSprite(sprite));
     }

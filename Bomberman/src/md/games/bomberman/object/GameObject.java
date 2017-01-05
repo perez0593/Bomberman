@@ -6,7 +6,6 @@
 package md.games.bomberman.object;
 
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -254,9 +253,9 @@ public abstract class GameObject
             gds.writeUTF(e.getKey());
             gds.writeLPL(e.getValue());
         }
-        innserSerialize(gds);
+        innerSerialize(gds);
     }
-    protected abstract void innserSerialize(GameDataSaver gds) throws IOException;
+    protected abstract void innerSerialize(GameDataSaver gds) throws IOException;
     
     @Override
     public final void unserialize(GameDataLoader gdl) throws IOException
