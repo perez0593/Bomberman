@@ -5,16 +5,15 @@
  */
 package md.games.bomberman.object.creature;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import md.games.bomberman.io.GameDataLoader;
-import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.io.SerializableObject;
 
 /**
  *
  * @author Asus
  */
-public final class HitPoints implements SerializableObject
+public final class HitPoints
 {
     private int containers;
     private int redHearts;
@@ -37,6 +36,12 @@ public final class HitPoints implements SerializableObject
     }
     
     public final HitPoints copy() { return new HitPoints(this); }
+    public final void set(HitPoints other)
+    {
+        containers = other.containers;
+        redHearts = other.redHearts;
+        blueHearts = other.blueHearts;
+    }
     
     public final void setContainers(int containers)
     {
@@ -111,19 +116,17 @@ public final class HitPoints implements SerializableObject
         blueHearts++;
     }
 
-    @Override
-    public final void serialize(GameDataSaver gds) throws IOException
+    public final void serialize(DataOutputStream dos) throws IOException
     {
-        gds.writeInt(containers);
-        gds.writeInt(redHearts);
-        gds.writeInt(blueHearts);
+        dos.writeInt(containers);
+        dos.writeInt(redHearts);
+        dos.writeInt(blueHearts);
     }
 
-    @Override
-    public final void unserialize(GameDataLoader gdl) throws IOException
+    public final void unserialize(DataInputStream dis) throws IOException
     {
-        containers = gdl.readInt();
-        redHearts = gdl.readInt();
-        blueHearts = gdl.readInt();
+        containers = dis.readInt();
+        redHearts = dis.readInt();
+        blueHearts = dis.readInt();
     }
 }
