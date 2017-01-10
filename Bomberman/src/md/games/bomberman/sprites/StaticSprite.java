@@ -21,7 +21,7 @@ import javax.imageio.ImageIO;
 public class StaticSprite extends Sprite<StaticSprite>
 {
     //private String reference = null;
-    private final BufferedImage img;
+    protected final BufferedImage img;
     
     public StaticSprite(int width, int height, int type)
     {

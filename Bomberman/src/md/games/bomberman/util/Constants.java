@@ -17,4 +17,6 @@ public final class Constants
     
     /* DAL STRINGS */
     public static final DALData DAL_STR_CLASS = DALData.valueOf("__class");
+    
+    public static final Version VERSION = Version.valueOf("0.0.0.1");
 }

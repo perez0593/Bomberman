@@ -49,9 +49,9 @@ public final class ScenarioTheme
         ScenarioTheme theme = new ScenarioTheme(smanager,name);
         DALBlock env = DALBlock.asObject();
         env.setAttribute(STR_SCENARIO,new DALUserdata(theme));
-        File initFile = new File(Resource.THEMES.getAbsolutePath() + "/" + name + "/.theme");
-        if(!initFile.exists() || !initFile.isDirectory())
-            throw new FileNotFoundException(".theme file in " + name + " theme not found");
+        File initFile = new File(Resource.THEMES.getAbsolutePath() + "/" + name + "/theme");
+        if(!initFile.exists() || !initFile.isFile())
+            throw new FileNotFoundException("theme file in " + name + " theme not found");
         try { DAL.execute(initFile,env,ROUTINES); }
         catch(DALParseException ex) { throw new IOException(ex); }
         return theme;
@@ -64,8 +64,8 @@ public final class ScenarioTheme
         DALUtils.insertBasicFeatures(routines);
         
         routines.putRoutine("sprite.static",(rou,env,pars) -> {
-            ScenarioTheme theme = env.getAttribute(STR_SCENARIO).<ScenarioTheme>asDALUserdata().get();
-            String path = pars.getParameter(0).toJavaString();
+            ScenarioTheme theme = env.getDeepAttribute(STR_SCENARIO).<ScenarioTheme>asDALUserdata().get();
+            String path = theme.name + "/" + pars.getParameter(0).toJavaString();
             String tag = pars.getParameter(1).toJavaString();
             try { theme.smanager.loadStaticSprite(Resource.THEMES,path,tag); }
             catch(IOException ex)
@@ -75,9 +75,25 @@ public final class ScenarioTheme
             theme.cache.add(tag);
         });
         
+        routines.putRoutine("sprite.region",(rou,env,pars) -> {
+            ScenarioTheme theme = env.getDeepAttribute(STR_SCENARIO).<ScenarioTheme>asDALUserdata().get();
+            String path = theme.name + "/" + pars.getParameter(0).toJavaString();
+            String tag = pars.getParameter(1).toJavaString();
+            int x = pars.getParameter(2).toJavaInt();
+            int y = pars.getParameter(3).toJavaInt();
+            int w = pars.getParameter(4).toJavaInt();
+            int h = pars.getParameter(5).toJavaInt();
+            try { theme.smanager.loadSubRegionStaticSprite(Resource.THEMES,path,tag,x,y,w,h); }
+            catch(IOException ex)
+            {
+                throw new RuntimeException(ex);
+            }
+            theme.cache.add(tag);
+        });
+        
         routines.putRoutine("sprite.animated",(rou,env,pars) -> {
-            ScenarioTheme theme = env.getAttribute(STR_SCENARIO).<ScenarioTheme>asDALUserdata().get();
-            String path = pars.getParameter(0).toJavaString();
+            ScenarioTheme theme = env.getDeepAttribute(STR_SCENARIO).<ScenarioTheme>asDALUserdata().get();
+            String path = theme.name + "/" + pars.getParameter(0).toJavaString();
             String tag = pars.getParameter(1).toJavaString();
             int x, y, width, height, count;
             if(pars.getParameterCount() > 5)

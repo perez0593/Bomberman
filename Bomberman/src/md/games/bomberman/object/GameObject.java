@@ -17,6 +17,7 @@ import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
+import md.games.bomberman.scenario.Camera;
 import md.games.bomberman.scenario.Scenario;
 import nt.lpl.LPLRuntimeException;
 import nt.lpl.types.LPLFunction;
@@ -172,12 +173,20 @@ public abstract class GameObject
     
     public final void createBoundingBox() { boundingBox = BoundingBox.situate(position,size); }
     public final void destroyBoundingBox() { boundingBox = null; }
+    public final boolean hasBoundingBox() { return boundingBox != null; }
     
     public final boolean hasCollision(BoundingBox box)
     {
         if(boundingBox == null)
             return false;
         return boundingBox.hasCollision(box);
+    }
+    
+    public final boolean canSee(Camera camera)
+    {
+        if(boundingBox == null)
+            return camera.contains(position.x,position.y,size.x,size.y);
+        else return camera.getBounds().hasCollision(boundingBox);
     }
     
     public final void setTag(String tag)

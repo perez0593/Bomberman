@@ -42,6 +42,17 @@ public final class SpriteManager
         return loadStaticSprite(Resource.SPRITES,path,tag);
     }
     
+    public final StaticSprite loadSubRegionStaticSprite(Resource resource, String path, String tag, int x, int y, int width, int height) throws IOException
+    {
+        if(spriteCache.containsKey(tag))
+            throw new IllegalArgumentException("Sprite with tag \"" + tag + "\" already exists");
+        BufferedImage base = loadRaw(resource,path);
+        SubRegionStaticSprite ss = SubRegionStaticSprite.fromSize(base,x,y,width,height);
+        ss.setSpriteTag(tag);
+        spriteCache.put(tag,ss);
+        return ss;
+    }
+    
     public final AnimatedSprite loadAnimatedSprite(Resource resource, String path, String tag, int x, int y, int width, int height, int frames) throws IOException
     {
         if(spriteCache.containsKey(tag))

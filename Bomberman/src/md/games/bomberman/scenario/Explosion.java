@@ -32,7 +32,7 @@ public final class Explosion
     //TODO: Cargar y asignar los sprites de las explosiones
     public static final Explosion getManager()
     {
-        return null;
+        return new Explosion(new BufferedImage[0][],1,1);
     }
     
     public final ExplosionReference getReference() { return new ExplosionReference(); }

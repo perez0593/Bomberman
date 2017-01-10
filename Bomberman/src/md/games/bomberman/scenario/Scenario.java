@@ -6,6 +6,7 @@
 package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -44,10 +45,11 @@ public final class Scenario
     private final BombBuilder bombBuilder;
     private final LinkedList<GameObject> objects = new LinkedList<>();
     private final HashMap<UUID, GameObject> objectHash = new HashMap<>();
+    private final Camera camera = new Camera();
     private ActionSender sender;
     private ActionReceiver receiver;
     
-    private Scenario(SpriteManager spriteManager, int rows, int columns)
+    public Scenario(SpriteManager spriteManager, int rows, int columns)
     {
         this.spriteManager = spriteManager;
         tiles = new TileManager(rows, columns);
@@ -79,6 +81,8 @@ public final class Scenario
     }
     public final ActionSender getActionSender() { return sender; }
     public final void sendAction(Action action) { sender.sendAction(action); }
+    
+    public final Camera getCamera() { return camera; }
     
     public final void registerGameObject(GameObject go)
     {
@@ -133,13 +137,22 @@ public final class Scenario
     
     public final void draw(Graphics2D g)
     {
+        AffineTransform oldTransform = g.getTransform();
+        g.setTransform(oldTransform);
+        
         tiles.draw(g);
         for(GameObject go : objects)
-            go.draw(g);
+        {
+            if(go.canSee(camera))
+                go.draw(g);
+        }
+        
+        g.setTransform(oldTransform);
     }
     
     public final void update(double delta)
     {
+        camera.update();
         tiles.update(delta);
         updateGameObjects(delta);
         

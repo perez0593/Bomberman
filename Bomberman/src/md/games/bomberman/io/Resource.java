@@ -55,6 +55,6 @@ public final class Resource
     
     /* FILES */
     
-    public static final Resource SPRITES = new Resource("bin/sprites");
-    public static final Resource THEMES = new Resource("bib/sprites/themes");
+    public static final Resource SPRITES = new Resource("sprites");
+    public static final Resource THEMES = new Resource("sprites/themes");
 }

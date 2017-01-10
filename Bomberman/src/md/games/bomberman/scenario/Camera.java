@@ -18,7 +18,7 @@ import nt.ntjg.NTJG;
  */
 public final class Camera
 {
-    private static double PIXELS_PER_METER = 45f;
+    private static double PIXELS_PER_METER = 1f;
     private double zoom, rotation;
     private AffineTransform at_transform;
     private BoundingBox bounds;
@@ -115,7 +115,7 @@ public final class Camera
             inv.transform(new Point2D.Double(viewport.x,viewport.y),vsize);
             bounds = new BoundingBox(
                     new Vector2(vpos.x,vpos.y),
-                    new Vector2(vpos.x+vsize.x,vpos.y+vsize.y));
+                    new Vector2(vsize.x,vsize.y));
             //bounds.translate(vpos.x,vpos.y);
             
         }
@@ -139,6 +139,8 @@ public final class Camera
     {
         return bounds.hasCollision(bb);
     }
+    
+    public final boolean contains(GameObject go) { return go.canSee(this); }
     
     public final boolean contains(float x, float y, float width, float height)
     {
