@@ -247,24 +247,28 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
         Vector2 p1 = cam.getBounds().getPoint1();
         
         int r = (int) (p0.y / tileSize.y);
-        int rr = r < 0 ? 0 : 0;
         r = r < 0 ? 0 : r;
         int cmin = (int) (p0.x / tileSize.x);
-        int rc = cmin < 0 ? 0 : 0;
         cmin = cmin < 0 ? 0 : cmin >= columns ? columns : cmin;
-        int rmax = (int) (p1.y / tileSize.y);
+        int rmax = (int) (p1.y / tileSize.y) + 1;
         rmax = rmax < 0 ? 0 : rmax >= rows ? rows : rmax;
-        int cmax = (int) (p1.x / tileSize.x);
+        int cmax = (int) (p1.x / tileSize.x) + 1;
         cmax = cmax < 0 ? 0 : cmax >= columns ? columns : cmax;
         
         for(;r<rmax;r++)
+        {
+            //if(r < 0) continue;
             for(int c=cmin;c<cmax;c++)
+            {
+                //if(c < 0) continue;
                 tiles[r * columns + c]
                         .draw(g,
-                                position.x + (c + rc) * tileSize.x,
-                                position.y + (r + rr) * tileSize.y,
+                                position.x + c * tileSize.x,
+                                position.y + r * tileSize.y,
                                 tileSize.x,
                                 tileSize.y);
+            }
+        }
     }
     
     public final void resize(int rows, int columns)

@@ -138,7 +138,7 @@ public final class Scenario
     public final void draw(Graphics2D g)
     {
         AffineTransform oldTransform = g.getTransform();
-        g.setTransform(oldTransform);
+        g.setTransform(camera.getAffineTransform());
         
         tiles.draw(g);
         for(GameObject go : objects)
@@ -152,10 +152,8 @@ public final class Scenario
     
     public final void update(double delta)
     {
-        camera.update();
         tiles.update(delta);
         updateGameObjects(delta);
-        
     }
     
     private void updateGameObjects(double delta)

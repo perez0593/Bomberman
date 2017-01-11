@@ -8,6 +8,7 @@ package md.games.bomberman.scenario;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import md.games.bomberman.geom.BoundingBox;
+import md.games.bomberman.geom.Matrix33;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.object.GameObject;
 import nt.ntjg.NTJG;
@@ -86,18 +87,18 @@ public final class Camera
             w = viewport.x;
             h = viewport.y;
         }
-        at_transform = AffineTransform.getTranslateInstance(pos.x,pos.y);
+        /*at_transform = AffineTransform.getTranslateInstance(-pos.x,-pos.y);
         at_transform.rotate(rotation);
-        at_transform.scale(1f/zoom*PIXELS_PER_METER,1f/zoom*PIXELS_PER_METER);
         at_transform.translate(w/2d,h/2d);
+        at_transform.scale(1f/zoom*PIXELS_PER_METER,1f/zoom*PIXELS_PER_METER);*/
                 
-        /*Matrix33 m = new Matrix33();
+        Matrix33 m = new Matrix33();
         Matrix33 transform = Matrix33.newTraslation((float)-pos.x,(float)-pos.y)
                 .multiply(Matrix33.newRotation(rotation))
                 .multiply(Matrix33.newScale(1f/zoom*PIXELS_PER_METER,1f/zoom*PIXELS_PER_METER))
                 .multiply(Matrix33.newTraslation(w/2,h/2));
         at_transform = transform.toAffineTransform();
-        at_transform = AffineTransform.getTranslateInstance(-pos.x,-pos.y);
+        /*at_transform = AffineTransform.getTranslateInstance(-pos.x,-pos.y);
         at_transform.translate(w/2,h/2);
         at_transform.rotate(rotation);
         at_transform.scale(1f/zoom,1f/zoom);*/
@@ -236,6 +237,12 @@ public final class Camera
     }*/
     
     public final void translateZ(float meters)
+    {
+        zoom += meters;
+        modif = true;
+    }
+    
+    public final void translateZ(double meters)
     {
         zoom += meters;
         modif = true;
