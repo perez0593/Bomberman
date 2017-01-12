@@ -58,8 +58,8 @@ public final class SpriteManager
         if(spriteCache.containsKey(tag))
             throw new IllegalArgumentException("Sprite with tag \"" + tag + "\" already exists");
         BufferedImage base = loadRaw(resource,path);
-        BufferedImage[] raws = SpriteUtils.arrayImages(x,y,width,height,frames,base);
-        AnimatedSprite as = new AnimatedSprite(raws);
+        //BufferedImage[] raws = SpriteUtils.arrayImages(x,y,width,height,frames,base);
+        AnimatedSprite as = new AnimatedSprite(base,x,y,width,height,frames);
         as.setSpriteTag(tag);
         spriteCache.put(tag,as);
         return as;

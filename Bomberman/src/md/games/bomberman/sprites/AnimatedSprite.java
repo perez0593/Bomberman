@@ -18,16 +18,19 @@ import java.util.Iterator;
  */
 public class AnimatedSprite
         extends Sprite<AnimatedSprite>
-        implements Iterable<BufferedImage>
 {
-    private final BufferedImage[] imgs;
+    //private final BufferedImage[] imgs;
+    private final BufferedImage base;
+    private final int x, y;
+    private final int width, height;
+    private final int frames;
+    
     private float delay, maxDelay, iterator;
     private float speed;
     private boolean loop, end;
-    private final int width, height;
     private String tref = null;
     
-    public AnimatedSprite(BufferedImage[] bitmaps)
+    /*public AnimatedSprite(BufferedImage[] bitmaps)
     {
         imgs = bitmaps;
         width = bitmaps[0].getWidth();
@@ -41,13 +44,31 @@ public class AnimatedSprite
         end = true;
         speed = 1f;
         iterator = 0;
+    }*/
+    public AnimatedSprite(BufferedImage base, int x, int y, int width, int height, int frames)
+    {
+        this.base = base;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.frames = frames;
+        delay = -1;
+        maxDelay = -1;
+        loop = false;
+        end = true;
+        speed = 1f;
+        iterator = 0;
     }
     
     public AnimatedSprite(AnimatedSprite other)
     {
-        imgs = other.imgs;
+        base = other.base;
+        x = other.x;
+        y = other.y;
         width = other.width;
         height = other.height;
+        frames = other.frames;
         delay = other.delay;
         maxDelay = other.maxDelay;
         loop = other.loop;
@@ -56,11 +77,14 @@ public class AnimatedSprite
         iterator = other.iterator;
     }
     
-    private AnimatedSprite(AnimatedSprite other, BufferedImage[] imgs)
+    private AnimatedSprite(AnimatedSprite other, BufferedImage base)
     {
-        this.imgs = imgs;
+        this.base = base;
+        x = other.x;
+        y = other.y;
         width = other.width;
         height = other.height;
+        frames = other.frames;
         delay = other.delay;
         maxDelay = other.maxDelay;
         loop = other.loop;
@@ -81,7 +105,7 @@ public class AnimatedSprite
     
     private boolean canContinue()
     {
-        return iterator >= 0d && iterator < imgs.length;
+        return iterator >= 0d && iterator < frames;
     }
     
     public void start()
@@ -139,7 +163,7 @@ public class AnimatedSprite
         if(loop)
         {
             while(!canContinue())
-                iterator = (iterator < 0 ? iterator + imgs.length : iterator % ((float)imgs.length));
+                iterator = (iterator < 0 ? iterator + frames : iterator % ((float)frames));
                 //iterator = (float) (iterator < 0 ? imgs.length - (delta * -speed) : delta * speed);
             return;
         }
@@ -150,17 +174,15 @@ public class AnimatedSprite
     public void draw(Graphics2D g, AffineTransform transf)
     {
         reallocIterator();
-        g.drawImage(imgs[(int)iterator],transf,null);
+        AffineTransform aold = g.getTransform();
+        g.transform(transf);
+        g.drawImage(base,0,0,width,height,x + ((int)iterator * width),y,width,height,null);
+        g.setTransform(aold);
     }
 
     public int size()
     {
-        return imgs.length;
-    }
-
-    public BufferedImage getData(int idx)
-    {
-        return imgs[idx];
+        return frames;
     }
     
     @Override
@@ -174,12 +196,6 @@ public class AnimatedSprite
     
     @Override
     public boolean isAnimation() { return false; }
-
-    @Override
-    public Iterator<BufferedImage> iterator()
-    {
-        return Arrays.asList(imgs).iterator();
-    }
     
     @Override
     public final SpriteKind kind() { return SpriteKind.ANIMATED; }

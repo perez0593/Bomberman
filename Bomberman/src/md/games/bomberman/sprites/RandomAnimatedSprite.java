@@ -17,9 +17,9 @@ public class RandomAnimatedSprite extends AnimatedSprite
     private double min, max, current;
     private static final Random RAND = new Random();
     
-    public RandomAnimatedSprite(BufferedImage[] bitmaps)
+    public RandomAnimatedSprite(BufferedImage base, int x, int y, int width, int height, int frames)
     {
-        super(bitmaps);
+        super(base,x,y,width,height,frames);
         super.setLoop(false);
         min = 0;
         max = 10;
