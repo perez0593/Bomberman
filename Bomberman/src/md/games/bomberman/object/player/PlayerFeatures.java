@@ -57,7 +57,7 @@ public final class PlayerFeatures
     {
         Player player = new Player(name,color);
         player.getHitPointsManager().set(hp);
-        player.setSpeed(speed);
+        player.setSpeedRatio(speed);
         player.setKevlar(kevlar);
         player.setMaxBombs(maxBombs);
         player.setBombRange(bombRange);

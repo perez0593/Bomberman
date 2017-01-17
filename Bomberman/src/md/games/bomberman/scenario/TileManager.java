@@ -8,11 +8,14 @@ package md.games.bomberman.scenario;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
+import md.games.bomberman.object.Creature;
 import md.games.bomberman.object.GameObject;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 
@@ -113,6 +116,37 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                 default: return null;
             }
         return tile;
+    }
+    
+    public final List<Tile> findCollisionTiles(Creature creature)
+    {
+        Tile base = getTileByPosition(creature.getPosition());
+        LinkedList<Tile> cols = new LinkedList<>();
+        int r = base.getRow();
+        int c = base.getColumn();
+        
+        if(base.checkCreatureCollision(creature))
+            cols.add(base);
+        
+        collideTile(cols,creature,r-1,c-1);
+        collideTile(cols,creature,r-1,c);
+        collideTile(cols,creature,r-1,c+1);
+        collideTile(cols,creature,r,c-1);
+        collideTile(cols,creature,r,c+1);
+        collideTile(cols,creature,r+1,c-1);
+        collideTile(cols,creature,r+1,c);
+        collideTile(cols,creature,r+1,c+1);
+        
+        return cols;
+    }
+    
+    private void collideTile(List<Tile> cols, Creature c, int row, int column)
+    {
+        Tile tile = tile(row,column);
+        if(tile == null)
+            return;
+        if(tile.checkCreatureCollision(c))
+            cols.add(tile);
     }
     
     private Tile tile(int row, int column)

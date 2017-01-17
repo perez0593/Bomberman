@@ -12,10 +12,6 @@ import java.util.ListIterator;
 import java.util.Objects;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.object.Bomb;
-import md.games.bomberman.object.Creature;
-import md.games.bomberman.object.CreatureType;
-import md.games.bomberman.object.PlayerColor;
 import md.games.bomberman.object.bomb.BombType;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
@@ -119,6 +115,7 @@ public class Player extends Creature
     @Override
     public void update(double delta)
     {
+        super.update(delta);
         updateBombs();
     }
     

@@ -64,6 +64,12 @@ public final class Tile
         }
     }
     
+    public final boolean checkCreatureCollision(Creature c)
+    {
+        return (placeable != null && c.hasCollision(placeable)) ||
+                (collectible != null && c.hasCollision(collectible));
+    }
+    
     final void situateBoundingBox(BoundingBox box)
     {
         box.translate(getPosition());

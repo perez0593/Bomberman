@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -187,7 +188,23 @@ public final class Scenario
                         unregisterGameObject(go);
                     it.remove();
                 }
+                else
+                {
+                    computeCollisions(c);
+                }
             }
+        }
+    }
+    
+    private void computeCollisions(Creature c)
+    {
+        List<Tile> cols = tiles.findCollisionTiles(c);
+        if(cols.isEmpty())
+            return;
+        
+        for(Tile tile : cols)
+        {
+            tile.onCreatureCollide(c);
         }
     }
             

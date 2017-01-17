@@ -19,6 +19,8 @@ import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
 import md.games.bomberman.scenario.Camera;
 import md.games.bomberman.scenario.Scenario;
+import md.games.bomberman.util.Utils;
+import md.games.bomberman.util.Utils.SweptInfo;
 import nt.lpl.LPLRuntimeException;
 import nt.lpl.types.LPLFunction;
 import nt.lpl.types.LPLObject;
@@ -180,6 +182,19 @@ public abstract class GameObject
         if(boundingBox == null)
             return false;
         return boundingBox.hasCollision(box);
+    }
+    
+    public final boolean hasCollision(GameObject other)
+    {
+        return other.boundingBox != null && boundingBox != null &&
+                boundingBox.hasCollision(other.boundingBox);
+    }
+    
+    public final SweptInfo computeSwept(Vector2 selfSpeed, GameObject other)
+    {
+        if(other.boundingBox == null || boundingBox == null)
+            return SweptInfo.EMPTY;
+        return Utils.sweptBoundingBox(boundingBox,other.boundingBox,selfSpeed);
     }
     
     public final boolean canSee(Camera camera)

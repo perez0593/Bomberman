@@ -16,7 +16,7 @@ import md.games.bomberman.io.SerializableObject;
  */
 public class BoundingBox implements SerializableObject
 {
-    private double x0, y0, x1, y1;
+    public double x0, y0, x1, y1;
     
     public BoundingBox() {}
     public BoundingBox(double x0, double y0, double x1, double y1)
