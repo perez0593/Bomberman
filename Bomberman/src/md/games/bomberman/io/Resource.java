@@ -9,9 +9,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 import javax.imageio.ImageIO;
 import md.games.bomberman.sprites.Animation;
-import nt.adm.AnimationData;
+import md.games.bomberman.util.RawAnimationLoader;
 
 /**
  *
@@ -20,6 +21,7 @@ import nt.adm.AnimationData;
 public final class Resource
 {
     private static final String ROOT_PATH = System.getProperty("user.dir") + "/bin";
+    private static final RawAnimationLoader ALOADER = new RawAnimationLoader();
     
     
     private final File base;
@@ -34,7 +36,7 @@ public final class Resource
     
     public final String getAbsolutePath() { return pathBase; }
     
-    private File getFile(String path) throws FileNotFoundException
+    public final File getFile(String path) throws FileNotFoundException
     {
         File file = new File(pathBase + "/" + path);
         if(!file.exists() || !file.isFile())
@@ -47,10 +49,11 @@ public final class Resource
         return ImageIO.read(getFile(path));
     }
     
-    public final Animation loadAnimation(String path, int width, int height) throws FileNotFoundException, IOException
+    public final Map<String, Animation> loadAnimations(String path, String... enabledFlags) throws FileNotFoundException, IOException
     {
-        AnimationData ad = AnimationData.load(getFile(path));
-        return new Animation(ad,width,height);
+        return ALOADER.loadFromScript(this,path,enabledFlags);
+        //AnimationData ad = AnimationData.load(getFile(path));
+        //return new Animation(ad,width,height);
     }
     
     /* FILES */

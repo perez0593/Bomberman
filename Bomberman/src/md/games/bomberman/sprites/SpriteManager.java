@@ -8,6 +8,7 @@ package md.games.bomberman.sprites;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import md.games.bomberman.io.Resource;
 import md.games.bomberman.scenario.ScenarioTheme;
 
@@ -77,17 +78,19 @@ public final class SpriteManager
         return loadAnimatedSprite(Resource.SPRITES,path,tag,0,0,width,height,frames);
     }
     
-    public final Animation loadAnimation(Resource resource, String path, String tag, int width, int height) throws IOException
+    public final void loadAnimations(Resource resource, String path, String... enabledFlags) throws IOException
     {
-        if(spriteCache.containsKey(tag))
-            throw new IllegalArgumentException("Sprite with tag \"" + tag + "\" already exists");
-        Animation a = resource.loadAnimation(path,width,height);
-        spriteCache.put(tag,a);
-        return a;
+        Map<String, Animation> map = resource.loadAnimations(path,enabledFlags);
+        for(Map.Entry<String, Animation> e : map.entrySet())
+        {
+            if(spriteCache.containsKey(e.getKey()))
+                throw new IllegalArgumentException("Animation or sprite with tag \"" + e.getKey() + "\" already exists");
+            spriteCache.put(e.getKey(),e.getValue());
+        }
     }
-    public final Animation loadAnimation(String path, String tag, int width, int height) throws IOException
+    public final void loadAnimations(String path, String... enabledFlags) throws IOException
     {
-        return loadAnimation(Resource.SPRITES,path,tag,width,height);
+        loadAnimations(Resource.SPRITES,path,enabledFlags);
     }
     
     public final void loadScenarioTheme(String name) throws IOException

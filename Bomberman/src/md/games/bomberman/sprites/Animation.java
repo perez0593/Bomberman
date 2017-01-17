@@ -9,10 +9,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import javax.imageio.ImageIO;
-import nt.adm.AnimationData;
+import md.games.bomberman.util.RawAnimationLoader.RawAnimationData;
+import md.games.bomberman.util.RawAnimationLoader.RawAnimationData.RawAnimationSequence;
 import nt.adm.AnimationData.AnimationSequence;
 
 /**
@@ -23,18 +21,27 @@ public final class Animation
         extends Sprite<Animation>
 {
     private final AnimationPart[] parts;
-    private final int width;
-    private final int height;
+    private final BufferedImage base;
     private float speed;
     private int animationId;
     
-    public Animation(AnimationData ad, int width, int height) throws IOException
+    /*public Animation(AnimationData ad) throws IOException
     {
         parts = new AnimationPart[ad.getSequenceCount()];
         for(int i=0;i<parts.length;i++)
             parts[i] = new AnimationPart(ad.getSequence(i));
-        this.width = width;
-        this.height = height;
+        base = ad.get
+        speed = 1f;
+        animationId = 0;
+    }*/
+    
+    public Animation(RawAnimationData rad) throws IOException
+    {
+        parts = new AnimationPart[rad.getSequenceCount()];
+        int count = 0;
+        for(RawAnimationSequence ras : rad)
+            parts[count++] = new AnimationPart(ras);
+        base = rad.getBase();
         speed = 1f;
         animationId = 0;
     }
@@ -44,8 +51,7 @@ public final class Animation
         parts = new AnimationPart[other.parts.length];
         for(int i=0;i<parts.length;i++)
             parts[i] = new AnimationPart(other.parts[i]);
-        width = other.width;
-        height = other.height;
+        base = other.base;
         speed = other.speed;
         animationId = 0;
     }
@@ -67,10 +73,10 @@ public final class Animation
     public final float getSpeed() { return speed; }
     
     @Override
-    public final int width() { return width; }
+    public final int width() { return parts[animationId].width; }
 
     @Override
-    public final int height() { return height; }
+    public final int height() { return parts[animationId].height; }
 
     @Override
     public void update(double delta)
@@ -104,25 +110,32 @@ public final class Animation
     
     private final class AnimationPart
     {
-        private final BufferedImage[] imgs;
+        private final int x, y;
         private final int width, height, frames;
         private float iterator;
         
         private AnimationPart(AnimationSequence as) throws IOException
         {
+            x = as.getX();
+            y = as.getY();
             width = as.getWidth();
             height = as.getHeight();
             frames = as.getFramesCount();
-            BufferedImage base;
-            try (InputStream baseInput = as.getInputStream()) {
-                base = ImageIO.read(baseInput);
-            }
-            imgs = SpriteUtils.arrayImages(as.getX(),as.getY(),width,height,frames,base);
+        }
+        
+        private AnimationPart(RawAnimationSequence ras) throws IOException
+        {
+            x = ras.getX();
+            y = ras.getY();
+            width = ras.getWidth();
+            height = ras.getHeight();
+            frames = ras.getFramesCount();
         }
         
         private AnimationPart(AnimationPart other)
         {
-            imgs = Arrays.copyOf(other.imgs,other.imgs.length);
+            x = other.x;
+            y = other.y;
             width = other.width;
             height = other.height;
             frames = other.frames;
@@ -131,7 +144,7 @@ public final class Animation
         
         private boolean canContinue()
         {
-            return iterator >= 0d && iterator < imgs.length;
+            return iterator >= 0d && iterator < frames;
         }
 
         private void reset()
@@ -150,13 +163,16 @@ public final class Animation
             iterator += delta * speed;
             if(canContinue()) return;
             while(!canContinue())
-                iterator = (iterator < 0 ? iterator + imgs.length : iterator % ((float)imgs.length));
+                iterator = (iterator < 0 ? iterator + frames : iterator % ((float)frames));
         }
 
         private void draw(Graphics2D g, AffineTransform transf)
         {
             reallocIterator();
-            g.drawImage(imgs[(int)iterator],transf,null);
+            AffineTransform aold = g.getTransform();
+            g.transform(transf);
+            g.drawImage(base,0,0,width,height,x + ((int)iterator * width),y,width,height,null);
+            g.setTransform(aold);
         }
     }
     
