@@ -16,13 +16,11 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.UUID;
 import java.util.function.Predicate;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.object.Collectible;
 import md.games.bomberman.object.Creature;
 import md.games.bomberman.object.GameObject;
 import md.games.bomberman.object.bomb.BombBuilder;
@@ -44,7 +42,7 @@ public final class Scenario
     private DeathBorder dborder;
     private ScriptManager scripts;
     private final BombBuilder bombBuilder;
-    private final LinkedList<GameObject> objects = new LinkedList<>();
+    private final LinkedList<Creature> creatures = new LinkedList<>();
     private final HashMap<UUID, GameObject> objectHash = new HashMap<>();
     private final Camera camera = new Camera();
     private ActionSender sender;
@@ -120,13 +118,7 @@ public final class Scenario
     public final void addCreature(Creature creature)
     {
         registerGameObject(creature);
-        objects.add(creature);
-    }
-    
-    public final void addCollectible(Collectible collectible)
-    {
-        registerGameObject(collectible);
-        objects.add(collectible);
+        creatures.add(creature);
     }
     
     public final GameObject getGameObject(UUID id)
@@ -142,10 +134,10 @@ public final class Scenario
         g.setTransform(camera.getAffineTransform());
         
         tiles.draw(g);
-        for(GameObject go : objects)
+        for(Creature c : creatures)
         {
-            if(go.canSee(camera))
-                go.draw(g);
+            if(c.canSee(camera))
+                c.draw(g);
         }
         
         g.setTransform(oldTransform);
@@ -154,65 +146,43 @@ public final class Scenario
     public final void update(double delta)
     {
         tiles.update(delta);
-        updateGameObjects(delta);
+        updateCreatures(delta);
     }
     
-    private void updateGameObjects(double delta)
+    private void updateCreatures(double delta)
     {
-        ListIterator<GameObject> it = objects.listIterator();
+        ListIterator<Creature> it = creatures.listIterator();
         while(it.hasNext())
         {
-            GameObject go = it.next();
-            if(go.isDestroid())
+            Creature c = it.next();
+            if(c.isDestroid())
             {
-                if(go.hasScenarioReference())
-                    unregisterGameObject(go);
+                if(c.hasScenarioReference())
+                    unregisterGameObject(c);
                 it.remove();
                 continue;
             }
-            else if(!go.hasScenarioReference())
+            else if(!c.hasScenarioReference())
             {
                 it.remove();
                 continue;
             }
-            go.update(delta);
-            if(go.isCreature())
+            c.update(delta);
+            if(!c.isAlive())
             {
-                Creature c = (Creature) go;
-                if(!c.isAlive())
-                {
-                    c.die();
-                    if(!c.isDestroid())
-                        c.destroy();
-                    if(go.hasScenarioReference())
-                        unregisterGameObject(go);
-                    it.remove();
-                }
-                else
-                {
-                    computeCollisions(c);
-                }
+                c.die();
+                if(!c.isDestroid())
+                    c.destroy();
+                if(c.hasScenarioReference())
+                    unregisterGameObject(c);
+                it.remove();
             }
         }
     }
-    
-    private void computeCollisions(Creature c)
-    {
-        List<Tile> cols = tiles.findCollisionTiles(c);
-        if(cols.isEmpty())
-            return;
-        
-        for(Tile tile : cols)
-        {
-            tile.onCreatureCollide(c);
-        }
-    }
-            
-            
     
     public final Iterator<GameObject> findGameObjectsByTag(String tag)
     {
-        return new CriteriaIterator<>(objects,it -> {
+        return new CriteriaIterator<>(objectHash.values(),it -> {
             GameObject obj;
             while(it.hasNext())
             {
@@ -226,7 +196,7 @@ public final class Scenario
     
     public final Iterator<GameObject> findGameObjectByType(int type)
     {
-        return new CriteriaIterator<>(objects,it -> {
+        return new CriteriaIterator<>(objectHash.values(),it -> {
             GameObject obj;
             while(it.hasNext())
             {
@@ -240,7 +210,7 @@ public final class Scenario
     
     public final Iterator<GameObject> findGameObjectByUserCriteria(Predicate<GameObject> checker)
     {
-        return new CriteriaIterator<>(objects,it -> {
+        return new CriteriaIterator<>(objectHash.values(),it -> {
             GameObject obj;
             while(it.hasNext())
             {
@@ -251,6 +221,8 @@ public final class Scenario
             return null;
         });
     }
+    
+    public final Iterable<Creature> getCreaturesIterable() { return creatures; }
     
     public final SpriteManager getSpriteManager() { return spriteManager; }
     public final TileManager getTileManager() { return tiles; }
@@ -268,9 +240,9 @@ public final class Scenario
         for(GameObject go : scenario.objectHash.values())
             gds.writeSerializableObject(go);
         gds.writeSerializableObject(scenario.tiles);
-        gds.writeInt(scenario.objects.size());
-        for(GameObject go : scenario.objects)
-            gds.writeUUID(go.getId());
+        gds.writeInt(scenario.creatures.size());
+        for(Creature c : scenario.creatures)
+            gds.writeUUID(c.getId());
     }
     public static final void store(Scenario scenario, File file) throws IOException
     {
@@ -298,7 +270,7 @@ public final class Scenario
         for(int i=0;i<len;i++)
         {
             GameObject go = scenario.objectHash.get(gdl.readUUID());
-            scenario.objects.add(go);
+            scenario.creatures.add((Creature) go);
         }
         return scenario;
     }

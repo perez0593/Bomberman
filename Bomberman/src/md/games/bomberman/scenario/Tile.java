@@ -52,7 +52,7 @@ public final class Tile
     
     public final void createExplosion(ExplosionId explosionId) { explosion.explode(explosionId); }
     
-    public final void onCreatureCollide(Creature creature)
+    /*public final void onCreatureCollide(Creature creature)
     {
         if(placeable != null)
             placeable.onCreatureCollide(creature);
@@ -62,6 +62,14 @@ public final class Tile
             //manager.getScenarioReference().sendAction(Action.collectCollectible(collectible.getId(),creature.getId()));
             collectible = null;
         }
+    }*/
+    
+    public final void collectCollectible(Creature c)
+    {
+        if(collectible == null)
+            return;
+        collectible.onCollect(c);
+        collectible = null;
     }
     
     public final boolean checkCreatureCollision(Creature c)
@@ -114,11 +122,11 @@ public final class Tile
     {
         if(collectible == null)
             throw new NullPointerException();
-        if(this.collectible != null)
-            throw new IllegalStateException();
         if(!manager.hasScenarioReference())
             throw new IllegalStateException();
-        this.collectible = collectible;
+        this.collectible = this.collectible == null
+                ? Collectible.join(this.collectible,collectible)
+                : collectible;
     }
     public final Collectible getCollectible() { return collectible; }
     public final boolean canPutCollectible() { return collectible == null; }
@@ -143,6 +151,9 @@ public final class Tile
                 placeable.onExplodeHit();
         }
     }
+    
+    public final boolean hasPlaceable() { return placeable != null; }
+    public final boolean hasCollectible() { return collectible != null; }
     
     final void draw(Graphics2D g, double x, double y, double w, double h)
     {

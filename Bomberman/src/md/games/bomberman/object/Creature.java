@@ -11,6 +11,7 @@ import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.object.creature.HitPoints;
+import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.util.Direction;
 import md.games.bomberman.util.Utils.SweptInfo;
@@ -81,23 +82,36 @@ public abstract class Creature extends GameObject
     @Override
     public void update(double delta)
     {
-        List<Tile> cols = getScenarioReference().getTileManager().findCollisionTiles(this);
-        if(cols.isEmpty())
-            translate(speed.x * delta, speed.y * delta);
-        else
+        if(hasScenarioReference())
         {
+            Scenario scenario = getScenarioReference();
+            List<Tile> neis = scenario.getTileManager().findNeighbors(this);
             Vector2 dspeed = speed.product(delta);
             double elapsedTime = 1d;
-            for(Tile tile : cols)
+            if(!neis.isEmpty())
             {
-                tile.onCreatureCollide(this);
-                if(tile.canPutPlaceable())
-                    continue;
-                SweptInfo si = computeSwept(dspeed,tile.getPlaceable());
-                if(elapsedTime > si.time)
-                    elapsedTime = si.time;
+                for(Tile tile : neis)
+                {
+                    if(tile.hasPlaceable())
+                    {
+                        SweptInfo si = computeSwept(dspeed,tile.getPlaceable());
+                        if(si.time < 1)
+                        {
+                            tile.getPlaceable().onCreatureCollide(this);
+                            if(elapsedTime > si.time)
+                                elapsedTime = si.time;
+                        }
+                    }
+                }
             }
             translate(dspeed.x * elapsedTime, dspeed.y * elapsedTime);
+
+            Tile currentTile = scenario.getTileManager().getTileByPosition(getPosition());
+            if(currentTile != null)
+            {
+                if(currentTile.hasCollectible() && hasCollision(currentTile.getCollectible()))
+                    currentTile.collectCollectible(this);
+            }
         }
     }
     

@@ -6,6 +6,7 @@
 package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -81,6 +82,12 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
     }
     public final Tile getTileByPosition(Vector2 position) { return getTileByPosition(position.x,position.y); }
     
+    public final Point getTilePositionByPosition(double x, double y)
+    {
+        return new Point((int) ((y - position.y) / tileSize.y),(int) ((x - position.x) / tileSize.x));
+    }
+    public final Point getTilePositionByPosition(Vector2 position) { return getTilePositionByPosition(position.x,position.y); }
+    
     public final Vector2 getTilePosition(int row, int column)
     {
         if(row < 0 || row >= rows || column < 0 || columns >= columns)
@@ -118,6 +125,22 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
         return tile;
     }
     
+    public final List<Tile> findNeighbors(GameObject go)
+    {
+        Point base = getTilePositionByPosition(go.getPosition());
+        LinkedList<Tile> neis = new LinkedList<>();
+        neighborTile(neis,go,base.y-1,base.x-1);
+        neighborTile(neis,go,base.y-1,base.x);
+        neighborTile(neis,go,base.y-1,base.x+1);
+        neighborTile(neis,go,base.y,base.x-1);
+        neighborTile(neis,go,base.y,base.x);
+        neighborTile(neis,go,base.y,base.x+1);
+        neighborTile(neis,go,base.y+1,base.x-1);
+        neighborTile(neis,go,base.y+1,base.x);
+        neighborTile(neis,go,base.y+1,base.x+1);
+        return neis;
+    }
+    
     public final List<Tile> findCollisionTiles(Creature creature)
     {
         Tile base = getTileByPosition(creature.getPosition());
@@ -138,6 +161,13 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
         collideTile(cols,creature,r+1,c+1);
         
         return cols;
+    }
+    
+    private void neighborTile(List<Tile> neis, GameObject go, int row, int column)
+    {
+        Tile tile = tile(row,column);
+        if(tile != null)
+            neis.add(tile);
     }
     
     private void collideTile(List<Tile> cols, Creature c, int row, int column)
