@@ -171,7 +171,8 @@ public final class Animation
             reallocIterator();
             AffineTransform aold = g.getTransform();
             g.transform(transf);
-            g.drawImage(base,0,0,width,height,x + ((int)iterator * width),y,width,height,null);
+            int dx = x + ((int)iterator * width);
+            g.drawImage(base,0,0,width,height,dx,y,dx + width,y + height,null);
             g.setTransform(aold);
         }
     }

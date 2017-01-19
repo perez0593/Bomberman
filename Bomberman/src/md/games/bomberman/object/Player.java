@@ -16,6 +16,9 @@ import md.games.bomberman.object.bomb.BombType;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.action.Action;
+import md.games.bomberman.sprites.SpriteManager;
+import md.games.bomberman.util.Constants;
+import md.games.bomberman.util.Direction;
 import nt.lpl.types.LPLValue;
 
 /**
@@ -37,7 +40,7 @@ public class Player extends Creature
     
     private final LinkedList<Bomb> bombs = new LinkedList<>();
     
-    public Player(String name, PlayerColor color)
+    public Player(SpriteManager sprites, String name, PlayerColor color)
     {
         if(name == null || color == null)
             throw new NullPointerException();
@@ -48,9 +51,21 @@ public class Player extends Creature
         bombRange = 3;
         primaryBombType = BombType.NORMAL;
         secondaryBombType = BombType.NORMAL;
+        
+        loadAnimation(sprites,"bomberman." + color.getLowName());
+        init();
     }
     
-    private Player() {}
+    private Player()
+    {
+        init();
+    }
+    
+    private void init()
+    {
+        setSize(Constants.PLAYER_AABB_WIDTH,Constants.PLAYER_AABB_HEIGHT);
+        createBoundingBox();
+    }
     
     public final String getName() { return name; }
     public final PlayerColor getColor() { return color; }
@@ -135,7 +150,13 @@ public class Player extends Creature
     @Override
     public void draw(Graphics2D g)
     {
-        
+        double x = getPositionX() - Constants.PLAYER_AABB_WIDTH / 2;
+        double y = getPositionY() - Constants.PLAYER_AABB_HEIGHT / 2;
+        double w = Constants.PLAYER_WIDTH;
+        double h = Constants.PLAYER_HEIGHT;
+        if(getWalkingDirection() == Direction.LEFT)
+            w = -w;
+        animation.draw(g,x,y,w,h);
     }
     
     @Override
@@ -168,6 +189,7 @@ public class Player extends Creature
         bombRange = gdl.readInt();
         primaryBombType = BombType.decode(gdl.readInt());
         secondaryBombType = BombType.decode(gdl.readInt());
+        loadAnimation(gdl.getSpriteManager(),"bomberman." + color.getLowName());
     }
 
     @Override

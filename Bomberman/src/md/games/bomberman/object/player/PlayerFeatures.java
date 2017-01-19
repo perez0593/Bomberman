@@ -12,6 +12,7 @@ import md.games.bomberman.object.Player;
 import md.games.bomberman.object.PlayerColor;
 import md.games.bomberman.object.bomb.BombType;
 import md.games.bomberman.object.creature.HitPoints;
+import md.games.bomberman.sprites.SpriteManager;
 
 /**
  *
@@ -53,9 +54,9 @@ public final class PlayerFeatures
         unserialize(dis);
     }
     
-    public final Player createPlayer(String name, PlayerColor color)
+    public final Player createPlayer(SpriteManager sprites, String name, PlayerColor color)
     {
-        Player player = new Player(name,color);
+        Player player = new Player(sprites,name,color);
         player.getHitPointsManager().set(hp);
         player.setSpeedRatio(speed);
         player.setKevlar(kevlar);

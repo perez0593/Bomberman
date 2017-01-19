@@ -19,4 +19,18 @@ public final class Constants
     public static final DALData DAL_STR_CLASS = DALData.valueOf("__class");
     
     public static final Version VERSION = Version.valueOf("0.0.0.1");
+    
+    
+    public static final int PLAYER_WIDTH = 32;
+    public static final int PLAYER_HEIGHT = 56;
+    
+    public static final int PLAYER_AABB_WIDTH = 32;
+    public static final int PLAYER_AABB_HEIGHT = 32;
+    
+    
+    public static final int CREATURE_ANIMATION_STOPPED = 0;
+    public static final int CREATURE_ANIMATION_WALK_UP = 1;
+    public static final int CREATURE_ANIMATION_WALK_LEFT = 2;
+    public static final int CREATURE_ANIMATION_WALK_DOWN = 3;
+    public static final int CREATURE_ANIMATION_WALK_RIGHT = 2;
 }

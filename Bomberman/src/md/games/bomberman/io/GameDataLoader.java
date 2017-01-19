@@ -57,6 +57,8 @@ public final class GameDataLoader extends DataInputStream
         this(new BufferedInputStream(in),sprites);
     }
     
+    public final SpriteManager getSpriteManager() { return sprites; }
+    
     public final void setScriptManager(ScriptManager scripts)
     {
         this.scripts = scripts;

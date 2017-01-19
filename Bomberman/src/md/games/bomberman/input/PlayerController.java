@@ -47,7 +47,7 @@ public final class PlayerController
     {
         if(player != null)
             throw new IllegalStateException();
-        return player = features.createPlayer(name,color);
+        return player = features.createPlayer(scenario.getSpriteManager(),name,color);
     }
     
     public final PlayerFeatures getPlayerFeatures() { return features; }

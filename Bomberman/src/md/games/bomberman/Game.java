@@ -9,6 +9,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import md.games.bomberman.font.DefaultFont;
 import md.games.bomberman.input.InputController;
+import md.games.bomberman.input.InputMasks;
+import md.games.bomberman.input.PlayerController;
+import md.games.bomberman.io.Resource;
+import md.games.bomberman.object.Player;
+import md.games.bomberman.object.PlayerColor;
+import md.games.bomberman.object.player.PlayerFeatures;
+import md.games.bomberman.object.player.PlayerId;
 import md.games.bomberman.peripheral.KeyID;
 import md.games.bomberman.peripheral.PeripheralMaskEvent;
 import md.games.bomberman.peripheral.PeripheralMaskingListener;
@@ -31,6 +38,7 @@ public final class Game
 {
     private ScenarioManager scenarioManager;
     private CameraController camc;
+    private PlayerController pc;
     
     @Override
     public void init()
@@ -45,6 +53,7 @@ public final class Game
     {
         InputController.update();
         camc.update(delta);
+        pc.update(delta);
         scenarioManager.update(delta);
     }
 
@@ -66,6 +75,7 @@ public final class Game
     {
         System.out.println(event.getID());
         camc.dispatchMaskedEvent(event);
+        pc.dispatchMaskedEvent(event);
         
         /*int code = event.getCode();
         if(code == KeyID.encode(KeyID.VK_RIGHT))
@@ -117,6 +127,18 @@ public final class Game
             camc.setRightCode(KeyID.encode(KeyID.VK_RIGHT));
             camc.setZoomInCode(KeyID.encode(KeyID.VK_I));
             camc.setZoomOutCode(KeyID.encode(KeyID.VK_O));
+            
+            InputController.assignPeripheralIdToMask(KeyID.encode(KeyID.VK_W),InputMasks.P1_MOVE_UP);
+            InputController.assignPeripheralIdToMask(KeyID.encode(KeyID.VK_S),InputMasks.P1_MOVE_DOWN);
+            InputController.assignPeripheralIdToMask(KeyID.encode(KeyID.VK_A),InputMasks.P1_MOVE_LEFT);
+            InputController.assignPeripheralIdToMask(KeyID.encode(KeyID.VK_D),InputMasks.P1_MOVE_RIGHT);
+            
+            scenario.getSpriteManager().loadAnimations(Resource.ANIMATIONS,"bomberman.ad");
+            
+            pc = new PlayerController(scenario,new PlayerFeatures(),PlayerId.ONE,"NT",PlayerColor.WHITE);
+            Player p = pc.createPlayer();
+            scenario.addCreature(p);
+            
         }
         catch(Throwable th) { th.printStackTrace(System.err); }
     }

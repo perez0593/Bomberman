@@ -13,6 +13,9 @@ import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.object.creature.HitPoints;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
+import md.games.bomberman.sprites.Animation;
+import md.games.bomberman.sprites.SpriteManager;
+import md.games.bomberman.util.Constants;
 import md.games.bomberman.util.Direction;
 import md.games.bomberman.util.Utils.SweptInfo;
 
@@ -24,7 +27,9 @@ public abstract class Creature extends GameObject
 {
     private final HitPoints hp = new HitPoints(1);
     private final Vector2 speed = new Vector2();
+    protected Animation animation;
     private double speedRatio = 1f;
+    private Direction walkDirection;
     
     @Override
     public final boolean isCreature() { return true; }
@@ -33,6 +38,11 @@ public abstract class Creature extends GameObject
     public final int getGameObjectType() { return GameObject.GAME_OBJECT_TYPE_CREATURE; }
     
     public abstract CreatureType getCreatureType();
+    
+    protected final void loadAnimation(SpriteManager sprites, String animationTag)
+    {
+        animation = sprites.getSprite(animationTag);
+    }
     
     public final boolean isPlayer() { return getCreatureType() == CreatureType.PLAYER; }
     
@@ -63,6 +73,7 @@ public abstract class Creature extends GameObject
             case LEFT: speed.x = -(speedBase * speedRatio); break;
             case RIGHT: speed.x = speedBase * speedRatio; break;
         }
+        walkDirection = computeWalkingDirection();
     }
     
     public final void stopWalk(boolean inXAxis)
@@ -70,8 +81,15 @@ public abstract class Creature extends GameObject
         if(inXAxis)
             speed.x = 0;
         speed.y = 0;
+        walkDirection = speed.isZero() ? null : computeWalkingDirection();
     }
-    public final void stopWalk() { speed.zero(); }
+    public final void stopWalk()
+    {
+        speed.zero();
+        walkDirection = null;
+    }
+    
+    protected Direction getWalkingDirection() { return walkDirection; }
     
     public abstract void die();
     
@@ -79,9 +97,39 @@ public abstract class Creature extends GameObject
     public final void heal(int amount) { hp.heal(amount); }
     public final void kill() { hp.kill(); }
     
+    private Direction computeWalkingDirection()
+    {
+        int dir = ((int)((speed.getDirection()) / Math.PI * 180d)) % 360;
+        if(dir < 0)
+            dir += 360;
+        if(dir > 315 || dir < 45)
+            return Direction.RIGHT;
+        if(dir > 45 && dir < 135)
+            return Direction.UP;
+        if(dir > 135 && dir < 225)
+            return Direction.LEFT;
+        return Direction.DOWN;
+    }
+    
+    protected void updateAnimation(double delta)
+    {
+        animation.update(delta);
+        if(walkDirection == null)
+            animation.setAnimationSequence(Constants.CREATURE_ANIMATION_STOPPED);
+        else switch(walkDirection)
+        {
+            default: animation.setAnimationSequence(Constants.CREATURE_ANIMATION_STOPPED); break;
+            case UP: animation.setAnimationSequence(Constants.CREATURE_ANIMATION_WALK_UP); break;
+            case DOWN: animation.setAnimationSequence(Constants.CREATURE_ANIMATION_WALK_DOWN); break;
+            case LEFT: animation.setAnimationSequence(Constants.CREATURE_ANIMATION_WALK_LEFT); break;
+            case RIGHT: animation.setAnimationSequence(Constants.CREATURE_ANIMATION_WALK_RIGHT); break;
+        }
+    }
+    
     @Override
     public void update(double delta)
     {
+        updateAnimation(delta);
         if(hasScenarioReference())
         {
             Scenario scenario = getScenarioReference();

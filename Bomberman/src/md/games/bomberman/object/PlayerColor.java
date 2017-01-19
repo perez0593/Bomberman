@@ -20,4 +20,8 @@ public enum PlayerColor {
     private static final PlayerColor[] VALUES = values();
     
     public static final PlayerColor decode(int ordinal) { return VALUES[ordinal]; }
+    
+    private final String name = name().toLowerCase();
+    
+    public final String getLowName() { return name; }
 }

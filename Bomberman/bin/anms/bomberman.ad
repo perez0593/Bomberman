@@ -1,0 +1,20 @@
+base_file = "bombermans.png"
+
+animation bomberman.white $base_file {
+	sequence 0	 0 16 26 1
+	sequence 0   0 16 26 8
+	sequence 128 0 16 26 8
+	sequence 256 0 16 26 8
+	sequence 384 0 22 26 9
+	sequence 582 0 16 26 5
+}
+
+
+
+
+
+
+
+animation bomberman.die $base_file {
+	sequence 0 130 20 26 5
+}
