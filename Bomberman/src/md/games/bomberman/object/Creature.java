@@ -11,6 +11,7 @@ import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.object.creature.HitPoints;
+import md.games.bomberman.scenario.Camera;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.sprites.Animation;
@@ -27,6 +28,7 @@ public abstract class Creature extends GameObject
 {
     private final HitPoints hp = new HitPoints(1);
     private final Vector2 speed = new Vector2();
+    private final Vector2 animationSize = new Vector2();
     protected Animation animation;
     private double speedRatio = 1f;
     private Direction walkDirection;
@@ -62,6 +64,15 @@ public abstract class Creature extends GameObject
     }
     
     public final Vector2 getSpeed() { return speed.copy(); }
+    
+    public final void setAnimationSize(Vector2 size) { animationSize.set(size); }
+    public final void setAnimationSize(double width, double height) { animationSize.set(width,height); }
+    public final void setAnimationSizeWidth(double width) { animationSize.x = width; }
+    public final void setAnimationSizeHeight(double height) { animationSize.y = height; }
+    
+    public final Vector2 getAnimationSize() { return animationSize.copy(); }
+    public final double getAnimationSizeWidth() { return animationSize.x; }
+    public final double getAnimationSizeHeight() { return animationSize.y; }
     
     public final void walk(Direction direction, double speedBase)
     {
@@ -99,12 +110,12 @@ public abstract class Creature extends GameObject
     
     private Direction computeWalkingDirection()
     {
-        int dir = ((int)((speed.getDirection()) / Math.PI * 180d)) % 360;
+        int dir = ((int)((new Vector2(speed.x,-speed.y).getDirection()) / Math.PI * 180d)) % 360;
         if(dir < 0)
             dir += 360;
         if(dir > 315 || dir < 45)
             return Direction.RIGHT;
-        if(dir > 45 && dir < 135)
+        if(dir >= 45 && dir <= 135)
             return Direction.UP;
         if(dir > 135 && dir < 225)
             return Direction.LEFT;
@@ -124,6 +135,15 @@ public abstract class Creature extends GameObject
             case LEFT: animation.setAnimationSequence(Constants.CREATURE_ANIMATION_WALK_LEFT); break;
             case RIGHT: animation.setAnimationSequence(Constants.CREATURE_ANIMATION_WALK_RIGHT); break;
         }
+    }
+    
+    @Override
+    public boolean canSee(Camera camera)
+    {
+        return camera.contains(
+                getPositionX() - animationSize.x / 2,
+                getPositionY() - animationSize.y / 2,
+                animationSize.x,animationSize.y);
     }
     
     @Override

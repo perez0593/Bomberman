@@ -53,6 +53,7 @@ public final class Game
     {
         InputController.update();
         camc.update(delta);
+        scenarioManager.getScenario().getCamera().lookAt(pc.getPlayer());
         pc.update(delta);
         scenarioManager.update(delta);
     }
@@ -108,7 +109,7 @@ public final class Game
             scenarioManager.loadTheme("basic_theme");
             
             TileManager tiles = scenario.getTileManager();
-            tiles.setSize(800,800);
+            tiles.setTileSize(50,50);
             for(int r=0;r<tiles.getRows();r++)
                 for(int c=0;c<tiles.getColumns();c++)
                 {
@@ -119,6 +120,7 @@ public final class Game
                 }
             
             scenario.getCamera().setPosition(150,150);
+            scenario.setCameraLimits();
             camc = new CameraController(scenario.getCamera());
             
             camc.setUpCode(KeyID.encode(KeyID.VK_UP));
@@ -138,6 +140,7 @@ public final class Game
             pc = new PlayerController(scenario,new PlayerFeatures(),PlayerId.ONE,"NT",PlayerColor.WHITE);
             Player p = pc.createPlayer();
             scenario.addCreature(p);
+            scenario.putCreatureInTile(10,0,p);
             
         }
         catch(Throwable th) { th.printStackTrace(System.err); }

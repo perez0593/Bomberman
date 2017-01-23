@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.UUID;
 import java.util.function.Predicate;
+import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.object.Creature;
@@ -124,6 +125,23 @@ public final class Scenario
     public final GameObject getGameObject(UUID id)
     {
         return objectHash.get(id);
+    }
+    
+    
+    public final void putCreatureInTile(int row, int column, Creature c)
+    {
+        if(!c.hasScenarioReference())
+            throw new IllegalArgumentException();
+        Tile tile = tiles.getTile(row,column);
+        Vector2 position = tile.getPosition();
+        position.add(c.getSizeWidth()/2,c.getSizeHeight()/2);
+        c.setPosition(position);
+    }
+    
+    public final void setCameraLimits()
+    {
+        Vector2 tsize = tiles.getSize();
+        camera.setLimitedScope(tiles.getPosition(),tiles.getPosition().add(tsize));
     }
     
     

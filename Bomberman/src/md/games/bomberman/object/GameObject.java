@@ -108,7 +108,12 @@ public abstract class GameObject
         if(boundingBox != null)
             boundingBox.resituate(position,size);
     }
-    public final void setPosition(Vector2 position) { this.position.set(position); }
+    public final void setPosition(Vector2 position)
+    {
+        this.position.set(position);
+        if(boundingBox != null)
+            boundingBox.resituate(position,size);
+    }
     public final Vector2 getPosition() { return position.copy(); }
     public final double getPositionX() { return position.x; }
     public final double getPositionY() { return position.y; }
@@ -197,10 +202,13 @@ public abstract class GameObject
         return Utils.sweptBoundingBox(boundingBox,other.boundingBox,selfSpeed);
     }
     
-    public final boolean canSee(Camera camera)
+    public boolean canSee(Camera camera)
     {
         if(boundingBox == null)
-            return camera.contains(position.x,position.y,size.x,size.y);
+            return camera.contains(
+                    position.x - size.x / 2,
+                    position.y - size.y / 2,
+                    size.x,size.y);
         else return camera.getBounds().hasCollision(boundingBox);
     }
     

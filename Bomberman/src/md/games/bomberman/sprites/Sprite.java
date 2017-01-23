@@ -39,6 +39,28 @@ public abstract class Sprite<A extends Sprite<A>>
         af.scale(w/width(),h/height());
         draw(g,af);
     }
+    
+    public final void draw(Graphics2D g, FlipMode flip, float x, float y, float w, float h)
+    {
+        AffineTransform af = new AffineTransform();
+        switch(flip)
+        {
+            case HORIZONTAL:
+                af.translate(x+w,y);
+                af.scale(-w/width(),h/height());
+                break;
+            case VERTICAL:
+                af.translate(x,y+h);
+                af.scale(w/width(),-h/height());
+                break;
+            case BOTH:
+                af.translate(x+w,y+h);
+                af.scale(-w/width(),-h/height());
+                break;
+        }
+        draw(g,af);
+    }
+    
     public final void draw(Graphics2D g, int x, int y, int w, int h)
     {
         AffineTransform af = new AffineTransform();
@@ -47,11 +69,53 @@ public abstract class Sprite<A extends Sprite<A>>
         draw(g,af);
     }
     
+    public final void draw(Graphics2D g, FlipMode flip, int x, int y, int w, int h)
+    {
+        AffineTransform af = new AffineTransform();
+        switch(flip)
+        {
+            case HORIZONTAL:
+                af.translate(x+w,y);
+                af.scale(-w/width(),h/height());
+                break;
+            case VERTICAL:
+                af.translate(x,y+h);
+                af.scale(w/width(),-h/height());
+                break;
+            case BOTH:
+                af.translate(x+w,y+h);
+                af.scale(-w/width(),-h/height());
+                break;
+        }
+        draw(g,af);
+    }
+    
     public final void draw(Graphics2D g, double x, double y, double w, double h)
     {
         AffineTransform af = new AffineTransform();
         af.translate(x,y);
         af.scale(w/width(),h/height());
+        draw(g,af);
+    }
+    
+    public final void draw(Graphics2D g, FlipMode flip, double x, double y, double w, double h)
+    {
+        AffineTransform af = new AffineTransform();
+        switch(flip)
+        {
+            case HORIZONTAL:
+                af.translate(x+w,y);
+                af.scale(-w/width(),h/height());
+                break;
+            case VERTICAL:
+                af.translate(x,y+h);
+                af.scale(w/width(),-h/height());
+                break;
+            case BOTH:
+                af.translate(x+w,y+h);
+                af.scale(-w/width(),-h/height());
+                break;
+        }
         draw(g,af);
     }
     
@@ -64,12 +128,60 @@ public abstract class Sprite<A extends Sprite<A>>
         draw(g,af);
     }
     
+    public final void draw(Graphics2D g, FlipMode flip, float x, float y, float w, float h, float rotationRadians)
+    {
+        AffineTransform af = new AffineTransform();
+        switch(flip)
+        {
+            case HORIZONTAL:
+                af.translate(x+w,y);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(-w/width(),h/height());
+                break;
+            case VERTICAL:
+                af.translate(x,y+h);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(w/width(),-h/height());
+                break;
+            case BOTH:
+                af.translate(x+w,y+h);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(-w/width(),-h/height());
+                break;
+        }
+        draw(g,af);
+    }
+    
     public final void draw(Graphics2D g, int x, int y, int w, int h, float rotationRadians)
     {
         AffineTransform af = new AffineTransform();
         af.translate(x,y);
         af.rotate(rotationRadians,w/2,h/2);
         af.scale((float)w/width(),(float)h/height());
+        draw(g,af);
+    }
+    
+    public final void draw(Graphics2D g, FlipMode flip, int x, int y, int w, int h, float rotationRadians)
+    {
+        AffineTransform af = new AffineTransform();
+        switch(flip)
+        {
+            case HORIZONTAL:
+                af.translate(x+w,y);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(-w/width(),h/height());
+                break;
+            case VERTICAL:
+                af.translate(x,y+h);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(w/width(),-h/height());
+                break;
+            case BOTH:
+                af.translate(x+w,y+h);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(-w/width(),-h/height());
+                break;
+        }
         draw(g,af);
     }
     
@@ -82,12 +194,60 @@ public abstract class Sprite<A extends Sprite<A>>
         draw(g,af);
     }
     
+    public final void draw(Graphics2D g, FlipMode flip, float x, float y, float w, float h, double rotationRadians)
+    {
+        AffineTransform af = new AffineTransform();
+        switch(flip)
+        {
+            case HORIZONTAL:
+                af.translate(x+w,y);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(-w/width(),h/height());
+                break;
+            case VERTICAL:
+                af.translate(x,y+h);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(w/width(),-h/height());
+                break;
+            case BOTH:
+                af.translate(x+w,y+h);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(-w/width(),-h/height());
+                break;
+        }
+        draw(g,af);
+    }
+    
     public final void draw(Graphics2D g, int x, int y, int w, int h, double rotationRadians)
     {
         AffineTransform af = new AffineTransform();
         af.translate(x,y);
         af.rotate(rotationRadians,w/2,h/2);
         af.scale((float)w/width(),(float)h/height());
+        draw(g,af);
+    }
+    
+    public final void draw(Graphics2D g, FlipMode flip, int x, int y, int w, int h, double rotationRadians)
+    {
+        AffineTransform af = new AffineTransform();
+        switch(flip)
+        {
+            case HORIZONTAL:
+                af.translate(x+w,y);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(-w/width(),h/height());
+                break;
+            case VERTICAL:
+                af.translate(x,y+h);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(w/width(),-h/height());
+                break;
+            case BOTH:
+                af.translate(x+w,y+h);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(-w/width(),-h/height());
+                break;
+        }
         draw(g,af);
     }
     
@@ -100,6 +260,32 @@ public abstract class Sprite<A extends Sprite<A>>
         draw(g,af);
     }
     
+    public final void draw(Graphics2D g, FlipMode flip, double x, double y, double w, double h, double rotationRadians)
+    {
+        AffineTransform af = new AffineTransform();
+        switch(flip)
+        {
+            case HORIZONTAL:
+                af.translate(x+w,y);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(-w/width(),h/height());
+                break;
+            case VERTICAL:
+                af.translate(x,y+h);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(w/width(),-h/height());
+                break;
+            case BOTH:
+                af.translate(x+w,y+h);
+                af.rotate(rotationRadians,w/2,h/2);
+                af.scale(-w/width(),-h/height());
+                break;
+        }
+        draw(g,af);
+    }
+    
     public final void setSpriteTag(String tag) { this.tag = tag; }
     public final String getSpriteTag() { return tag; }
+    
+    public enum FlipMode { VERTICAL, HORIZONTAL, BOTH; }
 }

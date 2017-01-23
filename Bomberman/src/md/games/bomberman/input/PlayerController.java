@@ -52,6 +52,8 @@ public final class PlayerController
     
     public final PlayerFeatures getPlayerFeatures() { return features; }
     
+    public final Player getPlayer() { return player; }
+    
     public final void update(double delta)
     {
         updateMove(delta);
@@ -60,9 +62,7 @@ public final class PlayerController
     
     private void updateMove(double delta)
     {
-        if(moveid == ID_MOVE_NONE)
-            return;
-        if(inDeathBorder)
+        if(inDeathBorder && moveid != ID_MOVE_NONE)
         {
             scenario.getDeathBorder().movePlayer(player,SPEED_BASE * delta);
         }
@@ -71,7 +71,7 @@ public final class PlayerController
             double moveAmount = SPEED_BASE;
             switch(moveid)
             {
-                case ID_MOVE_NONE: player.stopWalk();
+                case ID_MOVE_NONE: player.stopWalk(); break;
                 case ID_MOVE_UP: player.stopWalk(true); player.walk(Direction.UP,moveAmount); break;
                 case ID_MOVE_DOWN: player.stopWalk(true); player.walk(Direction.DOWN,moveAmount); break;
                 case ID_MOVE_LEFT: player.stopWalk(false); player.walk(Direction.LEFT,moveAmount); break;

@@ -48,7 +48,7 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
         position = new Vector2();
         size = new Vector2(1,1);
         tileSize = new Vector2();
-        computeTileSize();
+        computeSize();
     }
     private TileManager() {}
     
@@ -90,7 +90,7 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
     
     public final Vector2 getTilePosition(int row, int column)
     {
-        if(row < 0 || row >= rows || column < 0 || columns >= columns)
+        if(row < 0 || row >= rows || column < 0 || column >= columns)
             throw new IllegalArgumentException();
         return new Vector2(
                 position.x + tileSize.x * column,
@@ -181,7 +181,7 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
     
     private Tile tile(int row, int column)
     {
-        if(row < 0 || row >= rows || column < 0 || columns >= columns)
+        if(row < 0 || row >= rows || column < 0 || column >= columns)
             return null;
         return tiles[row * columns + column];
     }
@@ -194,18 +194,18 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
     public final double getPositionX() { return position.x; }
     public final double getPositionY() { return position.y; }
     
-    public final void setWidth(double width) { size.x = width; computeTileSize(); }
-    public final void setHeight(double height) { size.y = height; computeTileSize(); }
-    public final void setSize(double width, double height) { size.set(width,height); computeTileSize(); }
-    public final void setSize(Vector2 size) { this.size.set(size); computeTileSize(); }
+    //public final void setWidth(double width) { size.x = width; computeTileSize(); }
+    //public final void setHeight(double height) { size.y = height; computeTileSize(); }
+    public final void setTileSize(double width, double height) { tileSize.set(width,height); computeSize(); }
+    public final void setTileSize(Vector2 size) { tileSize.set(size); computeSize(); }
     public final Vector2 getSize() { return size.copy(); }
     public final double getWidth() { return size.x; }
     public final double getHeight() { return size.y; }
     
-    private void computeTileSize()
+    private void computeSize()
     {
-        tileSize.x = size.x / columns;
-        tileSize.y = size.y / rows;
+        size.x = tileSize.x * columns;
+        size.y = tileSize.y * rows;
     }
     
     public final double getTileWidth() { return tileSize.x; }
@@ -366,7 +366,7 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
             for(int c=0;c<columns;c++)
                 tiles[r * rows + c].serialize(gds);
         gds.writeVector2(position);
-        gds.writeVector2(size);
+        gds.writeVector2(tileSize);
     }
 
     @Override
@@ -383,8 +383,8 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                 tile.unserialize(gdl);
             }
         position = gdl.readVector2();
-        size = gdl.readVector2();
-        computeTileSize();
+        tileSize = gdl.readVector2();
+        computeSize();
     }
     
     private final class TileIterator implements Iterator<Tile>

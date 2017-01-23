@@ -16,6 +16,7 @@ import md.games.bomberman.object.bomb.BombType;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.action.Action;
+import md.games.bomberman.sprites.Sprite.FlipMode;
 import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.Constants;
 import md.games.bomberman.util.Direction;
@@ -53,6 +54,8 @@ public class Player extends Creature
         secondaryBombType = BombType.NORMAL;
         
         loadAnimation(sprites,"bomberman." + color.getLowName());
+        setAnimationSize(Constants.PLAYER_WIDTH,Constants.PLAYER_HEIGHT);
+        animation.setSpeed(10);
         init();
     }
     
@@ -151,12 +154,12 @@ public class Player extends Creature
     public void draw(Graphics2D g)
     {
         double x = getPositionX() - Constants.PLAYER_AABB_WIDTH / 2;
-        double y = getPositionY() - Constants.PLAYER_AABB_HEIGHT / 2;
+        double y = getPositionY() - (Constants.PLAYER_HEIGHT - Constants.PLAYER_AABB_HEIGHT / 2);
         double w = Constants.PLAYER_WIDTH;
         double h = Constants.PLAYER_HEIGHT;
         if(getWalkingDirection() == Direction.LEFT)
-            w = -w;
-        animation.draw(g,x,y,w,h);
+            animation.draw(g,FlipMode.HORIZONTAL,x,y,w,h);
+        else animation.draw(g,x,y,w,h);
     }
     
     @Override

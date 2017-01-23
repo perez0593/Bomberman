@@ -24,6 +24,7 @@ public final class Camera
     private AffineTransform at_transform;
     private BoundingBox bounds;
     private final Vector2 pos, viewport;
+    private Vector2 limit0, limit1;
     private boolean modif, nativeViewport;
     
     public Camera()
@@ -34,6 +35,7 @@ public final class Camera
         bounds = null;
         pos = new Vector2();
         viewport = new Vector2(NTJG.ntjgGetWindowWidth(),NTJG.ntjgGetWindowHeight());
+        limit0 = limit1 = null;
         modif = nativeViewport = true;
     }
     
@@ -50,6 +52,13 @@ public final class Camera
         if(!modif) return;
         update();
     }
+    
+    public final void setLimitedScope(Vector2 p0, Vector2 p1)
+    {
+        limit0 = new Vector2(p0);
+        limit1 = new Vector2(p1);
+    }
+    public final void unsetLimitedScope() { limit0 = limit1 = null; }
     
     public final void setNativeViewport()
     {
@@ -87,6 +96,8 @@ public final class Camera
             w = viewport.x;
             h = viewport.y;
         }
+        fixLimits(w,h);
+        
         /*at_transform = AffineTransform.getTranslateInstance(-pos.x,-pos.y);
         at_transform.rotate(rotation);
         at_transform.translate(w/2d,h/2d);
@@ -132,6 +143,38 @@ public final class Camera
     {
         recalcTransform();
         return at_transform;
+    }
+    
+    private void fixLimits(double w, double h)
+    {
+        if(limit0 == null)
+            return;
+        
+        w *= zoom * PIXELS_PER_METER;
+        h *= zoom * PIXELS_PER_METER;
+        
+        double w2 = w / 2;
+        double h2 = h / 2;
+        
+        if(w >= limit1.x - limit0.x)
+            pos.x = limit0.x + (limit1.x - limit0.x) / 2;
+        else
+        {
+            if(pos.x - w2 < limit0.x)
+                pos.x = limit0.x + w2;
+            else if(pos.x - w2 > limit1.x)
+                pos.x = limit1.x - w2;
+        }
+        
+        if(w >= limit1.y - limit0.y)
+            pos.y = limit0.y + (limit1.y - limit0.y) / 2;
+        else
+        {
+            if(pos.y - h2 < limit0.y)
+                pos.y = limit0.y + h2;
+            else if(pos.y + h2 > limit1.y)
+                pos.y = limit1.y - h2;
+        }
     }
     
     public final BoundingBox getBounds() { return bounds; }

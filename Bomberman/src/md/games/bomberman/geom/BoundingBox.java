@@ -111,7 +111,7 @@ public class BoundingBox implements SerializableObject
     public boolean hasCollision(BoundingBox other)
     {
         return x0 <= other.x1 && y0 <= other.y1 &&
-               x1 >= other.y0 && y1 >= other.y0;
+               x1 >= other.x0 && y1 >= other.y0;
     }
     
     public boolean contains(Vector2 point)
