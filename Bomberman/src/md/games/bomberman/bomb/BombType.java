@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package md.games.bomberman.object.bomb;
+package md.games.bomberman.bomb;
 
 import java.util.HashMap;
 import nt.lpl.types.LPLValue;

@@ -17,8 +17,7 @@ import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
-import md.games.bomberman.object.Creature;
-import md.games.bomberman.object.GameObject;
+import md.games.bomberman.creature.Creature;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 
 /**
@@ -333,15 +332,12 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                                 tileSize.x,
                                 tileSize.y);
                 g.setColor(Color.red);
-                g.drawRect((int)(position.x + c * tileSize.x),
+                /*g.drawRect((int)(position.x + c * tileSize.x),
                                 (int)(position.y + r * tileSize.y),
                                 (int)tileSize.x,
-                                (int)tileSize.y);
+                                (int)tileSize.y);*/
             }
         }
-        g.setColor(Color.BLUE);
-        BoundingBox box = cam.getBounds();
-        g.drawRect((int)box.x0, (int)box.y0, (int)(box.x0+box.x1), (int)(box.y0+box.y1));
     }
     
     public final void resize(int rows, int columns)

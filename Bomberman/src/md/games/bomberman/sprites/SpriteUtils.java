@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import md.games.bomberman.geom.Vector2;
-import md.games.bomberman.object.GameObject;
+import md.games.bomberman.scenario.GameObject;
 
 /**
  *

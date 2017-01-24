@@ -3,15 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package md.games.bomberman.object.player;
+package md.games.bomberman.creature.player;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import md.games.bomberman.object.Player;
-import md.games.bomberman.object.PlayerColor;
-import md.games.bomberman.object.bomb.BombType;
-import md.games.bomberman.object.creature.HitPoints;
+import md.games.bomberman.bomb.BombType;
+import md.games.bomberman.creature.HitPoints;
 import md.games.bomberman.sprites.SpriteManager;
 
 /**

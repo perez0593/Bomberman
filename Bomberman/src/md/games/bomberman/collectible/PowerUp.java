@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package md.games.bomberman.object;
+package md.games.bomberman.collectible;
 
-import md.games.bomberman.object.powerup.PowerUpType;
+import md.games.bomberman.collectible.Collectible;
+import md.games.bomberman.collectible.PowerUpType;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import md.games.bomberman.io.GameDataLoader;

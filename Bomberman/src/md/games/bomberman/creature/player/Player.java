@@ -3,8 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package md.games.bomberman.object;
+package md.games.bomberman.creature.player;
 
+import md.games.bomberman.creature.CreatureType;
+import md.games.bomberman.creature.Creature;
+import md.games.bomberman.bomb.Bomb;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -12,7 +15,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.object.bomb.BombType;
+import md.games.bomberman.bomb.BombType;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.action.Action;

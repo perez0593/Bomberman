@@ -10,7 +10,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.Vector2;
-import md.games.bomberman.object.GameObject;
 import nt.ntjg.NTJG;
 
 /**

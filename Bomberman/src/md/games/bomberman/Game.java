@@ -12,10 +12,10 @@ import md.games.bomberman.input.InputController;
 import md.games.bomberman.input.InputMasks;
 import md.games.bomberman.input.PlayerController;
 import md.games.bomberman.io.Resource;
-import md.games.bomberman.object.Player;
-import md.games.bomberman.object.PlayerColor;
-import md.games.bomberman.object.player.PlayerFeatures;
-import md.games.bomberman.object.player.PlayerId;
+import md.games.bomberman.creature.player.Player;
+import md.games.bomberman.creature.player.PlayerColor;
+import md.games.bomberman.creature.player.PlayerFeatures;
+import md.games.bomberman.creature.player.PlayerId;
 import md.games.bomberman.peripheral.KeyID;
 import md.games.bomberman.peripheral.PeripheralMaskEvent;
 import md.games.bomberman.peripheral.PeripheralMaskingListener;
@@ -146,7 +146,7 @@ public final class Game
             pc = new PlayerController(scenario,new PlayerFeatures(),PlayerId.ONE,"NT",PlayerColor.WHITE);
             Player p = pc.createPlayer();
             scenario.addCreature(p);
-            scenario.putCreatureInTile(28,28,p);
+            scenario.putCreatureInTile(3,3,p);
         }
         catch(Throwable th) { th.printStackTrace(System.err); }
     }

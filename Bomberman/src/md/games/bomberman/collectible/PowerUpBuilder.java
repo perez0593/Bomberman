@@ -3,11 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package md.games.bomberman.object.powerup;
+package md.games.bomberman.collectible;
 
-import md.games.bomberman.object.Creature;
-import md.games.bomberman.object.Player;
-import md.games.bomberman.object.PowerUp;
+import md.games.bomberman.creature.Creature;
+import md.games.bomberman.creature.player.Player;
 
 /**
  *

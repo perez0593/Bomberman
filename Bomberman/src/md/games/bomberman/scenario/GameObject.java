@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package md.games.bomberman.object;
+package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
 import java.io.IOException;

@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.UUID;
 import md.games.bomberman.geom.Vector2;
-import md.games.bomberman.object.GameObject;
+import md.games.bomberman.scenario.GameObject;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.ScenarioTheme;
 import md.games.bomberman.script.Script;

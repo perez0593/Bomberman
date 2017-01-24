@@ -6,10 +6,10 @@
 package md.games.bomberman.input;
 
 import md.games.bomberman.input.InputMasks.Bind;
-import md.games.bomberman.object.Player;
-import md.games.bomberman.object.PlayerColor;
-import md.games.bomberman.object.player.PlayerFeatures;
-import md.games.bomberman.object.player.PlayerId;
+import md.games.bomberman.creature.player.Player;
+import md.games.bomberman.creature.player.PlayerColor;
+import md.games.bomberman.creature.player.PlayerFeatures;
+import md.games.bomberman.creature.player.PlayerId;
 import md.games.bomberman.peripheral.PeripheralMaskEvent;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.util.Direction;

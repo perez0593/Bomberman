@@ -3,11 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package md.games.bomberman.object.bomb;
+package md.games.bomberman.bomb;
 
 import java.util.Random;
-import md.games.bomberman.object.Bomb;
-import md.games.bomberman.object.Creature;
+import md.games.bomberman.creature.Creature;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
 import md.games.bomberman.sprites.SpriteManager;

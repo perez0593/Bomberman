@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package md.games.bomberman.scenario;
+package md.games.bomberman.collectible;
 
 import java.util.Random;
-import md.games.bomberman.object.GameObject;
+import md.games.bomberman.scenario.GameObject;
 
 /**
  *

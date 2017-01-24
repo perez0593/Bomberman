@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 import md.games.bomberman.geom.Vector2;
-import md.games.bomberman.object.Player;
+import md.games.bomberman.creature.player.Player;
 
 /**
  *

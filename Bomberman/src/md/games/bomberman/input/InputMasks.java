@@ -6,7 +6,7 @@
 package md.games.bomberman.input;
 
 import java.lang.reflect.Field;
-import md.games.bomberman.object.player.PlayerId;
+import md.games.bomberman.creature.player.PlayerId;
 import md.games.bomberman.peripheral.PeripheralMask;
 import md.games.bomberman.peripheral.PeripheralMaskingManager;
 

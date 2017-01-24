@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package md.games.bomberman.object;
+package md.games.bomberman.bomb;
 
 import java.awt.Graphics2D;
 import java.io.IOException;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
+import md.games.bomberman.creature.Creature;
+import md.games.bomberman.placeable.Placeable;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
 import md.games.bomberman.sprites.Sprite;

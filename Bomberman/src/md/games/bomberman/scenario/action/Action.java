@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.function.IntFunction;
 import md.games.bomberman.geom.Vector2;
-import md.games.bomberman.object.bomb.BombType;
+import md.games.bomberman.bomb.BombType;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.script.Script;
 
