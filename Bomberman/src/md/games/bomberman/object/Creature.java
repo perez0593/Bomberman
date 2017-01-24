@@ -7,6 +7,7 @@ package md.games.bomberman.object;
 
 import java.io.IOException;
 import java.util.List;
+import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
@@ -14,6 +15,7 @@ import md.games.bomberman.object.creature.HitPoints;
 import md.games.bomberman.scenario.Camera;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
+import md.games.bomberman.scenario.TileManager;
 import md.games.bomberman.sprites.Animation;
 import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.Constants;
@@ -137,6 +139,26 @@ public abstract class Creature extends GameObject
         }
     }
     
+    private void checkOutOfBounds(Scenario scenario)
+    {
+        TileManager tiles = scenario.getTileManager();
+        Vector2 boundsPosition = tiles.getPosition();
+        Vector2 boundsSize = tiles.getSize();
+        BoundingBox bb = getBoundingBox();
+        
+        double dx = 0, dy = 0;
+        if(bb.x0 < boundsPosition.x)
+            dx = boundsPosition.x - bb.x0;
+        else if(bb.x1 > boundsPosition.x + boundsSize.x)
+            dx = (boundsPosition.x + boundsSize.x) - bb.x1;
+        if(bb.y0 < boundsPosition.y)
+            dy = boundsPosition.y - bb.y0;
+        else if(bb.y1 > boundsPosition.y + boundsSize.y)
+            dy = (boundsPosition.y + boundsSize.y) - bb.y1;
+        if(dx != 0 || dy != 0)
+            translate(dx,dy);
+    }
+    
     @Override
     public boolean canSee(Camera camera)
     {
@@ -153,6 +175,7 @@ public abstract class Creature extends GameObject
         if(hasScenarioReference())
         {
             Scenario scenario = getScenarioReference();
+            checkOutOfBounds(scenario);
             List<Tile> neis = scenario.getTileManager().findNeighbors(this);
             Vector2 dspeed = speed.product(delta);
             double elapsedTime = 1d;

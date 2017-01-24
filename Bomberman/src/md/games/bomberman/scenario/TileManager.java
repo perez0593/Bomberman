@@ -5,6 +5,7 @@
  */
 package md.games.bomberman.scenario;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.io.IOException;
@@ -331,8 +332,16 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                                 position.y + r * tileSize.y,
                                 tileSize.x,
                                 tileSize.y);
+                g.setColor(Color.red);
+                g.drawRect((int)(position.x + c * tileSize.x),
+                                (int)(position.y + r * tileSize.y),
+                                (int)tileSize.x,
+                                (int)tileSize.y);
             }
         }
+        g.setColor(Color.BLUE);
+        BoundingBox box = cam.getBounds();
+        g.drawRect((int)box.x0, (int)box.y0, (int)(box.x0+box.x1), (int)(box.y0+box.y1));
     }
     
     public final void resize(int rows, int columns)

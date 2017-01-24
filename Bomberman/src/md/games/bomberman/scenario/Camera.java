@@ -5,10 +5,10 @@
  */
 package md.games.bomberman.scenario;
 
+import java.awt.Insets;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import md.games.bomberman.geom.BoundingBox;
-import md.games.bomberman.geom.Matrix33;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.object.GameObject;
 import nt.ntjg.NTJG;
@@ -57,6 +57,15 @@ public final class Camera
     {
         limit0 = new Vector2(p0);
         limit1 = new Vector2(p1);
+        
+        if(!NTJG.ntjgIsFullscreenEnabled())
+        {
+            Insets i = NTJG.ntjgGetWindowInsets();
+            limit0.subtract(i.left,i.top);
+            limit1.add(i.right,i.bottom);
+        }
+        
+        //limit0.y -= 23;
     }
     public final void unsetLimitedScope() { limit0 = limit1 = null; }
     
@@ -98,17 +107,17 @@ public final class Camera
         }
         fixLimits(w,h);
         
-        /*at_transform = AffineTransform.getTranslateInstance(-pos.x,-pos.y);
-        at_transform.rotate(rotation);
-        at_transform.translate(w/2d,h/2d);
-        at_transform.scale(1f/zoom*PIXELS_PER_METER,1f/zoom*PIXELS_PER_METER);*/
+        at_transform = AffineTransform.getTranslateInstance(-pos.x,-pos.y);
+        at_transform.concatenate(AffineTransform.getRotateInstance(rotation));
+        at_transform.concatenate(AffineTransform.getScaleInstance(1f/zoom*PIXELS_PER_METER,1f/zoom*PIXELS_PER_METER));
+        at_transform.concatenate(AffineTransform.getTranslateInstance(w/2d,h/2d));
                 
-        Matrix33 m = new Matrix33();
+        /*Matrix33 m = new Matrix33();
         Matrix33 transform = Matrix33.newTraslation((float)-pos.x,(float)-pos.y)
                 .multiply(Matrix33.newRotation(rotation))
                 .multiply(Matrix33.newScale(1f/zoom*PIXELS_PER_METER,1f/zoom*PIXELS_PER_METER))
                 .multiply(Matrix33.newTraslation(w/2,h/2));
-        at_transform = transform.toAffineTransform();
+        at_transform = transform.toAffineTransform();*/
         /*at_transform = AffineTransform.getTranslateInstance(-pos.x,-pos.y);
         at_transform.translate(w/2,h/2);
         at_transform.rotate(rotation);
@@ -162,11 +171,11 @@ public final class Camera
         {
             if(pos.x - w2 < limit0.x)
                 pos.x = limit0.x + w2;
-            else if(pos.x - w2 > limit1.x)
+            else if(pos.x + w2 > limit1.x)
                 pos.x = limit1.x - w2;
         }
         
-        if(w >= limit1.y - limit0.y)
+        if(h >= limit1.y - limit0.y)
             pos.y = limit0.y + (limit1.y - limit0.y) / 2;
         else
         {

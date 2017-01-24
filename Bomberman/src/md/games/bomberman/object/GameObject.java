@@ -181,6 +181,7 @@ public abstract class GameObject
     public final void createBoundingBox() { boundingBox = BoundingBox.situate(position,size); }
     public final void destroyBoundingBox() { boundingBox = null; }
     public final boolean hasBoundingBox() { return boundingBox != null; }
+    protected final BoundingBox getBoundingBox() { return boundingBox; }
     
     public final boolean hasCollision(BoundingBox box)
     {

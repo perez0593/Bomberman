@@ -75,6 +75,11 @@ public final class Game
     public void dispatchMaskedEvent(PeripheralMaskEvent event)
     {
         System.out.println(event.getID());
+        if(event.getCode() == KeyID.encode(KeyID.VK_ESCAPE))
+        {
+            NTJG.ntjgAbort(0);
+            return;
+        }
         camc.dispatchMaskedEvent(event);
         pc.dispatchMaskedEvent(event);
         
@@ -119,8 +124,9 @@ public final class Game
                     else tile.setSprite(scenario.getSpriteManager().getSprite("tile1"));
                 }
             
-            scenario.getCamera().setPosition(150,150);
+            scenario.getCamera().setPosition(317,225);
             scenario.setCameraLimits();
+            scenario.getCamera().setCustomViewport(640,480);
             camc = new CameraController(scenario.getCamera());
             
             camc.setUpCode(KeyID.encode(KeyID.VK_UP));
@@ -140,8 +146,7 @@ public final class Game
             pc = new PlayerController(scenario,new PlayerFeatures(),PlayerId.ONE,"NT",PlayerColor.WHITE);
             Player p = pc.createPlayer();
             scenario.addCreature(p);
-            scenario.putCreatureInTile(10,0,p);
-            
+            scenario.putCreatureInTile(28,28,p);
         }
         catch(Throwable th) { th.printStackTrace(System.err); }
     }
