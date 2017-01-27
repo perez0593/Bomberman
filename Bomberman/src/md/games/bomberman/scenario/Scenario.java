@@ -19,17 +19,18 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.UUID;
 import java.util.function.Predicate;
+import md.games.bomberman.bomb.BombBuilder;
+import md.games.bomberman.creature.Creature;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.creature.Creature;
-import md.games.bomberman.bomb.BombBuilder;
 import md.games.bomberman.scenario.action.Action;
 import md.games.bomberman.scenario.action.ActionReceiver;
 import md.games.bomberman.scenario.action.ActionSender;
 import md.games.bomberman.script.ScriptManager;
 import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.CriteriaIterator;
+import md.games.bomberman.util.RNG;
 
 /**
  *
@@ -45,6 +46,7 @@ public final class Scenario
     private final LinkedList<Creature> creatures = new LinkedList<>();
     private final HashMap<UUID, GameObject> objectHash = new HashMap<>();
     private final Camera camera = new Camera();
+    private final RNG rng = new RNG();
     private ActionSender sender;
     private ActionReceiver receiver;
     
@@ -245,6 +247,7 @@ public final class Scenario
     public final TileManager getTileManager() { return tiles; }
     public final DeathBorder getDeathBorder() { return dborder; }
     public final BombBuilder getBombBuilder() { return bombBuilder; }
+    public final RNG getRNG() { return rng; }
     
     
     public static final void store(Scenario scenario, OutputStream out) throws IOException

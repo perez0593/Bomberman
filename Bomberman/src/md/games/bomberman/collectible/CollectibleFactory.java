@@ -11,5 +11,11 @@ package md.games.bomberman.collectible;
  */
 public final class CollectibleFactory
 {
-    
+    public static final Collectible create(CollectibleId id)
+    {
+        switch(id)
+        {
+            default: throw new IllegalStateException();
+        }
+    }
 }

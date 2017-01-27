@@ -5,9 +5,6 @@
  */
 package md.games.bomberman.collectible;
 
-import md.games.bomberman.creature.Creature;
-import md.games.bomberman.creature.player.Player;
-
 /**
  *
  * @author Asus
@@ -19,7 +16,7 @@ public final class PowerUpBuilder
         
     }*/
     
-    private static final class RangeUp extends PowerUp
+    /*private static final class RangeUp extends PowerUp
     {
         private RangeUp()
         {
@@ -32,5 +29,5 @@ public final class PowerUpBuilder
             if(creature.isPlayer())
                 ((Player)creature).increaseBombRange(1);
         }
-    }
+    }*/
 }

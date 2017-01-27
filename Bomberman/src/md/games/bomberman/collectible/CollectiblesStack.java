@@ -5,10 +5,10 @@
  */
 package md.games.bomberman.collectible;
 
-import md.games.bomberman.creature.Creature;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.LinkedList;
+import md.games.bomberman.creature.Creature;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import nt.lpl.types.LPLValue;
