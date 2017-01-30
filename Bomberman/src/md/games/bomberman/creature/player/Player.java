@@ -5,17 +5,17 @@
  */
 package md.games.bomberman.creature.player;
 
-import md.games.bomberman.creature.CreatureType;
-import md.games.bomberman.creature.Creature;
-import md.games.bomberman.bomb.Bomb;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Objects;
+import md.games.bomberman.bomb.Bomb;
+import md.games.bomberman.bomb.BombType;
+import md.games.bomberman.creature.Creature;
+import md.games.bomberman.creature.CreatureType;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.bomb.BombType;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.action.Action;
@@ -163,6 +163,10 @@ public class Player extends Creature
         if(getWalkingDirection() == Direction.LEFT)
             animation.draw(g,FlipMode.HORIZONTAL,x,y,w,h);
         else animation.draw(g,x,y,w,h);
+        
+        /*BoundingBox box = getBoundingBox();
+        g.setColor(Color.CYAN);
+        g.drawRect((int)box.x0,(int)box.y0,(int)(box.x1-box.x0),(int)(box.y1-box.y0));*/
     }
     
     @Override

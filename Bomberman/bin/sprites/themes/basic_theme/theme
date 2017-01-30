@@ -2,6 +2,7 @@ base = "TileSet.png"
 
 sprite.region $base "tile1" 0 0 128 128
 sprite.region $base "block1" 384 0 128 128
+sprite.region $base "rock.unbreakable" 384 0 128 128
 
 sprite.static $base "tile2"
 sprite.static $base "block2"

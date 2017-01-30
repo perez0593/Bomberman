@@ -12,12 +12,12 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import md.games.bomberman.creature.Creature;
 import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
-import md.games.bomberman.creature.Creature;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 
 /**
@@ -84,7 +84,7 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
     
     public final Point getTilePositionByPosition(double x, double y)
     {
-        return new Point((int) ((y - position.y) / tileSize.y),(int) ((x - position.x) / tileSize.x));
+        return new Point((int) ((x - position.x) / tileSize.x), (int) ((y - position.y) / tileSize.y));
     }
     public final Point getTilePositionByPosition(Vector2 position) { return getTilePositionByPosition(position.x,position.y); }
     

@@ -28,12 +28,14 @@ public class Rock extends Placeable
     private int resistence;
     private boolean die = false;
     
-    private Rock(Sprite sprite, int resistence)
+    Rock(Sprite sprite, int resistence, double width, double height)
     {
         this.sprite = sprite;
         this.drops = new Drops();
         this.indestructible = resistence <= 0;
         this.resistence = resistence;
+        setSize(width,height);
+        createBoundingBox();
     }
     private Rock() {}
     
@@ -81,7 +83,14 @@ public class Rock extends Placeable
     public void draw(Graphics2D g)
     {
         if(sprite != null)
-            sprite.draw(g,getPositionX(),getPositionY(),getSizeWidth(),getSizeHeight());
+        {
+            double x = getPositionX() - getSizeWidth() / 2;
+            double y = getPositionY() - getSizeHeight() / 2;
+            sprite.draw(g,x,y,getSizeWidth(),getSizeHeight());
+        }
+        /*BoundingBox box = getBoundingBox();
+        g.setColor(Color.CYAN);
+        g.drawRect((int)box.x0,(int)box.y0,(int)(box.x1-box.x0),(int)(box.y1-box.y0));*/
     }
 
     @Override

@@ -5,15 +5,14 @@
  */
 package md.games.bomberman.creature;
 
-import md.games.bomberman.scenario.GameObject;
 import java.io.IOException;
 import java.util.List;
 import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.creature.HitPoints;
 import md.games.bomberman.scenario.Camera;
+import md.games.bomberman.scenario.GameObject;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
@@ -179,24 +178,29 @@ public abstract class Creature extends GameObject
             checkOutOfBounds(scenario);
             List<Tile> neis = scenario.getTileManager().findNeighbors(this);
             Vector2 dspeed = speed.product(delta);
-            double elapsedTime = 1d;
+            double deltaX = 1d, deltaY = 1d;
             if(!neis.isEmpty())
             {
                 for(Tile tile : neis)
                 {
                     if(tile.hasPlaceable())
                     {
-                        SweptInfo si = computeSwept(dspeed,tile.getPlaceable());
+                        SweptInfo si = computeSwept(dspeed.product(new Vector2(deltaX,deltaY)),tile.getPlaceable());
                         if(si.time < 1)
                         {
                             tile.getPlaceable().onCreatureCollide(this);
-                            if(elapsedTime > si.time)
-                                elapsedTime = si.time;
+                            if(si.time < 1d)
+                            {
+                                if(si.normalX != 0 && deltaX > si.time)
+                                    deltaX = si.time;
+                                if(si.normalY != 0 && deltaY > si.time)
+                                    deltaY = si.time;
+                            }
                         }
                     }
                 }
             }
-            translate(dspeed.x * elapsedTime, dspeed.y * elapsedTime);
+            translate(dspeed.x * deltaX, dspeed.y * deltaY);
 
             Tile currentTile = scenario.getTileManager().getTileByPosition(getPosition());
             if(currentTile != null)

@@ -66,7 +66,7 @@ public final class ScenarioTheme
         routines.putRoutine("sprite.static",(rou,env,pars) -> {
             ScenarioTheme theme = env.getDeepAttribute(STR_SCENARIO).<ScenarioTheme>asDALUserdata().get();
             String path = theme.name + "/" + pars.getParameter(0).toJavaString();
-            String tag = pars.getParameter(1).toJavaString();
+            String tag = "theme." + pars.getParameter(1).toJavaString();
             try { theme.smanager.loadStaticSprite(Resource.THEMES,path,tag); }
             catch(IOException ex)
             {
@@ -78,7 +78,7 @@ public final class ScenarioTheme
         routines.putRoutine("sprite.region",(rou,env,pars) -> {
             ScenarioTheme theme = env.getDeepAttribute(STR_SCENARIO).<ScenarioTheme>asDALUserdata().get();
             String path = theme.name + "/" + pars.getParameter(0).toJavaString();
-            String tag = pars.getParameter(1).toJavaString();
+            String tag = "theme." + pars.getParameter(1).toJavaString();
             int x = pars.getParameter(2).toJavaInt();
             int y = pars.getParameter(3).toJavaInt();
             int w = pars.getParameter(4).toJavaInt();
@@ -94,7 +94,7 @@ public final class ScenarioTheme
         routines.putRoutine("sprite.animated",(rou,env,pars) -> {
             ScenarioTheme theme = env.getDeepAttribute(STR_SCENARIO).<ScenarioTheme>asDALUserdata().get();
             String path = theme.name + "/" + pars.getParameter(0).toJavaString();
-            String tag = pars.getParameter(1).toJavaString();
+            String tag = "theme." + pars.getParameter(1).toJavaString();
             int x, y, width, height, count;
             if(pars.getParameterCount() > 5)
             {

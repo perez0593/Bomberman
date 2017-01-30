@@ -7,12 +7,12 @@ package md.games.bomberman.scenario;
 
 import java.awt.Graphics2D;
 import java.io.IOException;
+import md.games.bomberman.collectible.Collectible;
+import md.games.bomberman.creature.Creature;
 import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.collectible.Collectible;
-import md.games.bomberman.creature.Creature;
 import md.games.bomberman.placeable.Placeable;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 import md.games.bomberman.scenario.Explosion.ExplosionReference;
@@ -165,6 +165,9 @@ public final class Tile
             collectible.draw(g);
         if(!explosion.isEnd())
             explosion.draw(g,x,y,w,h);
+        
+        //g.setColor(Color.CYAN);
+        //g.drawRect((int)x,(int)y,(int)w,(int)h);
     }
     
     final void serialize(GameDataSaver gds) throws IOException

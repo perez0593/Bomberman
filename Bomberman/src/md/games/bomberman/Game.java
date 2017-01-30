@@ -7,18 +7,22 @@ package md.games.bomberman;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import md.games.bomberman.font.DefaultFont;
-import md.games.bomberman.input.InputController;
-import md.games.bomberman.input.InputMasks;
-import md.games.bomberman.input.PlayerController;
-import md.games.bomberman.io.Resource;
 import md.games.bomberman.creature.player.Player;
 import md.games.bomberman.creature.player.PlayerColor;
 import md.games.bomberman.creature.player.PlayerFeatures;
 import md.games.bomberman.creature.player.PlayerId;
+import md.games.bomberman.font.DefaultFont;
+import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.input.InputController;
+import md.games.bomberman.input.InputMasks;
+import md.games.bomberman.input.PlayerController;
+import md.games.bomberman.io.Resource;
 import md.games.bomberman.peripheral.KeyID;
 import md.games.bomberman.peripheral.PeripheralMaskEvent;
 import md.games.bomberman.peripheral.PeripheralMaskingListener;
+import md.games.bomberman.placeable.Rock;
+import md.games.bomberman.placeable.RockFactory;
+import md.games.bomberman.placeable.RockFactory.RockId;
 import md.games.bomberman.scenario.Camera;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.ScenarioManager;
@@ -119,10 +123,23 @@ public final class Game
                 for(int c=0;c<tiles.getColumns();c++)
                 {
                     Tile tile = tiles.getTile(r,c);
-                    if(r == c)
-                        tile.setSprite(scenario.getSpriteManager().getSprite("block1"));
-                    else tile.setSprite(scenario.getSpriteManager().getSprite("tile1"));
+                    /*if(r == c)
+                        tile.setSprite(scenario.getSpriteManager().getSprite("theme.block1"));
+                    else */tile.setSprite(scenario.getSpriteManager().getSprite("theme.tile1"));
                 }
+            
+            Rock rock = RockFactory.create(scenario.getSpriteManager(),RockId.UNBREAKABLE,scenario);
+            scenario.registerGameObject(rock);
+            tiles.getTile(3,5).putPlaceable(rock);
+            
+            putRock(scenario,4,4,0.4,1);
+            putRock(scenario,5,4,1,1);
+            putRock(scenario,6,4,1,1);
+            putRock(scenario,6,3,1,1);
+            //putRock(scenario,6,2,1,1);
+            putRock(scenario,6,1,1,1);
+            putRock(scenario,5,1,1,1);
+            putRock(scenario,4,1,0.5,0.5);
             
             scenario.getCamera().setPosition(317,225);
             scenario.setCameraLimits();
@@ -149,5 +166,16 @@ public final class Game
             scenario.putCreatureInTile(3,3,p);
         }
         catch(Throwable th) { th.printStackTrace(System.err); }
+    }
+    
+    private static void putRock(Scenario scenario, int row, int column, double widthFactor, double heightFactor)
+    {
+        TileManager tiles = scenario.getTileManager();
+        Vector2 size = tiles.getTileSize();
+        size.x *= widthFactor;
+        size.y *= heightFactor;
+        Rock rock = RockFactory.create(scenario.getSpriteManager(),RockId.UNBREAKABLE,size.x,size.y);
+        scenario.registerGameObject(rock);
+        tiles.getTile(row,column).putPlaceable(rock);
     }
 }
