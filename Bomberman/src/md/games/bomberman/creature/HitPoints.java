@@ -8,12 +8,15 @@ package md.games.bomberman.creature;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import nt.lpl.types.LPLFunction;
+import nt.lpl.types.LPLObject;
+import nt.lpl.types.LPLValue;
 
 /**
  *
  * @author Asus
  */
-public final class HitPoints
+public final class HitPoints extends LPLObject
 {
     private int containers;
     private int redHearts;
@@ -129,4 +132,46 @@ public final class HitPoints
         redHearts = dis.readInt();
         blueHearts = dis.readInt();
     }
+    
+    @Override
+    public final LPLValue getAttribute(LPLValue key)
+    {
+        switch(key.toJavaString())
+        {
+            default: return UNDEFINED;
+            case "setContainers": return SET_CONTAINERS;
+            case "setRedHearts": return SET_RED_HEARTS;
+            case "setBlueHearts": return SET_BLUE_HEARTS;
+            case "getContainers": return GET_CONTAINERS;
+            case "getRedHearts": return GET_RED_HEARTS;
+            case "getBlueHearts": return GET_BLUE_HEARTS;
+            case "getCurrentHitPoints": return GET_CURRENT_HIT_POINTS;
+            case "isAlive": return IS_ALIVE;
+        }
+    }
+    
+    private static final LPLValue SET_CONTAINERS = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<HitPoints>toLPLObject().setContainers(arg1.toJavaInt());
+    });
+    private static final LPLValue SET_RED_HEARTS = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<HitPoints>toLPLObject().setRedHearts(arg1.toJavaInt());
+    });
+    private static final LPLValue SET_BLUE_HEARTS = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<HitPoints>toLPLObject().setBlueHearts(arg1.toJavaInt());
+    });
+    private static final LPLValue GET_CONTAINERS = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<HitPoints>toLPLObject().getContainers());
+    });
+    private static final LPLValue GET_RED_HEARTS = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<HitPoints>toLPLObject().getRedHearts());
+    });
+    private static final LPLValue GET_BLUE_HEARTS = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<HitPoints>toLPLObject().getBlueHearts());
+    });
+    private static final LPLValue GET_CURRENT_HIT_POINTS = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<HitPoints>toLPLObject().getCurrentHitPoints());
+    });
+    private static final LPLValue IS_ALIVE = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<HitPoints>toLPLObject().isAlive());
+    });
 }

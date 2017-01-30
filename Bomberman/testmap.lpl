@@ -1,0 +1,30 @@
+
+//Create scenario
+locked local scenario = CreateScenario(30,30)
+
+//Load scenario theme
+scenario->loadTheme("basic_theme")
+
+//Init all sprite tiles
+scenario->initTiles(function(tile)
+	tile->setSprite("theme.tile1")
+end)
+
+//Player Start position
+scenario->setPlayerStartTile(3,3)
+
+//Put unbreakable walls
+scenario->putWall(4,4,0.5,0.5)
+scenario->putWall(4,5,1,1)
+scenario->putWall(4,6,1,1)
+scenario->putWall(5,6,1,1)
+scenario->putWall(6,6,1,1)
+scenario->putWall(6,5,1,1)
+scenario->putWall(6,4,0.4,1)
+
+
+//Set window config
+scenario->setWindowConfig(640,480,false)
+
+
+

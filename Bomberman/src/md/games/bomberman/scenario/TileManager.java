@@ -19,6 +19,7 @@ import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
+import md.games.bomberman.util.Constants;
 
 /**
  *
@@ -46,8 +47,8 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
             for(int c=0;c<columns;c++)
                 tiles[r * rows + c] = new Tile(this,r,c,explosion.getReference());
         position = new Vector2();
-        size = new Vector2(1,1);
-        tileSize = new Vector2();
+        size = new Vector2();
+        tileSize = new Vector2(Constants.TILE_WIDTH,Constants.TILE_HEIGHT);
         computeSize();
     }
     private TileManager() {}

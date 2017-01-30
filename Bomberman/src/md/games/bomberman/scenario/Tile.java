@@ -17,12 +17,16 @@ import md.games.bomberman.placeable.Placeable;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 import md.games.bomberman.scenario.Explosion.ExplosionReference;
 import md.games.bomberman.sprites.Sprite;
+import md.games.bomberman.sprites.SpriteManager;
+import nt.lpl.types.LPLFunction;
+import nt.lpl.types.LPLObject;
+import nt.lpl.types.LPLValue;
 
 /**
  *
  * @author mpasc
  */
-public final class Tile
+public final class Tile extends LPLObject
 {
     private final TileManager manager;
     private final int row;
@@ -183,4 +187,60 @@ public final class Tile
         gdl.readIfNonNull(() -> collectible = gdl.readGameObjectById());
         gdl.readIfNonNull(() -> sprite = gdl.readSprite());
     }
+    
+    @Override
+    public final LPLValue getAttribute(LPLValue key)
+    {
+        switch(key.toJavaString())
+        {
+            default: return UNDEFINED;
+            case "getRow": return GET_ROW;
+            case "getColumn": return GET_COLUMN;
+            case "getPosition": return GET_POSITION;
+            case "setSprite": return SET_SPRITE;
+            case "putPlaceable": return PUT_PLACEABLE;
+            case "putCollectible": return PUT_COLLECTIBLE;
+            case "getPlaceable": return GET_PLACEABLE;
+            case "getCollectible": return GET_COLLECTIBLE;
+            case "removePlaceable": return REMOVE_PLACEABLE;
+            case "removeCollectible": return REMOVE_COLLECTIBLE;
+        }
+    }
+    
+    private static final LPLValue GET_ROW = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<Tile>toLPLObject().getRow());
+    });
+    private static final LPLValue GET_COLUMN = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<Tile>toLPLObject().getColumn());
+    });
+    private static final LPLValue GET_POSITION = LPLFunction.createFunction((arg0) -> {
+        return arg0.<Tile>toLPLObject().getPosition();
+    });
+    private static final LPLValue GET_PLACEABLE = LPLFunction.createFunction((arg0) -> {
+        return arg0.<Tile>toLPLObject().getPlaceable();
+    });
+    private static final LPLValue GET_COLLECTIBLE = LPLFunction.createFunction((arg0) -> {
+        return arg0.<Tile>toLPLObject().getCollectible();
+    });
+    private static final LPLValue SET_SPRITE = LPLFunction.createVFunction((arg0, arg1) -> {
+        Tile tile = arg0.toLPLObject();
+        SpriteManager sprites = tile.manager.getScenarioReference().getSpriteManager();
+        tile.setSprite(sprites.getSprite(arg1.toJavaString()));
+    });
+    private static final LPLValue PUT_PLACEABLE = LPLFunction.createVFunction((arg0, arg1) -> {
+        Tile tile = arg0.toLPLObject();
+        tile.putPlaceable(arg1.toLPLObject());
+    });
+    private static final LPLValue PUT_COLLECTIBLE = LPLFunction.createVFunction((arg0, arg1) -> {
+        Tile tile = arg0.toLPLObject();
+        tile.putCollectible(arg1.toLPLObject());
+    });
+    private static final LPLValue REMOVE_PLACEABLE = LPLFunction.createVFunction((arg0) -> {
+        Tile tile = arg0.toLPLObject();
+        tile.removePlaceable();
+    });
+    private static final LPLValue REMOVE_COLLECTIBLE = LPLFunction.createVFunction((arg0) -> {
+        Tile tile = arg0.toLPLObject();
+        tile.removeCollectible();
+    });
 }

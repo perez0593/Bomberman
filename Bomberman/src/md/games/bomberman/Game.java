@@ -7,9 +7,9 @@ package md.games.bomberman;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.io.File;
 import md.games.bomberman.creature.player.Player;
 import md.games.bomberman.creature.player.PlayerColor;
-import md.games.bomberman.creature.player.PlayerFeatures;
 import md.games.bomberman.creature.player.PlayerId;
 import md.games.bomberman.font.DefaultFont;
 import md.games.bomberman.geom.Vector2;
@@ -26,8 +26,8 @@ import md.games.bomberman.placeable.RockFactory.RockId;
 import md.games.bomberman.scenario.Camera;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.ScenarioManager;
-import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
+import md.games.bomberman.scenario.build.ScenarioLoader;
 import md.games.bomberman.util.CameraController;
 import nt.ntjg.NTJG;
 import nt.ntjg.NTJGFunctionalities;
@@ -113,37 +113,13 @@ public final class Game
     {
         try
         {
-            scenarioManager = new ScenarioManager();
-            Scenario scenario = scenarioManager.createDebugScenario(30,30);
-            scenarioManager.loadTheme("basic_theme");
+            ScenarioLoader sloader = ScenarioLoader.loadScenario(new File("testmap.lpl"));
+            scenarioManager = sloader.getScenarioManager();
+            Scenario scenario = scenarioManager.getScenario();
             
-            TileManager tiles = scenario.getTileManager();
-            tiles.setTileSize(50,50);
-            for(int r=0;r<tiles.getRows();r++)
-                for(int c=0;c<tiles.getColumns();c++)
-                {
-                    Tile tile = tiles.getTile(r,c);
-                    /*if(r == c)
-                        tile.setSprite(scenario.getSpriteManager().getSprite("theme.block1"));
-                    else */tile.setSprite(scenario.getSpriteManager().getSprite("theme.tile1"));
-                }
-            
-            Rock rock = RockFactory.create(scenario.getSpriteManager(),RockId.UNBREAKABLE,scenario);
-            scenario.registerGameObject(rock);
-            tiles.getTile(3,5).putPlaceable(rock);
-            
-            putRock(scenario,4,4,0.4,1);
-            putRock(scenario,5,4,1,1);
-            putRock(scenario,6,4,1,1);
-            putRock(scenario,6,3,1,1);
-            //putRock(scenario,6,2,1,1);
-            putRock(scenario,6,1,1,1);
-            putRock(scenario,5,1,1,1);
-            putRock(scenario,4,1,0.5,0.5);
-            
-            scenario.getCamera().setPosition(317,225);
+            scenario.getCamera().setCustomViewport(sloader.getViewport().x,sloader.getViewport().y);
             scenario.setCameraLimits();
-            scenario.getCamera().setCustomViewport(640,480);
+
             camc = new CameraController(scenario.getCamera());
             
             camc.setUpCode(KeyID.encode(KeyID.VK_UP));
@@ -160,12 +136,16 @@ public final class Game
             
             scenario.getSpriteManager().loadAnimations(Resource.ANIMATIONS,"bomberman.ad");
             
-            pc = new PlayerController(scenario,new PlayerFeatures(),PlayerId.ONE,"NT",PlayerColor.WHITE);
+            pc = new PlayerController(scenario,sloader.getPlayerFeatures(),PlayerId.ONE,"NT",PlayerColor.WHITE);
             Player p = pc.createPlayer();
             scenario.addCreature(p);
-            scenario.putCreatureInTile(3,3,p);
+            scenario.putCreatureInTile(sloader.getPlayerStartTile().x,sloader.getPlayerStartTile().y,p);
         }
-        catch(Throwable th) { th.printStackTrace(System.err); }
+        catch(Throwable th)
+        {
+            th.printStackTrace(System.err);
+            NTJG.ntjgAbort(1);
+        }
     }
     
     private static void putRock(Scenario scenario, int row, int column, double widthFactor, double heightFactor)

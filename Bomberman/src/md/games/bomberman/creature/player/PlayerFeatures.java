@@ -11,12 +11,15 @@ import java.io.IOException;
 import md.games.bomberman.bomb.BombType;
 import md.games.bomberman.creature.HitPoints;
 import md.games.bomberman.sprites.SpriteManager;
+import nt.lpl.LPLRuntimeException;
+import nt.lpl.types.LPLObject;
+import nt.lpl.types.LPLValue;
 
 /**
  *
  * @author Asus
  */
-public final class PlayerFeatures
+public final class PlayerFeatures extends LPLObject
 {
     private final HitPoints hp;
     private double speed;
@@ -76,7 +79,7 @@ public final class PlayerFeatures
     public final BombType getSecondaryBombType() { return secondaryBombType; }
     
     public final void setSpeed(double speed) { this.speed = speed < 0 ? 0 : speed; }
-    public final void setkevlar(boolean kevlar) { this.kevlar = kevlar; }
+    public final void setKevlar(boolean kevlar) { this.kevlar = kevlar; }
     public final void setMaxBombs(int max) { this.maxBombs = max; }
     public final void setBombRange(int range) { this.bombRange = range; }
     public final void setPrimaryBombType(BombType type) { this.primaryBombType = type; }
@@ -105,4 +108,48 @@ public final class PlayerFeatures
     }
     
     public static final PlayerFeatures read(DataInputStream dis) throws IOException { return new PlayerFeatures(dis); }
+    
+    @Override
+    public final LPLValue getAttribute(LPLValue key)
+    {
+        switch(key.toJavaString())
+        {
+            default: return UNDEFINED;
+            case "hp": return getHitPoints();
+            case "speed": return valueOf(getSpeed());
+            case "kevlar": return valueOf(getKevlar());
+            case "maxBombs": return valueOf(getMaxBombs());
+            case "bombRange": return valueOf(getBombRange());
+            case "primaryBombType": return valueOf(getPrimaryBombType().name());
+            case "secondaryBombType": return valueOf(getSecondaryBombType().name());
+        }
+    }
+    
+    @Override
+    public final LPLValue setAttribute(LPLValue key, LPLValue value)
+    {
+        switch(key.toJavaString())
+        {
+            default: return UNDEFINED;
+            case "hp": throw new LPLRuntimeException("hp attribute cannot set");
+            case "speed":
+                setSpeed(value.toJavaDouble());
+                return valueOf(getSpeed());
+            case "kevlar":
+                setKevlar(value.toJavaBoolean());
+                return valueOf(getKevlar());
+            case "maxBombs":
+                setMaxBombs(value.toJavaInt());
+                return valueOf(getMaxBombs());
+            case "bombRange":
+                setBombRange(value.toJavaInt());
+                return valueOf(getBombRange());
+            case "primaryBombType":
+                setPrimaryBombType(BombType.decode(value));
+                return valueOf(getPrimaryBombType().name());
+            case "secondaryBombType":
+                setSecondaryBombType(BombType.decode(value));
+                return valueOf(getSecondaryBombType().name());
+        }
+    }
 }

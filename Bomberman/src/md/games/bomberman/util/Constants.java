@@ -27,10 +27,16 @@ public final class Constants
     public static final int PLAYER_AABB_WIDTH = 32;
     public static final int PLAYER_AABB_HEIGHT = 32;
     
+    public static final int TILE_WIDTH = 50;
+    public static final int TILE_HEIGHT = 50;
+    
+    
     
     public static final int CREATURE_ANIMATION_STOPPED = 0;
     public static final int CREATURE_ANIMATION_WALK_UP = 3;
     public static final int CREATURE_ANIMATION_WALK_LEFT = 2;
     public static final int CREATURE_ANIMATION_WALK_DOWN = 1;
     public static final int CREATURE_ANIMATION_WALK_RIGHT = 2;
+    
+    
 }
