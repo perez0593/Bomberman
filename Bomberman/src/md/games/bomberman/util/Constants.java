@@ -39,4 +39,15 @@ public final class Constants
     public static final int CREATURE_ANIMATION_WALK_RIGHT = 2;
     
     
+    
+    public static final String SPRITE_BOMB_NORMAL = "bomb.normal";
+    
+    
+    
+    public static final String THEME_TILE_BASE = "theme.tile.base";
+    public static final String THEME_ROCK_UNBREAKABLE = "theme.rock.unbreakable";
+    public static final String THEME_ROCK_BREAKABLE_WEAK = "theme.rock.breakable_w";
+    public static final String THEME_ROCK_BREAKABLE_HARD = "theme.rock.breakable_h";
+    
+    
 }

@@ -61,4 +61,6 @@ public final class Resource
     public static final Resource SPRITES = new Resource("sprites");
     public static final Resource THEMES = new Resource("sprites/themes");
     public static final Resource ANIMATIONS = new Resource("anms");
+    public static final Resource SOUNDS = new Resource("audio/sound");
+    public static final Resource MUSICS = new Resource("audio/music");
 }

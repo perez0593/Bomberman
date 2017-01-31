@@ -1,8 +1,6 @@
 base = "TileSet.png"
 
-sprite.region $base "tile1" 0 0 128 128
-sprite.region $base "block1" 384 0 128 128
-sprite.region $base "rock.unbreakable" 384 0 128 128
-
-sprite.static $base "tile2"
-sprite.static $base "block2"
+sprite.region $base "tile.base" 0 0 128 128
+sprite.region $base "rock.unbreakable" 128 0 128 128
+sprite.region $base "rock.breakable_w" 256 0 128 128
+sprite.region $base "rock.breakable_h" 384 0 128 128

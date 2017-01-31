@@ -10,6 +10,7 @@ import md.games.bomberman.creature.Creature;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
 import md.games.bomberman.sprites.SpriteManager;
+import md.games.bomberman.util.Constants;
 
 /**
  *
@@ -38,15 +39,15 @@ public final class BombBuilder
         switch(type)
         {
             default: throw new IllegalStateException();
-            case NORMAL: return new Bomb(range, BOMB_DAMAGE, false, sprites.getSprite(STR_SPRITE_NORMAL), BOMB_TIME_TO_EXPLODE);
-            case SPIKES: return new Bomb(range * 2, BOMB_DAMAGE, false, sprites.getSprite(STR_SPRITE_NORMAL), BOMB_TIME_TO_EXPLODE);
+            case NORMAL: return new Bomb(range, BOMB_DAMAGE, false, sprites.getSprite(Constants.SPRITE_BOMB_NORMAL), BOMB_TIME_TO_EXPLODE);
+            case SPIKES: return new Bomb(range * 2, BOMB_DAMAGE, false, sprites.getSprite(Constants.SPRITE_BOMB_NORMAL), BOMB_TIME_TO_EXPLODE);
             /*TODO*/case THROWABLE: return null;
-            case FASTEXPOLDE: return new Bomb(range, BOMB_DAMAGE, false, sprites.getSprite(STR_SPRITE_NORMAL), BOMB_TIME_TO_EXPLODE / 2);
-            case C4: return new Bomb(range, BOMB_DAMAGE, true, sprites.getSprite(STR_SPRITE_NORMAL));
+            case FASTEXPOLDE: return new Bomb(range, BOMB_DAMAGE, false, sprites.getSprite(Constants.SPRITE_BOMB_NORMAL), BOMB_TIME_TO_EXPLODE / 2);
+            case C4: return new Bomb(range, BOMB_DAMAGE, true, sprites.getSprite(Constants.SPRITE_BOMB_NORMAL));
             case HIGHRANGE: return new SquareBomb(sprites, range, BOMB_DAMAGE, false, BOMB_TIME_TO_EXPLODE);
             /*TODO*/case NINJA: return null;
             case MINE: return new MineBomb(range, BOMB_DAMAGE);
-            case HEAL: return new Bomb(range, -1, false, sprites.getSprite(STR_SPRITE_NORMAL), BOMB_TIME_TO_EXPLODE);
+            case HEAL: return new Bomb(range, -1, false, sprites.getSprite(Constants.SPRITE_BOMB_NORMAL), BOMB_TIME_TO_EXPLODE);
             /*TODO*/case ICEBOMB: return null;
             case TELEPORT: return new TeleportBomb(sprites, range, BOMB_DAMAGE, false, BOMB_TIME_TO_EXPLODE);
         }
@@ -56,12 +57,12 @@ public final class BombBuilder
     {
         public SquareBomb(SpriteManager sprites, int range, int damage, boolean remoteMode)
         {
-            super(range, damage, remoteMode, sprites.getSprite(STR_SPRITE_NORMAL));
+            super(range, damage, remoteMode, sprites.getSprite(Constants.SPRITE_BOMB_NORMAL));
         }
 
         public SquareBomb(SpriteManager sprites, int range, int damage, boolean remoteMode, double timeToExplode)
         {
-            super(range, damage, remoteMode, sprites.getSprite(STR_SPRITE_NORMAL), timeToExplode);
+            super(range, damage, remoteMode, sprites.getSprite(Constants.SPRITE_BOMB_NORMAL), timeToExplode);
         }
         
         private SquareBomb() {}
@@ -90,12 +91,12 @@ public final class BombBuilder
     {
         public TeleportBomb(SpriteManager sprites, int range, int damage, boolean remoteMode)
         {
-            super(range, damage, remoteMode, sprites.getSprite(STR_SPRITE_NORMAL));
+            super(range, damage, remoteMode, sprites.getSprite(Constants.SPRITE_BOMB_NORMAL));
         }
 
         public TeleportBomb(SpriteManager sprites, int range, int damage, boolean remoteMode, double timeToExplode)
         {
-            super(range, damage, remoteMode, sprites.getSprite(STR_SPRITE_NORMAL), timeToExplode);
+            super(range, damage, remoteMode, sprites.getSprite(Constants.SPRITE_BOMB_NORMAL), timeToExplode);
         }
         
         private TeleportBomb() {}
@@ -108,6 +109,4 @@ public final class BombBuilder
             tiles.createCrossExplosion(row,column,range);
         }
     }
-    
-    public static final String STR_SPRITE_NORMAL = "bomb.normal";
 }

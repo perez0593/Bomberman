@@ -11,10 +11,10 @@ import java.io.File;
 import md.games.bomberman.creature.player.Player;
 import md.games.bomberman.creature.player.PlayerColor;
 import md.games.bomberman.creature.player.PlayerId;
+import md.games.bomberman.debug.DebugScenarioLoader;
 import md.games.bomberman.font.DefaultFont;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.input.InputController;
-import md.games.bomberman.input.InputMasks;
 import md.games.bomberman.input.PlayerController;
 import md.games.bomberman.io.Resource;
 import md.games.bomberman.peripheral.KeyID;
@@ -22,12 +22,11 @@ import md.games.bomberman.peripheral.PeripheralMaskEvent;
 import md.games.bomberman.peripheral.PeripheralMaskingListener;
 import md.games.bomberman.placeable.Rock;
 import md.games.bomberman.placeable.RockFactory;
-import md.games.bomberman.placeable.RockFactory.RockId;
+import md.games.bomberman.placeable.RockType;
 import md.games.bomberman.scenario.Camera;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.ScenarioManager;
 import md.games.bomberman.scenario.TileManager;
-import md.games.bomberman.scenario.build.ScenarioLoader;
 import md.games.bomberman.util.CameraController;
 import nt.ntjg.NTJG;
 import nt.ntjg.NTJGFunctionalities;
@@ -113,7 +112,7 @@ public final class Game
     {
         try
         {
-            ScenarioLoader sloader = ScenarioLoader.loadScenario(new File("testmap.lpl"));
+            DebugScenarioLoader sloader = DebugScenarioLoader.loadScenario(new File("testmap.lpl"));
             scenarioManager = sloader.getScenarioManager();
             Scenario scenario = scenarioManager.getScenario();
             
@@ -129,17 +128,15 @@ public final class Game
             camc.setZoomInCode(KeyID.encode(KeyID.VK_I));
             camc.setZoomOutCode(KeyID.encode(KeyID.VK_O));
             
-            InputController.assignPeripheralIdToMask(KeyID.encode(KeyID.VK_W),InputMasks.P1_MOVE_UP);
-            InputController.assignPeripheralIdToMask(KeyID.encode(KeyID.VK_S),InputMasks.P1_MOVE_DOWN);
-            InputController.assignPeripheralIdToMask(KeyID.encode(KeyID.VK_A),InputMasks.P1_MOVE_LEFT);
-            InputController.assignPeripheralIdToMask(KeyID.encode(KeyID.VK_D),InputMasks.P1_MOVE_RIGHT);
-            
             scenario.getSpriteManager().loadAnimations(Resource.ANIMATIONS,"bomberman.ad");
             
             pc = new PlayerController(scenario,sloader.getPlayerFeatures(),PlayerId.ONE,"NT",PlayerColor.WHITE);
             Player p = pc.createPlayer();
             scenario.addCreature(p);
             scenario.putCreatureInTile(sloader.getPlayerStartTile().x,sloader.getPlayerStartTile().y,p);
+            
+            NTJG.ntjgSetDisplayMode(NTJG.ntjgGetValidDisplayMode(sloader.getViewport().x,sloader.getViewport().y));
+            NTJG.ntjgSetFullscreen(sloader.getIsFullscreen());
         }
         catch(Throwable th)
         {
@@ -154,7 +151,7 @@ public final class Game
         Vector2 size = tiles.getTileSize();
         size.x *= widthFactor;
         size.y *= heightFactor;
-        Rock rock = RockFactory.create(scenario.getSpriteManager(),RockId.UNBREAKABLE,size.x,size.y);
+        Rock rock = RockFactory.create(scenario.getSpriteManager(),RockType.UNBREAKABLE,size.x,size.y);
         scenario.registerGameObject(rock);
         tiles.getTile(row,column).putPlaceable(rock);
     }
