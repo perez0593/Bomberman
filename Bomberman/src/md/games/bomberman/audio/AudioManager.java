@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import kuusisto.tinysound.Music;
+import kuusisto.tinysound.TinySound;
 import md.games.bomberman.io.Resource;
 
 /**
@@ -82,6 +83,26 @@ public final class AudioManager
                     break;
             }
         }
+    }
+    
+    public static final void loadMusic(String path) throws IOException
+    {
+        if(MUSIC != null)
+            throw new IllegalStateException();
+        File file = Resource.MUSICS.getFile(path);
+        MUSIC = TinySound.loadMusic(file);
+    }
+    
+    public static final void playMusic()
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        MUSIC.play(false);
+    }
+    
+    public static final void loopMusic()
+    {
+        
     }
     
     private static final class SoundItem
