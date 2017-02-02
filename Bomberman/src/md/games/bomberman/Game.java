@@ -8,6 +8,7 @@ package md.games.bomberman;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
+import md.games.bomberman.audio.AudioManager;
 import md.games.bomberman.creature.player.Player;
 import md.games.bomberman.creature.player.PlayerColor;
 import md.games.bomberman.creature.player.PlayerId;
@@ -137,6 +138,11 @@ public final class Game
             
             NTJG.ntjgSetDisplayMode(NTJG.ntjgGetValidDisplayMode(sloader.getViewport().x,sloader.getViewport().y));
             NTJG.ntjgSetFullscreen(sloader.getIsFullscreen());
+            
+            AudioManager.init();
+            AudioManager.loadMusic("testMusic.wav");
+            AudioManager.loopMusic();
+            NTJG.ntjgAddStopCallbackFunction(AudioManager::shutdown);
         }
         catch(Throwable th)
         {

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.TinySound;
 import md.games.bomberman.io.Resource;
@@ -25,10 +26,34 @@ public final class AudioManager
     private static final LinkedList<SoundItem> SOUND_LIST = new LinkedList<>();
     private static Music MUSIC = null;
     
+    private AudioManager() {}
+    
+    public static final void init()
+    {
+        TinySound.init();
+    }
+    
+    public static final void shutdown()
+    {
+        if(MUSIC != null)
+        {
+            if(MUSIC.playing())
+                MUSIC.stop();
+            MUSIC.unload();
+            MUSIC = null;
+        }
+        CACHE.clear();
+        SOUNDS.clear();
+        SOUND_LIST.clear();
+        TinySound.shutdown();
+    }
+    
+    public static final AudioManager createSoundsReference() { return new AudioManager(); }
+    
     public final void loadSound(String path, String tag, boolean loopable) throws IOException
     {
         if(SOUNDS.containsKey(tag))
-            throw new IllegalArgumentException();
+            return;
         SoundItem s = CACHE.get(path);
         if(s != null)
             s.addReference(this);
@@ -36,10 +61,26 @@ public final class AudioManager
         {
             File file = Resource.SOUNDS.getFile(path);
             Sound sound = Sound.loadSound(file,loopable);
-            s = new SoundItem(this,sound);
+            s = new SoundItem(this,tag,sound);
             CACHE.put(path,s);
         }
         SOUNDS.put(tag,s);
+    }
+    
+    public final void clearSounds()
+    {
+        ListIterator<SoundItem> it = SOUND_LIST.listIterator();
+        while(it.hasNext())
+        {
+            SoundItem s = it.next();
+            s.deleteReference(this);
+            SOUNDS.remove(s.tag);
+            if(!s.hasReferences())
+            {
+                CACHE.remove(s.tag);
+                it.remove();
+            }
+        }
     }
     
     public static final void playSound(String tag)
@@ -102,18 +143,105 @@ public final class AudioManager
     
     public static final void loopMusic()
     {
-        
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        MUSIC.play(true);
+    }
+    
+    public static final void pauseMusic()
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        MUSIC.pause();
+    }
+    
+    public static final void stopMusic()
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        MUSIC.stop();
+    }
+    
+    public static final void resumeMusic()
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        MUSIC.resume();
+    }
+    
+    public static final void rewindMusic()
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        MUSIC.rewind();
+    }
+    
+    public static final void rewindMusicToLoopPosition()
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        MUSIC.rewindToLoopPosition();
+    }
+    
+    public static final void setMusicLoopPositionByFrame(int frameIndex)
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        MUSIC.setLoopPositionByFrame(frameIndex);
+    }
+    
+    public static final void setMusicLoopPositionBySeconds(double seconds)
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        MUSIC.setLoopPositionBySeconds(seconds);
+    }
+    
+    public static final int getMusicLoopPositionByFrame()
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        return MUSIC.getLoopPositionByFrame();
+    }
+    
+    public static final double getMusicLoopPositionBySeconds()
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        return MUSIC.getLoopPositionBySeconds();
+    }
+    
+    public static final boolean isMusicPlaying()
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        return MUSIC.playing();
+    }
+    
+    public static final boolean isMusicLoaded()
+    {
+        return MUSIC != null;
+    }
+    
+    public static final void unloadMusic()
+    {
+        if(MUSIC == null)
+            throw new IllegalStateException();
+        MUSIC.unload();
+        MUSIC = null;
     }
     
     private static final class SoundItem
     {
         private final List<AudioManager> refs = new LinkedList<>();
+        private final String tag;
         private final Sound sound;
         private int play = 0;
         
-        private SoundItem(AudioManager reference, Sound sound)
+        private SoundItem(AudioManager reference, String tag, Sound sound)
         {
             refs.add(reference);
+            this.tag = tag;
             this.sound = sound;
         }
         
