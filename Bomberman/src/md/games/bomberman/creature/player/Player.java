@@ -119,7 +119,8 @@ public class Player extends Creature
         if(!hasScenarioReference() || bombs.size() >= maxBombs)
             return;
         Scenario scenario = getScenarioReference();
-        Tile tile = scenario.getTileManager().getLookAtTile(this);
+        //Tile tile = scenario.getTileManager().getLookAtTile(this);
+        Tile tile = scenario.getTileManager().getTileByPosition(getPosition());
         if(tile == null || !tile.canPutPlaceable())
             return;
         Bomb bomb = scenario.getBombBuilder().createBomb(primary ? primaryBombType : secondaryBombType,bombRange);
@@ -145,7 +146,7 @@ public class Player extends Creature
         if(bombs.isEmpty())
             return;
         ListIterator<Bomb> it = bombs.listIterator();
-        while(!it.hasNext())
+        while(it.hasNext())
         {
             Bomb bomb = it.next();
             if(bomb.hasExploited() || bomb.isDestroid())

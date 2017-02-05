@@ -117,7 +117,7 @@ public final class Tile extends LPLObject
     {
         if(placeable == null)
             return;
-        if(placeable.isPlacedOnTile())
+        if(!placeable.isPlacedOnTile())
             placeable = null;
         else placeable.removeFromTile();
     }

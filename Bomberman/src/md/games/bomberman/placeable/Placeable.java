@@ -28,6 +28,8 @@ public abstract class Placeable extends GameObject
             removeFromTile();
     }
     
+    public boolean isBomb() { return false; }
+    
     @Override
     public final boolean isPlaceable() { return true; }
     

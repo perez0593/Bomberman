@@ -81,7 +81,11 @@ public final class Scenario
         this.sender = sender;
     }
     public final ActionSender getActionSender() { return sender; }
-    public final void sendAction(Action action) { sender.sendAction(action); }
+    public final void sendAction(Action action)
+    {
+        if(sender != null)
+            sender.sendAction(action);
+    }
     
     public final Camera getCamera() { return camera; }
     

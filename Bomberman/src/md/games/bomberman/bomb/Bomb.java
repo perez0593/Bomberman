@@ -16,6 +16,7 @@ import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
 import md.games.bomberman.sprites.Sprite;
 import md.games.bomberman.sprites.SpriteUtils;
+import md.games.bomberman.util.Constants;
 import nt.lpl.types.LPLFunction;
 import nt.lpl.types.LPLValue;
 
@@ -46,6 +47,9 @@ public class Bomb extends Placeable
         this.remoteMode = remoteMode;
         this.timeRemaining = 1d;
         this.sprite = sprite;
+        
+        setSize(Constants.TILE_WIDTH,Constants.TILE_HEIGHT);
+        createBoundingBox();
     }
     
     public Bomb(int range, int damage, boolean remoteMode, Sprite sprite, double timeToExplode)
@@ -58,12 +62,18 @@ public class Bomb extends Placeable
         this.remoteMode = remoteMode;
         this.timeRemaining = timeToExplode;
         this.sprite = sprite;
+        
+        setSize(Constants.TILE_WIDTH,Constants.TILE_HEIGHT);
+        createBoundingBox();
     }
     
     public final int getRange() { return range; }
     public final int getDamage() { return damage; }
     public final boolean isTimingBomb() { return timingBomb; }
     public final boolean hasRemoteMode() { return remoteMode; }
+    
+    @Override
+    public final boolean isBomb() { return true; }
     
     public final void explodeByRemote()
     {
@@ -77,8 +87,10 @@ public class Bomb extends Placeable
         if(exploited || !hasScenarioReference() || !isPlacedOnTile())
             return;
         exploited = true;
-        explode(getScenarioReference().getTileManager(),getTilePlaced());
+        Tile tileOnPlaced = getTilePlaced();
+        TileManager tiles = getScenarioReference().getTileManager();
         destroy();
+        explode(tiles,tileOnPlaced);
     }
     protected void explode(TileManager tiles, Tile tileOnPlaced)
     {

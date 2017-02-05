@@ -18,6 +18,7 @@ import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
+import md.games.bomberman.placeable.Placeable;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
 import md.games.bomberman.util.Constants;
 
@@ -232,7 +233,12 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                 else {
                     tile = tiles[(row - i) * columns + column];
                     if(!tile.canPutPlaceable())
-                        block[0] = true;
+                    {
+                        Placeable p = tile.getPlaceable();
+                        if(!p.isBomb())
+                            block[0] = true;
+                        else tile.createExplosion(i == range-1 ? ExplosionId.END_UP : ExplosionId.VERTICAL);
+                    }
                     else tile.createExplosion(i == range-1 ? ExplosionId.END_UP : ExplosionId.VERTICAL);
                 }
             }
@@ -244,7 +250,12 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                 {
                     tile = tiles[(row + i) * columns + column];
                     if(!tile.canPutPlaceable())
-                        block[1] = true;
+                    {
+                        Placeable p = tile.getPlaceable();
+                        if(!p.isBomb())
+                            block[1] = true;
+                        else tile.createExplosion(i == range-1 ? ExplosionId.END_DOWN : ExplosionId.VERTICAL);
+                    }
                     else tile.createExplosion(i == range-1 ? ExplosionId.END_DOWN : ExplosionId.VERTICAL);
                 }
             }
@@ -256,7 +267,12 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                 {
                     tile = tiles[row * columns + (column - i)];
                     if(!tile.canPutPlaceable())
-                        block[2] = true;
+                    {
+                        Placeable p = tile.getPlaceable();
+                        if(!p.isBomb())
+                            block[2] = true;
+                        else tile.createExplosion(i == range-1 ? ExplosionId.END_LEFT : ExplosionId.HORIZONTAL);
+                    }
                     else tile.createExplosion(i == range-1 ? ExplosionId.END_LEFT : ExplosionId.HORIZONTAL);
                 }
             }
@@ -268,7 +284,12 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                 {
                     tile = tiles[row * columns + (column + i)];
                     if(!tile.canPutPlaceable())
-                        block[3] = true;
+                    {
+                        Placeable p = tile.getPlaceable();
+                        if(!p.isBomb())
+                            block[3] = true;
+                        else tile.createExplosion(i == range-1 ? ExplosionId.END_RIGHT : ExplosionId.HORIZONTAL);
+                    }
                     else tile.createExplosion(i == range-1 ? ExplosionId.END_RIGHT : ExplosionId.HORIZONTAL);
                 }
             }

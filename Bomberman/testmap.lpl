@@ -29,10 +29,14 @@ scenario->bindKey("W","P1_MOVE_UP");
 scenario->bindKey("S","P1_MOVE_DOWN");
 scenario->bindKey("A","P1_MOVE_LEFT");
 scenario->bindKey("D","P1_MOVE_RIGHT");
+scenario->bindKey("X","P1_PUT_BOMB");
+
+local feat = scenario->getPlayerFeatures()
+feat.maxBombs = 10
 
 
 //Set window config
-scenario->setWindowConfig(640,480,false)
+scenario->setWindowConfig(1920,1080,false)
 
 
 

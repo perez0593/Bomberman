@@ -147,7 +147,7 @@ public class AnimatedSprite
     private void reallocIterator()
     {
         if(end || !canContinue())
-                iterator = 0f;
+            iterator = 0f;
     }
 
     @Override
@@ -175,8 +175,9 @@ public class AnimatedSprite
     {
         reallocIterator();
         AffineTransform aold = g.getTransform();
+        int dx = x + ((int)iterator * width);
         g.transform(transf);
-        g.drawImage(base,0,0,width,height,x + ((int)iterator * width),y,width,height,null);
+        g.drawImage(base,0,0,width,height,dx,y,dx + width,y + height,null);
         g.setTransform(aold);
     }
 

@@ -29,6 +29,7 @@ import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.ScenarioManager;
 import md.games.bomberman.scenario.TileManager;
 import md.games.bomberman.util.CameraController;
+import md.games.bomberman.util.Constants;
 import nt.ntjg.NTJG;
 import nt.ntjg.NTJGFunctionalities;
 import nt.ntjg.NTJGInputEvent;
@@ -117,6 +118,8 @@ public final class Game
             scenarioManager = sloader.getScenarioManager();
             Scenario scenario = scenarioManager.getScenario();
             
+            scenario.getSpriteManager().loadAnimatedSprite("bombs.png",Constants.SPRITE_BOMB_NORMAL,20,20,4);
+            
             scenario.getCamera().setCustomViewport(sloader.getViewport().x,sloader.getViewport().y);
             scenario.setCameraLimits();
 
@@ -140,8 +143,8 @@ public final class Game
             NTJG.ntjgSetFullscreen(sloader.getIsFullscreen());
             
             AudioManager.init();
-            AudioManager.loadMusic("testMusic.wav");
-            AudioManager.loopMusic();
+            //AudioManager.loadMusic("testMusic.wav");
+            //AudioManager.loopMusic();
             NTJG.ntjgAddStopCallbackFunction(AudioManager::shutdown);
         }
         catch(Throwable th)

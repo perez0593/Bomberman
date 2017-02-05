@@ -41,6 +41,7 @@ public final class Constants
     
     
     public static final String SPRITE_BOMB_NORMAL = "bomb.normal";
+    public static final String SPRITE_EXPLOSIONS = "explosions";
     
     
     
