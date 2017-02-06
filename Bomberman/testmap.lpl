@@ -36,7 +36,7 @@ feat.maxBombs = 10
 
 
 //Set window config
-scenario->setWindowConfig(1920,1080,false)
+scenario->setWindowConfig(640,480,false)
 
 
 

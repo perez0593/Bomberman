@@ -15,6 +15,7 @@ import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.sprites.Sprite;
+import md.games.bomberman.sprites.SpriteManager;
 
 /**
  *
@@ -91,6 +92,16 @@ public class Rock extends Placeable
         /*BoundingBox box = getBoundingBox();
         g.setColor(Color.CYAN);
         g.drawRect((int)box.x0,(int)box.y0,(int)(box.x1-box.x0),(int)(box.y1-box.y0));*/
+    }
+    
+    @Override
+    public void reloadSprites(SpriteManager sprites)
+    {
+        if(sprite != null)
+        {
+            String tag = sprite.getSpriteTag();
+            sprite = sprites.getSprite(tag);
+        }
     }
 
     @Override

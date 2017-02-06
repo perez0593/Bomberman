@@ -93,12 +93,12 @@ public final class SpriteManager
         loadAnimations(Resource.SPRITES,path,enabledFlags);
     }
     
-    public final void loadScenarioTheme(String name) throws IOException
+    /*public final void loadScenarioTheme(String name) throws IOException
     {
         if(theme != null)
             throw new IllegalStateException("Another scenario theme is loaded");
         theme = ScenarioTheme.loadTheme(this,name);
-    }
+    }*/
     
     private BufferedImage loadRaw(Resource resource, String path) throws IOException
     {
@@ -126,14 +126,14 @@ public final class SpriteManager
         spriteCache.remove(tag);
     }
     
-    public final void unloadScenarioTheme()
+    /*public final void unloadScenarioTheme()
     {
         if(theme == null)
             throw new IllegalStateException("There is not any theme loaded");
         for(String tag : theme.getIterableTags())
             spriteCache.remove(tag);
         theme = null;
-    }
+    }*/
     
     public final <S extends Sprite<S>> S getSprite(String tag)
     {
@@ -141,5 +141,5 @@ public final class SpriteManager
         return s == null ? null : (S) s.duplicate();
     }
     
-    public final boolean hasThemeLoaded() { return theme != null; }
+    //public final boolean hasThemeLoaded() { return theme != null; }
 }

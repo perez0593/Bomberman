@@ -17,6 +17,7 @@ public final class ScenarioManager
 {
     private Scenario scenario;
     private final SpriteManager sprites;
+    private ScenarioTheme theme;
     
     public ScenarioManager(SpriteManager sprites)
     {
@@ -35,7 +36,19 @@ public final class ScenarioManager
     
     public final void loadTheme(String theme) throws IOException
     {
-        sprites.loadScenarioTheme(theme);
+        if(this.theme != null)
+            throw new IllegalStateException("Another scenario theme is loaded");
+        this.theme = ScenarioTheme.loadTheme(sprites,theme);
+    }
+    
+    public final void reloadTheme(String newTheme) throws IOException
+    {
+        if(theme == null)
+            throw new IllegalStateException("There are no theme loaded");
+        theme.unload();
+        theme = ScenarioTheme.loadTheme(sprites,newTheme);
+        if(scenario != null)
+            scenario.reloadSprites();
     }
     
     public final void update(double delta)

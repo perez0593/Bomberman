@@ -203,6 +203,13 @@ public final class Scenario
         }
     }
     
+    public final void reloadSprites()
+    {
+        for(GameObject go : objectHash.values())
+            go.reloadSprites(spriteManager);
+        tiles.reloadSprites(spriteManager);
+    }
+    
     public final Iterator<GameObject> findGameObjectsByTag(String tag)
     {
         return new CriteriaIterator<>(objectHash.values(),it -> {

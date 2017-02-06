@@ -174,6 +174,15 @@ public final class Tile extends LPLObject
         //g.drawRect((int)x,(int)y,(int)w,(int)h);
     }
     
+    final void reloadSprites(SpriteManager sprites)
+    {
+        if(sprite != null)
+        {
+            String tag = sprite.getSpriteTag();
+            sprite = sprites.getSprite(tag);
+        }
+    }
+    
     final void serialize(GameDataSaver gds) throws IOException
     {
         gds.writeIfNonNull(placeable,() -> gds.writeUUID(placeable.getId()));

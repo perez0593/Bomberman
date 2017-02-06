@@ -212,6 +212,13 @@ public abstract class Creature extends GameObject
     }
     
     @Override
+    public void reloadSprites(SpriteManager sprites)
+    {
+        String tag = animation.getSpriteTag();
+        animation = sprites.getSprite(tag);
+    }
+    
+    @Override
     protected void innerSerialize(GameDataSaver gds) throws IOException
     {
         hp.serialize(gds);

@@ -20,6 +20,7 @@ import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
 import md.games.bomberman.placeable.Placeable;
 import md.games.bomberman.scenario.Explosion.ExplosionId;
+import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.Constants;
 
 /**
@@ -360,6 +361,12 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                                 (int)tileSize.y);*/
             }
         }
+    }
+    
+    public final void reloadSprites(SpriteManager sprites)
+    {
+        for(Tile tile : tiles)
+            tile.reloadSprites(sprites);
     }
     
     public final void resize(int rows, int columns)

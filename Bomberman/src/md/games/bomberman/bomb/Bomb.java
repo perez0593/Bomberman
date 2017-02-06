@@ -7,14 +7,14 @@ package md.games.bomberman.bomb;
 
 import java.awt.Graphics2D;
 import java.io.IOException;
-import md.games.bomberman.geom.Vector2;
+import md.games.bomberman.creature.Creature;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
-import md.games.bomberman.creature.Creature;
 import md.games.bomberman.placeable.Placeable;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
 import md.games.bomberman.sprites.Sprite;
+import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.sprites.SpriteUtils;
 import md.games.bomberman.util.Constants;
 import nt.lpl.types.LPLFunction;
@@ -138,6 +138,16 @@ public class Bomb extends Placeable
                 SpriteUtils.drawGameObjectSprite(this,g,sprite);
         }
     }
+    
+    @Override
+    public void reloadSprites(SpriteManager sprites)
+    {
+        if(sprite != null)
+        {
+            String tag = sprite.getSpriteTag();
+            sprite = sprites.getSprite(tag);
+        }
+    }
 
     @Override
     protected void innerSerialize(GameDataSaver gds) throws IOException
@@ -161,11 +171,6 @@ public class Bomb extends Placeable
         timeRemaining = gdl.readDouble();
         fireResistence = gdl.readInt();
         exploited = gdl.readBoolean();
-    }
-    
-    public static final void initBombSprites()
-    {
-        //TODO
     }
 
     @Override

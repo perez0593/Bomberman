@@ -17,8 +17,7 @@ import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
-import md.games.bomberman.scenario.Camera;
-import md.games.bomberman.scenario.Scenario;
+import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.Utils;
 import md.games.bomberman.util.Utils.SweptInfo;
 import nt.lpl.LPLRuntimeException;
@@ -267,6 +266,8 @@ public abstract class GameObject
     
     public abstract void update(double delta);
     public abstract void draw(Graphics2D g);
+    
+    public abstract void reloadSprites(SpriteManager sprites);
     
     /* Input/Output */
     @Override

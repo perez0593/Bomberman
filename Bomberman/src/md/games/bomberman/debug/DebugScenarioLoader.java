@@ -129,6 +129,11 @@ public final class DebugScenarioLoader extends LPLObject
             return;
         InputController.assignPeripheralIdToMask(code,mask);
     });
+    private static final LPLValue ADD_SCRIPT = LPLFunction.createVFunction((arg0, arg1, arg2) -> {
+        DebugScenarioLoader loader = arg0.toLPLObject();
+        
+        
+    });
     
     
     

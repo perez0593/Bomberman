@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import md.games.bomberman.creature.Creature;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
+import md.games.bomberman.sprites.SpriteManager;
 import nt.lpl.types.LPLValue;
 
 /**
@@ -26,11 +27,13 @@ public class CollectiblesStack extends Collectible
         if(c.isStack())
             stack.addAll(((CollectiblesStack)c).stack);
         else stack.add(c);
+        c.setScenarioReference(null);
     }
     
     public final void addCollectible(CollectiblesStack cstack)
     {
         stack.addAll(cstack.stack);
+        cstack.setScenarioReference(null);
     }
     
     @Override
@@ -64,6 +67,13 @@ public class CollectiblesStack extends Collectible
     public void draw(Graphics2D g)
     {
         
+    }
+    
+    @Override
+    public void reloadSprites(SpriteManager sprites)
+    {
+        for(Collectible c : stack)
+            c.reloadSprites(sprites);
     }
 
     @Override

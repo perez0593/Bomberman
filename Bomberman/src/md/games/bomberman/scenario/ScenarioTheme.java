@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
+import md.games.bomberman.audio.AudioManager;
 import md.games.bomberman.io.Resource;
 import md.games.bomberman.sprites.SpriteManager;
 import nt.dal.DAL;
@@ -29,6 +30,7 @@ public final class ScenarioTheme
     
     private final String name;
     private final SpriteManager smanager;
+    private final AudioManager sounds;
     private final LinkedList<String> cache;
     
     private ScenarioTheme(SpriteManager smanager, String name)
@@ -39,10 +41,18 @@ public final class ScenarioTheme
             throw new NullPointerException();
         this.name = name;
         this.smanager = smanager;
+        this.sounds = AudioManager.createSoundsReference();
         cache = new LinkedList<>();
     }
     
     public final Iterable<String> getIterableTags() { return cache; }
+    
+    public final void unload()
+    {
+        for(String tag : cache)
+            smanager.unloadSprite(tag);
+        sounds.clearSounds();
+    }
     
     public static final ScenarioTheme loadTheme(SpriteManager smanager, String name) throws FileNotFoundException, IOException
     {
