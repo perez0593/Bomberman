@@ -17,12 +17,14 @@ import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
+import md.games.bomberman.script.Script;
+import md.games.bomberman.script.ScriptId;
+import md.games.bomberman.script.ScriptUser;
 import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.Utils;
 import md.games.bomberman.util.Utils.SweptInfo;
 import nt.lpl.LPLRuntimeException;
 import nt.lpl.types.LPLFunction;
-import nt.lpl.types.LPLObject;
 import nt.lpl.types.LPLValue;
 
 /**
@@ -30,7 +32,7 @@ import nt.lpl.types.LPLValue;
  * @author Asus
  */
 public abstract class GameObject
-        extends LPLObject
+        extends ScriptUser
         implements SerializableObject
 {
     private UUID uid = null;
@@ -42,6 +44,7 @@ public abstract class GameObject
     private String tag;
     private Scenario scenario;
     private boolean destroid;
+    private Script onCreate, onDestroy;
     
     public GameObject()
     {
@@ -65,7 +68,10 @@ public abstract class GameObject
     public final void setScenarioReference(Scenario scenario)
     {
         if(uid == null)
+        {
             uid = UUID.randomUUID();
+            executeScript(ScriptId.ON_CREATE);
+        }
         this.scenario = scenario;
     }
     public final Scenario getScenarioReference() { return scenario; }
@@ -76,6 +82,7 @@ public abstract class GameObject
         if(!destroid)
         {
             destroid = true;
+            executeScript(ScriptId.ON_DESTROY);
             innerDestroy();
             localData.clear();
             destroyBoundingBox();
@@ -268,6 +275,30 @@ public abstract class GameObject
     public abstract void draw(Graphics2D g);
     
     public abstract void reloadSprites(SpriteManager sprites);
+    
+    @Override
+    public void setScript(ScriptId id, Script script)
+    {
+        switch(id)
+        {
+            case ON_CREATE: onCreate = script; break;
+            case ON_DESTROY: onDestroy = script; break;
+        }
+    }
+    
+    @Override
+    public Script getScript(ScriptId id)
+    {
+        switch(id)
+        {
+            default: return null;
+            case ON_CREATE: return onCreate;
+            case ON_DESTROY: return onDestroy;
+        }
+    }
+    
+    @Override
+    public final void removeScript(ScriptId id) { setScript(id,null); }
     
     /* Input/Output */
     @Override

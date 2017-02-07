@@ -19,6 +19,7 @@ import nt.lpl.LPLGlobals;
 import nt.lpl.LPLRuntimeException;
 import nt.lpl.compiler.LPLCompilerException;
 import nt.lpl.types.LPLFunction;
+import nt.lpl.types.LPLIterator;
 import nt.lpl.types.LPLObject;
 import nt.lpl.types.LPLValue;
 import static nt.lpl.types.LPLValue.FALSE;
@@ -78,12 +79,17 @@ public final class ScriptManager implements SerializableObject
         decorateGlobals(globals,compiledScripts);
         LPLClassLoader cl = new LPLClassLoader(getClass().getClassLoader());
         scripts.values().stream().filter(s -> !s.isCompiled()).forEach(s -> {
-            try(ByteArrayInputStream bais = new ByteArrayInputStream(s.getCode().getBytes()))
+            StringBuilder sb = new StringBuilder();
+            sb.append("Scripts[\"").append(s.getName()).append("\"] = function(args)\n\t");
+            sb.append(s.getCode().replace("\n","\n\t")).append("\nend\n");
+            try(ByteArrayInputStream bais = new ByteArrayInputStream(sb.toString().getBytes()))
             {
                 LPLValue hashGlobals = new LPLObjectInstance();
                 LPLGlobals subGlobals = LPLGlobals.wrap(globals,hashGlobals);
                 LPLFunction closure = LPLCompiler.compile(bais,s.getName(),cl,subGlobals);
-                s.setClosure(closure);
+                compiledScripts.lastGlobals = hashGlobals;
+                closure.call();
+                s.setClosure(compiledScripts.scripts.get(s.getName()).closure);
                 compiledScripts.scripts.put(s.getName(),new CompiledScript(s.getName(),closure,hashGlobals));
             }
             catch(Throwable ex)
@@ -91,23 +97,41 @@ public final class ScriptManager implements SerializableObject
                 s.setClosure(null);
             }
         });
+        compiledScripts.canput = false;
     }
     
-    public final LPLValue executeScript(LPLObject executor, String script)
+    public final LPLValue executeScript(LPLObject executor, String script, ScriptId id)
     {
         Script s = scripts.get(script);
         if(s != null)
         {
             currentExecutor = executor;
-            return s.execute();
+            return s.execute(new ScriptParameters(id));
         }
         return UNDEFINED;
     }
     
-    final LPLValue executeScript(LPLObject executor, Script script)
+    public final LPLValue executeScript(LPLObject executor, String script, ScriptId id, LPLValue... args)
+    {
+        Script s = scripts.get(script);
+        if(s != null)
+        {
+            currentExecutor = executor;
+            return s.execute(new ScriptParameters(id,args));
+        }
+        return UNDEFINED;
+    }
+    
+    final LPLValue executeScript(LPLObject executor, Script script, ScriptId id)
     {
         currentExecutor = executor;
-        return script.execute();
+        return script.execute(new ScriptParameters(id));
+    }
+    
+    final LPLValue executeScript(LPLObject executor, Script script, ScriptId id, LPLValue[] args)
+    {
+        currentExecutor = executor;
+        return script.execute(new ScriptParameters(id,args));
     }
     
     final LPLObject getCurrentExecutor() { return currentExecutor; }
@@ -179,12 +203,26 @@ public final class ScriptManager implements SerializableObject
     private static final class ScriptsObject extends LPLObject
     {
         private final HashMap<String, CompiledScript> scripts = new HashMap<>();
+        private LPLValue lastGlobals = null;
+        private boolean canput = true;
         
         @Override
         public final LPLValue getAttribute(LPLValue key)
         {
             CompiledScript cs = scripts.get(key.toJavaString());
             return cs == null ? LPLValue.UNDEFINED : cs;
+        }
+        
+        @Override
+        public final LPLValue setAttribute(LPLValue key, LPLValue value)
+        {
+            if(!canput)
+                throw new LPLRuntimeException("Cannot set any script in runtime");
+            String name = key.toJavaString();
+            CompiledScript cs;
+            scripts.put(key.toJavaString(),cs = new CompiledScript(name,(LPLFunction)value,lastGlobals));
+            lastGlobals = null;
+            return cs;
         }
         
         @Override
@@ -232,6 +270,57 @@ public final class ScriptManager implements SerializableObject
                 case "name": return valueOf(name);
                 case "data": return data;
             }
+        }
+    }
+    
+    private static final class ScriptParameters extends LPLObject
+    {
+        private final LPLValue id;
+        private final LPLValue[] args;
+        
+        private ScriptParameters(ScriptId id, LPLValue[] args)
+        {
+            this.id = valueOf(id.name());
+            this.args = args;
+        }
+        
+        private ScriptParameters(ScriptId id)
+        {
+            this.id = valueOf(id.name());
+            this.args = new LPLValue[0];
+        }
+        
+        @Override
+        public final LPLValue length() { return valueOf(args.length); }
+        
+        @Override
+        public final LPLValue getAttribute(LPLValue key)
+        {
+            if(key.isString())
+            {
+                switch(key.toJavaString())
+                {
+                    default: return UNDEFINED;
+                    case "id": return id;
+                    case "size": return valueOf(args.length);
+                }
+            }
+            return args[key.toJavaInt()];
+        }
+        
+        @Override
+        public final LPLIterator createIterator()
+        {
+            return new LPLIterator()
+            {
+                private int it = 0;
+                
+                @Override
+                public final boolean hasNext() { return it < args.length; }
+
+                @Override
+                public final LPLVarargs next() { return args[it++]; }
+            };
         }
     }
 }

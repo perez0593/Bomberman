@@ -46,13 +46,19 @@ public class Script
     final void setCompiled(boolean compiled) { this.compiled = compiled; }
     final boolean isCompiled() { return compiled; }
     
-    public final LPLValue execute(LPLObject executor)
+    public final LPLValue execute(LPLObject executor, ScriptId id)
     {
         if(executor == null)
             throw new NullPointerException();
-        return manager.executeScript(executor,this);
+        return manager.executeScript(executor,this,id);
     }
-    final LPLValue execute() { return closure.call().arg0(); }
+    public final LPLValue execute(LPLObject executor, ScriptId id, LPLValue[] args)
+    {
+        if(executor == null)
+            throw new NullPointerException();
+        return manager.executeScript(executor,this,id,args);
+    }
+    final LPLValue execute(LPLValue args) { return closure.call(args).arg0(); }
     
     public static final LPLObject OBJECT_INVALID = new LPLObject();
 }
