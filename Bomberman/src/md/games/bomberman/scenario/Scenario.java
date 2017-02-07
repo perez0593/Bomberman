@@ -258,6 +258,7 @@ public final class Scenario
     public final TileManager getTileManager() { return tiles; }
     public final DeathBorder getDeathBorder() { return dborder; }
     public final BombBuilder getBombBuilder() { return bombBuilder; }
+    public final ScriptManager getScriptManager() { return scripts; }
     public final RNG getRNG() { return rng; }
     
     

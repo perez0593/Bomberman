@@ -25,6 +25,8 @@ import static nt.lpl.types.LPLValue.FALSE;
 import static nt.lpl.types.LPLValue.NULL;
 import static nt.lpl.types.LPLValue.TRUE;
 import static nt.lpl.types.LPLValue.UNDEFINED;
+import nt.lpl.types.LPLVarargs;
+import nt.lpl.types.objects.LPLObjectInstance;
 
 /**
  *
@@ -72,14 +74,17 @@ public final class ScriptManager implements SerializableObject
     
     public final void compileAll(LPLGlobals globals)
     {
-        decorateGlobals(globals);
+        ScriptsObject compiledScripts = new ScriptsObject();
+        decorateGlobals(globals,compiledScripts);
         LPLClassLoader cl = new LPLClassLoader(getClass().getClassLoader());
-        scripts.values().stream().filter(s -> s.isCompiled()).forEach(s -> {
+        scripts.values().stream().filter(s -> !s.isCompiled()).forEach(s -> {
             try(ByteArrayInputStream bais = new ByteArrayInputStream(s.getCode().getBytes()))
             {
-                LPLGlobals subGlobals = LPLGlobals.createGlobals(globals);
+                LPLValue hashGlobals = new LPLObjectInstance();
+                LPLGlobals subGlobals = LPLGlobals.wrap(globals,hashGlobals);
                 LPLFunction closure = LPLCompiler.compile(bais,s.getName(),cl,subGlobals);
                 s.setClosure(closure);
+                compiledScripts.scripts.put(s.getName(),new CompiledScript(s.getName(),closure,hashGlobals));
             }
             catch(Throwable ex)
             {
@@ -133,14 +138,15 @@ public final class ScriptManager implements SerializableObject
         }
     }
     
-    private void decorateGlobals(LPLGlobals globals)
+    private void decorateGlobals(LPLGlobals globals, ScriptsObject scripts)
     {
-        globals.setGlobalValue("ExecuteScript",LPLFunction.createFunction((arg0) -> {
+        /*globals.setGlobalValue("ExecuteScript",LPLFunction.createFunction((arg0) -> {
             Script s = getScript(arg0.toJavaString());
             if(s == null)
                 throw new LPLRuntimeException("Script " + arg0 + " not found");
             return s.execute();
-        }));
+        }));*/
+        globals.setGlobalValue("Scripts",scripts);
         
         HashMap<LPLValue, LPLValue> localData = new HashMap<>();
         
@@ -167,5 +173,65 @@ public final class ScriptManager implements SerializableObject
                 throw new LPLRuntimeException("Invalid UNDEFINED value");
             localData.remove(arg0);
         }));
+    }
+    
+    
+    private static final class ScriptsObject extends LPLObject
+    {
+        private final HashMap<String, CompiledScript> scripts = new HashMap<>();
+        
+        @Override
+        public final LPLValue getAttribute(LPLValue key)
+        {
+            CompiledScript cs = scripts.get(key.toJavaString());
+            return cs == null ? LPLValue.UNDEFINED : cs;
+        }
+        
+        @Override
+        public final LPLValue length() { return valueOf(scripts.size()); }
+        
+        @Override
+        public final LPLValue in(LPLValue key) { return valueOf(scripts.containsKey(key.toJavaString())); }
+    }
+    
+    
+    private static final class CompiledScript extends LPLObject
+    {
+        private final LPLFunction closure;
+        private final String name;
+        private final LPLValue data;
+        
+        private CompiledScript(String name, LPLFunction closure, LPLValue data)
+        {
+            this.closure = closure;
+            this.name = name;
+            this.data = data;
+        }
+        
+        @Override
+        public final LPLVarargs call() { return closure.call(); }
+        
+        @Override
+        public final LPLVarargs call(LPLValue arg0) { return closure.call(arg0); }
+        
+        @Override
+        public final LPLVarargs call(LPLValue arg0, LPLValue arg1) { return closure.call(arg0,arg1); }
+        
+        @Override
+        public final LPLVarargs call(LPLValue arg0, LPLValue arg1, LPLValue arg2) { return closure.call(arg0,arg1,arg2); }
+        
+        @Override
+        public final LPLVarargs call(LPLVarargs args) { return closure.call(args); }
+        
+        @Override
+        public final LPLValue getAttribute(LPLValue key)
+        {
+            switch(key.toJavaString())
+            {
+                default: return UNDEFINED;
+                case "name": return valueOf(name);
+                case "data": return data;
+            }
+        }
     }
 }

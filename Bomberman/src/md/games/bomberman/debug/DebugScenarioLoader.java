@@ -6,8 +6,12 @@
 package md.games.bomberman.debug;
 
 import java.awt.Point;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import md.games.bomberman.creature.player.PlayerFeatures;
 import md.games.bomberman.geom.Vector2;
@@ -21,6 +25,8 @@ import md.games.bomberman.placeable.RockType;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.ScenarioManager;
 import md.games.bomberman.scenario.Tile;
+import md.games.bomberman.script.Script;
+import md.games.bomberman.script.ScriptManager;
 import nt.lpl.LPLEnvironment;
 import nt.lpl.LPLGlobals;
 import nt.lpl.LPLRuntimeException;
@@ -59,6 +65,8 @@ public final class DebugScenarioLoader extends LPLObject
         globals.setGlobalValue("CreateScenario",loader.SCENARIO_INIT);
         LPLFunction func = loader.env.compile(file,"ScenarioLoaderScript",globals);
         func.call();
+        LPLGlobals subGlobals = LPLGlobals.createGlobals(globals);
+        loader.scenario.getScriptManager().compileAll(subGlobals);
         return loader;
     }
     
@@ -81,6 +89,7 @@ public final class DebugScenarioLoader extends LPLObject
             case "initTiles": return INIT_TILES;
             case "setWindowConfig": return SET_WINDOW_CONFIG;
             case "bindKey": return BIND_KEY;
+            case "addScript": return ADD_SCRIPT;
         }
     }
     
@@ -131,8 +140,15 @@ public final class DebugScenarioLoader extends LPLObject
     });
     private static final LPLValue ADD_SCRIPT = LPLFunction.createVFunction((arg0, arg1, arg2) -> {
         DebugScenarioLoader loader = arg0.toLPLObject();
-        
-        
+        File file = new File(arg2.toJavaString());
+        if(!file.exists() || !file.isFile())
+            return;
+        ScriptManager scripts = loader.scenario.getScriptManager();
+        Script s = scripts.createScript(arg1.toJavaString());
+        String code = extractStringFromFile(file);
+        if(code == null)
+            return;
+        s.setCode(code);
     });
     
     
@@ -159,6 +175,25 @@ public final class DebugScenarioLoader extends LPLObject
         catch(NoSuchFieldException | IllegalAccessException ex)
         {
             return -1;
+        }
+    }
+    
+    private static String extractStringFromFile(File file)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.setLength((int) (file.length() / 2));
+        char[] buffer = new char[8192];
+        int len;
+        try(FileReader fr = new FileReader(file))
+        {
+            while((len = fr.read(buffer)) > 0)
+                sb.append(buffer,0,len);
+            return sb.toString();
+        }
+        catch(IOException ex)
+        {
+            ex.printStackTrace(System.err);
+            return null;
         }
     }
     

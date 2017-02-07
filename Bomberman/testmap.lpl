@@ -35,6 +35,9 @@ local feat = scenario->getPlayerFeatures()
 feat.maxBombs = 10
 
 
+scenario->addScript("script_test01","script_test01.lpl")
+
+
 //Set window config
 scenario->setWindowConfig(640,480,false)
 
