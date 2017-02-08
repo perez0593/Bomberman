@@ -12,6 +12,7 @@ import java.util.Map;
 import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
+import md.games.bomberman.scenario.GameObject;
 import nt.lpl.LPLClassLoader;
 import nt.lpl.LPLCompiler;
 import nt.lpl.LPLEnvironment;
@@ -196,6 +197,33 @@ public final class ScriptManager implements SerializableObject
             if(arg0 == UNDEFINED)
                 throw new LPLRuntimeException("Invalid UNDEFINED value");
             localData.remove(arg0);
+        }));
+        
+        
+        globals.setGlobalValue("AssignScriptToObject",LPLFunction.createVFunction((arg0, arg1, arg2) -> {
+            GameObject go = arg0.toLPLObject();
+            ScriptId id = ScriptId.decode(arg1);
+            if(id == null)
+                throw new LPLRuntimeException("Invalid ScriptId: " + arg1);
+            Script script = getScript(arg2.toJavaString());
+            if(script == null)
+                throw new LPLRuntimeException("Script \"" + arg2 + "\" not found");
+            go.setScript(id,script);
+        }));
+        globals.setGlobalValue("GetScriptFromObject",LPLFunction.createFunction((arg0, arg1) -> {
+            GameObject go = arg0.toLPLObject();
+            ScriptId id = ScriptId.decode(arg1);
+            if(id == null)
+                throw new LPLRuntimeException("Invalid ScriptId: " + arg1);
+            Script script = go.getScript(id);
+            return script == null ? NULL : LPLValue.valueOf(script.getName());
+        }));
+        globals.setGlobalValue("UnassignScriptFromObject",LPLFunction.createVFunction((arg0, arg1) -> {
+            GameObject go = arg0.toLPLObject();
+            ScriptId id = ScriptId.decode(arg1);
+            if(id == null)
+                throw new LPLRuntimeException("Invalid ScriptId: " + arg1);
+            go.removeScript(id);
         }));
     }
     
