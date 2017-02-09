@@ -6,12 +6,9 @@
 package md.games.bomberman.debug;
 
 import java.awt.Point;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import md.games.bomberman.creature.player.PlayerFeatures;
 import md.games.bomberman.geom.Vector2;
@@ -66,7 +63,7 @@ public final class DebugScenarioLoader extends LPLObject
         LPLFunction func = loader.env.compile(file,"ScenarioLoaderScript",globals);
         func.call();
         LPLGlobals subGlobals = LPLGlobals.createGlobals(globals);
-        loader.scenario.getScriptManager().compileAll(subGlobals);
+        loader.scenario.getScriptManager().compileAll(loader.scenario,subGlobals);
         return loader;
     }
     
@@ -90,6 +87,7 @@ public final class DebugScenarioLoader extends LPLObject
             case "setWindowConfig": return SET_WINDOW_CONFIG;
             case "bindKey": return BIND_KEY;
             case "addScript": return ADD_SCRIPT;
+            case "setOnInitScript": return SET_ON_INIT_SCRIPT;
         }
     }
     
@@ -149,6 +147,10 @@ public final class DebugScenarioLoader extends LPLObject
         if(code == null)
             return;
         s.setCode(code);
+    });
+    private static final LPLValue SET_ON_INIT_SCRIPT = LPLFunction.createVFunction((arg0, arg1) -> {
+        DebugScenarioLoader loader = arg0.toLPLObject();
+        loader.scenario.setOnInitScript(arg1.toJavaString());
     });
     
     

@@ -1,3 +1,15 @@
 
 print "hello world testing"
 
+for c in Scenario->findObjectByUserCriteria(function(obj)
+	return obj->getObjectType() == 0 and obj->isPlayerCreature()
+end)
+	print c->getTag()..": "..c->getObjectType()
+end
+
+local count = 0
+for obj in Scenario->findObjectByUserCriteria(function(obj) return true end)
+	print count..": "..obj->getTag()..", "..obj->getObjectType()
+	count++
+end
+

@@ -206,7 +206,10 @@ public class Player extends Creature
     @Override
     protected LPLValue getAttribute(String key)
     {
-        return null;
+        switch(key)
+        {
+            default: return super.getAttribute(key);
+        }
     }
     
 }

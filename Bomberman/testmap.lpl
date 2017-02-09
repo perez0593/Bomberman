@@ -36,6 +36,7 @@ feat.maxBombs = 10
 
 
 scenario->addScript("script_test01","script_test01.lpl")
+scenario->setOnInitScript("script_test01")
 
 
 //Set window config

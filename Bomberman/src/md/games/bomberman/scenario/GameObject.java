@@ -318,6 +318,8 @@ public abstract class GameObject
             gds.writeUTF(e.getKey());
             gds.writeLPL(e.getValue());
         }
+        gds.writeIfNonNull(onCreate,() -> gds.writeScript(onCreate));
+        gds.writeIfNonNull(onDestroy,() -> gds.writeScript(onDestroy));
         innerSerialize(gds);
     }
     protected abstract void innerSerialize(GameDataSaver gds) throws IOException;
@@ -334,6 +336,8 @@ public abstract class GameObject
         int len = gdl.readInt();
         for(int i=0;i<len;i++)
             localData.put(gdl.readUTF(),gdl.readLPL());
+        gdl.readIfNonNull(() -> onCreate = gdl.readScript());
+        gdl.readIfNonNull(() -> onDestroy = gdl.readScript());
         innerUnserialize(gdl);
     }
     protected abstract void innerUnserialize(GameDataLoader gdl) throws IOException;
@@ -386,6 +390,7 @@ public abstract class GameObject
             case "getSizeHeight": return GET_SIZE_HEIGHT;
             case "setDirection": return SET_DIRECTION;
             case "getDirection": return GET_DIRECTION;
+            case "getObjectType": return GET_OBJECT_TYPE;
         }
     }
     protected abstract LPLValue getAttribute(String key);
@@ -478,5 +483,8 @@ public abstract class GameObject
     });
     private static final LPLValue GET_DIRECTION = LPLFunction.createFunction((arg0) -> {
         return valueOf(arg0.<GameObject>toLPLObject().getDirection());
+    });
+    private static final LPLValue GET_OBJECT_TYPE = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<GameObject>toLPLObject().getGameObjectType());
     });
 }

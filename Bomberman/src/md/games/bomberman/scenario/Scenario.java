@@ -27,16 +27,20 @@ import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.scenario.action.Action;
 import md.games.bomberman.scenario.action.ActionReceiver;
 import md.games.bomberman.scenario.action.ActionSender;
+import md.games.bomberman.script.Script;
 import md.games.bomberman.script.ScriptManager;
 import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.CriteriaIterator;
 import md.games.bomberman.util.RNG;
+import nt.lpl.types.LPLFunction;
+import nt.lpl.types.LPLObject;
+import nt.lpl.types.LPLValue;
 
 /**
  *
  * @author mpasc
  */
-public final class Scenario
+public final class Scenario extends LPLObject
 {
     private final SpriteManager spriteManager;
     private TileManager tiles;
@@ -47,6 +51,7 @@ public final class Scenario
     private final HashMap<UUID, GameObject> objectHash = new HashMap<>();
     private final Camera camera = new Camera();
     private final RNG rng = new RNG();
+    private Script onInit;
     private ActionSender sender;
     private ActionReceiver receiver;
     
@@ -148,6 +153,17 @@ public final class Scenario
         Vector2 tsize = tiles.getSize();
         camera.setLimitedScope(tiles.getPosition(),tiles.getPosition().add(tsize));
     }
+    
+    public final void setOnInitScript(String script)
+    {
+        Script s = scripts.getScript(script);
+        if(s == null)
+            throw new IllegalArgumentException("Script \"" + script + "\" does not exists");
+        onInit = s;
+    }
+    public final Script getOnInitScript() { return onInit; }
+    public final void removeOnInitScript() { onInit = null; }
+    
     
     
     
@@ -275,6 +291,7 @@ public final class Scenario
         gds.writeInt(scenario.creatures.size());
         for(Creature c : scenario.creatures)
             gds.writeUUID(c.getId());
+        gds.writeIfNonNull(scenario.onInit,() -> gds.writeScript(scenario.onInit));
     }
     public static final void store(Scenario scenario, File file) throws IOException
     {
@@ -304,6 +321,7 @@ public final class Scenario
             GameObject go = scenario.objectHash.get(gdl.readUUID());
             scenario.creatures.add((Creature) go);
         }
+        gdl.readIfNonNull(() -> scenario.onInit = gdl.readScript());
         return scenario;
     }
     public static final Scenario load(SpriteManager sprites, File file) throws IOException
@@ -313,4 +331,30 @@ public final class Scenario
             return load(sprites,fis);
         }
     }
+    
+    
+    
+    
+    @Override
+    public final LPLValue getAttribute(LPLValue key)
+    {
+        switch(key.toJavaString())
+        {
+            default: return UNDEFINED;
+            case "addCreature": return ADD_CREATURE;
+            case "findObjectByTag": return FIND_OBJECT_BY_TAG;
+            case "findObjectByUserCriteria": return FIND_OBJECT_BY_USER_CRITERIA;
+        }
+    }
+    
+    
+    private static final LPLValue ADD_CREATURE = LPLFunction.createVFunction((arg0, arg1) -> {
+        arg0.<Scenario>toLPLObject().addCreature(arg1.toLPLObject());
+    });
+    private static final LPLValue FIND_OBJECT_BY_TAG = LPLFunction.createFunction((arg0, arg1) -> {
+        return valueOf(arg0.<Scenario>toLPLObject().findGameObjectsByTag(arg1.toString()));
+    });
+    private static final LPLValue FIND_OBJECT_BY_USER_CRITERIA = LPLFunction.createFunction((arg0, arg1) -> {
+        return valueOf(arg0.<Scenario>toLPLObject().findGameObjectByUserCriteria(c -> arg1.callLimited(c).toJavaBoolean()));
+    });
 }

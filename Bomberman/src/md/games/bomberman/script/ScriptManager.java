@@ -13,6 +13,7 @@ import md.games.bomberman.io.GameDataLoader;
 import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
 import md.games.bomberman.scenario.GameObject;
+import md.games.bomberman.scenario.Scenario;
 import nt.lpl.LPLClassLoader;
 import nt.lpl.LPLCompiler;
 import nt.lpl.LPLEnvironment;
@@ -74,10 +75,10 @@ public final class ScriptManager implements SerializableObject
         catch(IOException ex) {}
     }
     
-    public final void compileAll(LPLGlobals globals)
+    public final void compileAll(Scenario scenario, LPLGlobals globals)
     {
         ScriptsObject compiledScripts = new ScriptsObject();
-        decorateGlobals(globals,compiledScripts);
+        decorateGlobals(globals,scenario,compiledScripts);
         LPLClassLoader cl = new LPLClassLoader(getClass().getClassLoader());
         scripts.values().stream().filter(s -> !s.isCompiled()).forEach(s -> {
             StringBuilder sb = new StringBuilder();
@@ -163,7 +164,7 @@ public final class ScriptManager implements SerializableObject
         }
     }
     
-    private void decorateGlobals(LPLGlobals globals, ScriptsObject scripts)
+    private void decorateGlobals(LPLGlobals globals, Scenario scenario, ScriptsObject scripts)
     {
         /*globals.setGlobalValue("ExecuteScript",LPLFunction.createFunction((arg0) -> {
             Script s = getScript(arg0.toJavaString());
@@ -172,6 +173,7 @@ public final class ScriptManager implements SerializableObject
             return s.execute();
         }));*/
         globals.setGlobalValue("Scripts",scripts);
+        globals.setGlobalValue("Scenario",scenario);
         
         HashMap<LPLValue, LPLValue> localData = new HashMap<>();
         

@@ -21,6 +21,8 @@ import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.Constants;
 import md.games.bomberman.util.Direction;
 import md.games.bomberman.util.Utils.SweptInfo;
+import nt.lpl.types.LPLFunction;
+import nt.lpl.types.LPLValue;
 
 /**
  *
@@ -233,4 +235,18 @@ public abstract class Creature extends GameObject
         speedRatio = gdl.readDouble();
         speed.set(gdl.readVector2());
     }
+    
+    @Override
+    protected LPLValue getAttribute(String key)
+    {
+        switch(key)
+        {
+            default: return null;
+            case "isPlayerCreature": return IS_PLAYER_CREATURE;
+        }
+    }
+    
+    private static final LPLValue IS_PLAYER_CREATURE = LPLFunction.createFunction((arg0) -> {
+        return valueOf(arg0.<Creature>toLPLObject().isPlayer());
+    });
 }

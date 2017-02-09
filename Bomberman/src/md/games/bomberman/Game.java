@@ -28,6 +28,8 @@ import md.games.bomberman.scenario.Camera;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.ScenarioManager;
 import md.games.bomberman.scenario.TileManager;
+import md.games.bomberman.script.Script;
+import md.games.bomberman.script.ScriptId;
 import md.games.bomberman.util.CameraController;
 import md.games.bomberman.util.Constants;
 import nt.ntjg.NTJG;
@@ -51,6 +53,9 @@ public final class Game
         InputController.initController();
         InputController.addListener(this);
         startDebugScenario();
+        Script onInit = scenarioManager.getScenario().getOnInitScript();
+        if(onInit != null)
+            onInit.execute(Script.OBJECT_INVALID,ScriptId.ON_CREATE);
     }
 
     @Override
