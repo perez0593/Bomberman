@@ -27,6 +27,8 @@ import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.scenario.action.Action;
 import md.games.bomberman.scenario.action.ActionReceiver;
 import md.games.bomberman.scenario.action.ActionSender;
+import md.games.bomberman.scenario.event.ScenarioEvent;
+import md.games.bomberman.scenario.event.ScenarioEventManager;
 import md.games.bomberman.script.Script;
 import md.games.bomberman.script.ScriptManager;
 import md.games.bomberman.sprites.SpriteManager;
@@ -49,6 +51,7 @@ public final class Scenario extends LPLObject
     private final BombBuilder bombBuilder;
     private final LinkedList<Creature> creatures = new LinkedList<>();
     private final HashMap<UUID, GameObject> objectHash = new HashMap<>();
+    private final ScenarioEventManager events = new ScenarioEventManager();
     private final Camera camera = new Camera();
     private final RNG rng = new RNG();
     private Script onInit;
@@ -164,6 +167,8 @@ public final class Scenario extends LPLObject
     public final Script getOnInitScript() { return onInit; }
     public final void removeOnInitScript() { onInit = null; }
     
+    public final void addEvent(ScenarioEvent event) { events.addEvent(event); }
+    
     
     
     
@@ -186,6 +191,7 @@ public final class Scenario extends LPLObject
     {
         tiles.update(delta);
         updateCreatures(delta);
+        events.dispatchEvents(this,delta);
     }
     
     private void updateCreatures(double delta)
@@ -275,6 +281,7 @@ public final class Scenario extends LPLObject
     public final DeathBorder getDeathBorder() { return dborder; }
     public final BombBuilder getBombBuilder() { return bombBuilder; }
     public final ScriptManager getScriptManager() { return scripts; }
+    public final ScenarioEventManager getEventManager() { return events; }
     public final RNG getRNG() { return rng; }
     
     
@@ -344,6 +351,8 @@ public final class Scenario extends LPLObject
             case "addCreature": return ADD_CREATURE;
             case "findObjectByTag": return FIND_OBJECT_BY_TAG;
             case "findObjectByUserCriteria": return FIND_OBJECT_BY_USER_CRITERIA;
+            case "getObjectByTag": return GET_OBJECT_BY_TAG;
+            case "getObjectByUserCriteria": return GET_OBJECT_BY_USER_CRITERIA;
         }
     }
     
@@ -356,5 +365,35 @@ public final class Scenario extends LPLObject
     });
     private static final LPLValue FIND_OBJECT_BY_USER_CRITERIA = LPLFunction.createFunction((arg0, arg1) -> {
         return valueOf(arg0.<Scenario>toLPLObject().findGameObjectByUserCriteria(c -> arg1.callLimited(c).toJavaBoolean()));
+    });
+    private static final LPLValue GET_OBJECT_BY_TAG = LPLFunction.createFunction((arg0, arg1, arg2) -> {
+        int n = arg2 == UNDEFINED ? 1 : arg2.toJavaInt();
+        int count = 0;
+        GameObject first = null;
+        Iterator<GameObject> it = arg0.<Scenario>toLPLObject().findGameObjectByUserCriteria(c -> arg1.callLimited(c).toJavaBoolean());
+        while(it.hasNext())
+        {
+            GameObject go = it.next();
+            if(count == 0)
+                first = go;
+            if(++count == n)
+                return go;
+        }
+        return first == null ? NULL : first;
+    });
+    private static final LPLValue GET_OBJECT_BY_USER_CRITERIA = LPLFunction.createFunction((arg0, arg1, arg2) -> {
+        int n = arg2 == UNDEFINED ? 1 : arg2.toJavaInt();
+        int count = 0;
+        GameObject first = null;
+        Iterator<GameObject> it = arg0.<Scenario>toLPLObject().findGameObjectsByTag(arg1.toString());
+        while(it.hasNext())
+        {
+            GameObject go = it.next();
+            if(count == 0)
+                first = go;
+            if(++count == n)
+                return go;
+        }
+        return first == null ? NULL : first;
     });
 }
