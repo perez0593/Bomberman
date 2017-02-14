@@ -1,3 +1,4 @@
+
 function EndlessEvent(elapsedTime, closure)
 	local action;
 	action = function()

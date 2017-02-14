@@ -83,7 +83,7 @@ public final class ScriptManager implements SerializableObject
         scripts.values().stream().filter(s -> !s.isCompiled()).forEach(s -> {
             StringBuilder sb = new StringBuilder();
             
-            sb.append("Scripts[\"").append(s.getName()).append("\"] = function(args)\n\t");
+            sb.append("Scripts[\"").append(s.getName()).append("\"] = function()\n\n");
             sb.append(s.getCode().replace("\n","\n\t")).append("\nend\n");
             try(ByteArrayInputStream bais = new ByteArrayInputStream(sb.toString().getBytes()))
             {
@@ -91,12 +91,19 @@ public final class ScriptManager implements SerializableObject
                 LPLGlobals subGlobals = LPLGlobals.wrap(globals,hashGlobals);
                 LPLFunction closure = LPLCompiler.compile(bais,s.getName(),cl,subGlobals);
                 compiledScripts.lastGlobals = hashGlobals;
+                closure.call();
                 s.setCompiledCode(compiledScripts.scripts.get(s.getName()).closure,subGlobals);
+                s.setCompiled(true);
             }
             catch(Throwable ex)
             {
+                System.err.println("Script error: " + s.getName());
+                ex.printStackTrace(System.err);
                 s.setCompiledCode(null,null);
             }
+        });
+        scripts.values().stream().filter(s -> s.isCompiled()).forEach(s -> {
+            s.initiateCompiledCode();
         });
         compiledScripts.canput = false;
     }
@@ -233,9 +240,15 @@ public final class ScriptManager implements SerializableObject
         globals.setGlobalValue("Scenario",scenario);
         globals.setGlobalValue("Event",new LPLScenarioEventBuilder(scenario));
         
+        globals.setGlobalValue("GetObjectSelf",LPLFunction.createFunction(() -> currentExecutor));
+        
         globals.setGlobalValue("ImportScript",LPLFunction.createFunction((arg0) -> {
-            CompiledScript s = scripts.scripts.get(arg0.toJavaString());
-            return s == null ? UNDEFINED : s.data;
+            CompiledScript cs = scripts.scripts.get(arg0.toJavaString());
+            Script s = ScriptManager.this.scripts.get(arg0.toJavaString());
+            if(cs == null || s == null)
+                return UNDEFINED;
+            s.initiateCompiledCode();
+            return cs.data;
         }));
         
         HashMap<LPLValue, LPLValue> localData = new HashMap<>();

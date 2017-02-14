@@ -1,5 +1,6 @@
 
-EndlessEvent = Scripts.includes_test.EndlessEvent
+local utils = ImportScript("includes_test")
+EndlessEvent = utils.EndlessEvent
 
 function main()
 	print "hello world testing"
@@ -34,4 +35,6 @@ function main()
 		print "Count: "..externalCount
 		externalCount++
 	end)
+	
+	print typename GetObjectSelf()
 end
