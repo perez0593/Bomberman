@@ -14,6 +14,7 @@ import md.games.bomberman.io.GameDataSaver;
 import md.games.bomberman.io.SerializableObject;
 import md.games.bomberman.scenario.GameObject;
 import md.games.bomberman.scenario.Scenario;
+import md.games.bomberman.scenario.event.LPLScenarioEventBuilder;
 import nt.lpl.LPLClassLoader;
 import nt.lpl.LPLCompiler;
 import nt.lpl.LPLEnvironment;
@@ -21,7 +22,6 @@ import nt.lpl.LPLGlobals;
 import nt.lpl.LPLRuntimeException;
 import nt.lpl.compiler.LPLCompilerException;
 import nt.lpl.types.LPLFunction;
-import nt.lpl.types.LPLIterator;
 import nt.lpl.types.LPLObject;
 import nt.lpl.types.LPLValue;
 import static nt.lpl.types.LPLValue.FALSE;
@@ -82,6 +82,7 @@ public final class ScriptManager implements SerializableObject
         LPLClassLoader cl = new LPLClassLoader(getClass().getClassLoader());
         scripts.values().stream().filter(s -> !s.isCompiled()).forEach(s -> {
             StringBuilder sb = new StringBuilder();
+            
             sb.append("Scripts[\"").append(s.getName()).append("\"] = function(args)\n\t");
             sb.append(s.getCode().replace("\n","\n\t")).append("\nend\n");
             try(ByteArrayInputStream bais = new ByteArrayInputStream(sb.toString().getBytes()))
@@ -90,50 +91,106 @@ public final class ScriptManager implements SerializableObject
                 LPLGlobals subGlobals = LPLGlobals.wrap(globals,hashGlobals);
                 LPLFunction closure = LPLCompiler.compile(bais,s.getName(),cl,subGlobals);
                 compiledScripts.lastGlobals = hashGlobals;
-                closure.call();
-                s.setClosure(compiledScripts.scripts.get(s.getName()).closure);
-                compiledScripts.scripts.put(s.getName(),new CompiledScript(s.getName(),closure,hashGlobals));
+                s.setCompiledCode(compiledScripts.scripts.get(s.getName()).closure,subGlobals);
             }
             catch(Throwable ex)
             {
-                s.setClosure(null);
+                s.setCompiledCode(null,null);
             }
         });
         compiledScripts.canput = false;
     }
     
-    public final LPLValue executeScript(LPLObject executor, String script, ScriptId id)
+    public final LPLValue executeScript(LPLObject executor, String script)
     {
         Script s = scripts.get(script);
         if(s != null)
         {
             currentExecutor = executor;
-            return s.execute(new ScriptParameters(id));
+            return s.execute();
         }
         return UNDEFINED;
     }
-    
-    public final LPLValue executeScript(LPLObject executor, String script, ScriptId id, LPLValue... args)
+    public final LPLValue executeScript(LPLObject executor, String script, LPLValue arg0)
     {
         Script s = scripts.get(script);
         if(s != null)
         {
             currentExecutor = executor;
-            return s.execute(new ScriptParameters(id,args));
+            return s.execute(arg0);
+        }
+        return UNDEFINED;
+    }
+    public final LPLValue executeScript(LPLObject executor, String script, LPLValue arg0, LPLValue arg1)
+    {
+        Script s = scripts.get(script);
+        if(s != null)
+        {
+            currentExecutor = executor;
+            return s.execute(arg0,arg1);
+        }
+        return UNDEFINED;
+    }
+    public final LPLValue executeScript(LPLObject executor, String script, LPLValue arg0, LPLValue arg1, LPLValue arg2)
+    {
+        Script s = scripts.get(script);
+        if(s != null)
+        {
+            currentExecutor = executor;
+            return s.execute(arg0,arg1,arg2);
+        }
+        return UNDEFINED;
+    }
+    public final LPLValue executeScript(LPLObject executor, String script, LPLValue arg0, LPLValue arg1, LPLValue arg2, LPLValue arg3)
+    {
+        Script s = scripts.get(script);
+        if(s != null)
+        {
+            currentExecutor = executor;
+            return s.execute(arg0,arg1,arg2,arg3);
+        }
+        return UNDEFINED;
+    }
+    public final LPLValue executeScript(LPLObject executor, String script, LPLValue... args)
+    {
+        Script s = scripts.get(script);
+        if(s != null)
+        {
+            currentExecutor = executor;
+            return s.execute(args);
         }
         return UNDEFINED;
     }
     
-    final LPLValue executeScript(LPLObject executor, Script script, ScriptId id)
+    final LPLValue executeScript(LPLObject executor, Script script)
     {
         currentExecutor = executor;
-        return script.execute(new ScriptParameters(id));
+        return script.execute();
     }
-    
-    final LPLValue executeScript(LPLObject executor, Script script, ScriptId id, LPLValue[] args)
+    final LPLValue executeScript(LPLObject executor, Script script, LPLValue arg0)
     {
         currentExecutor = executor;
-        return script.execute(new ScriptParameters(id,args));
+        return script.execute(arg0);
+    }
+    final LPLValue executeScript(LPLObject executor, Script script, LPLValue arg0, LPLValue arg1)
+    {
+        currentExecutor = executor;
+        return script.execute(arg0,arg1);
+    }
+    final LPLValue executeScript(LPLObject executor, Script script, LPLValue arg0, LPLValue arg1, LPLValue arg2)
+    {
+        currentExecutor = executor;
+        return script.execute(arg0,arg1,arg2);
+    }
+    final LPLValue executeScript(LPLObject executor, Script script, LPLValue arg0, LPLValue arg1, LPLValue arg2, LPLValue arg3)
+    {
+        currentExecutor = executor;
+        return script.execute(arg0,arg1,arg2,arg3);
+    }
+    final LPLValue executeScript(LPLObject executor, Script script, LPLValue[] args)
+    {
+        currentExecutor = executor;
+        return script.execute(args);
     }
     
     final LPLObject getCurrentExecutor() { return currentExecutor; }
@@ -174,6 +231,12 @@ public final class ScriptManager implements SerializableObject
         }));*/
         globals.setGlobalValue("Scripts",scripts);
         globals.setGlobalValue("Scenario",scenario);
+        globals.setGlobalValue("Event",new LPLScenarioEventBuilder(scenario));
+        
+        globals.setGlobalValue("ImportScript",LPLFunction.createFunction((arg0) -> {
+            CompiledScript s = scripts.scripts.get(arg0.toJavaString());
+            return s == null ? UNDEFINED : s.data;
+        }));
         
         HashMap<LPLValue, LPLValue> localData = new HashMap<>();
         
@@ -277,7 +340,8 @@ public final class ScriptManager implements SerializableObject
         }
         
         @Override
-        public final LPLVarargs call() { return closure.call(); }
+        public final LPLVarargs call() {
+            return closure.call(); }
         
         @Override
         public final LPLVarargs call(LPLValue arg0) { return closure.call(arg0); }
@@ -292,65 +356,6 @@ public final class ScriptManager implements SerializableObject
         public final LPLVarargs call(LPLVarargs args) { return closure.call(args); }
         
         @Override
-        public final LPLValue getAttribute(LPLValue key)
-        {
-            switch(key.toJavaString())
-            {
-                default: return UNDEFINED;
-                case "name": return valueOf(name);
-                case "data": return data;
-            }
-        }
-    }
-    
-    private static final class ScriptParameters extends LPLObject
-    {
-        private final LPLValue id;
-        private final LPLValue[] args;
-        
-        private ScriptParameters(ScriptId id, LPLValue[] args)
-        {
-            this.id = valueOf(id.name());
-            this.args = args;
-        }
-        
-        private ScriptParameters(ScriptId id)
-        {
-            this.id = valueOf(id.name());
-            this.args = new LPLValue[0];
-        }
-        
-        @Override
-        public final LPLValue length() { return valueOf(args.length); }
-        
-        @Override
-        public final LPLValue getAttribute(LPLValue key)
-        {
-            if(key.isString())
-            {
-                switch(key.toJavaString())
-                {
-                    default: return UNDEFINED;
-                    case "id": return id;
-                    case "size": return valueOf(args.length);
-                }
-            }
-            return args[key.toJavaInt()];
-        }
-        
-        @Override
-        public final LPLIterator createIterator()
-        {
-            return new LPLIterator()
-            {
-                private int it = 0;
-                
-                @Override
-                public final boolean hasNext() { return it < args.length; }
-
-                @Override
-                public final LPLVarargs next() { return args[it++]; }
-            };
-        }
+        public final LPLValue getAttribute(LPLValue key) { return data.getAttribute(key); }
     }
 }

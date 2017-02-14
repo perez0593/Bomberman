@@ -1,15 +1,37 @@
 
-print "hello world testing"
+EndlessEvent = Scripts.includes_test.EndlessEvent
 
-for c in Scenario->findObjectByUserCriteria(function(obj)
-	return obj->getObjectType() == 0 and obj->isPlayerCreature()
-end)
-	print c->getTag()..": "..c->getObjectType()
+function main()
+	print "hello world testing"
+
+	for c in Scenario->findObjectByUserCriteria(function(obj)
+		return obj->getObjectType() == 0 and obj->isPlayerCreature()
+	end)
+		print c->getTag()..": "..c->getObjectType()
+	end
+
+	local count = 0
+	for obj in Scenario->findObjectByUserCriteria(function(obj) return true end)
+		print count..": "..obj->getTag()..", "..obj->getObjectType()
+		count++
+	end
+
+
+	local externalCount = 0
+	/*local delayedEvent;
+	delayedEvent = function()
+		print "Count: "..externalCount
+		externalCount++
+		Event.delayed(1.0,delayedEvent)
+	end
+	Event.delayed(1.0,delayedEvent)
+
+	print Scripts*/
+
+	Scripts.includes_test()
+
+	EndlessEvent(1,function()
+		print "Count: "..externalCount
+		externalCount++
+	end)
 end
-
-local count = 0
-for obj in Scenario->findObjectByUserCriteria(function(obj) return true end)
-	print count..": "..obj->getTag()..", "..obj->getObjectType()
-	count++
-end
-

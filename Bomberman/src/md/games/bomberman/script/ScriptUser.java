@@ -20,11 +20,31 @@ public abstract class ScriptUser extends LPLObject
     public final LPLValue executeScript(ScriptId id)
     {
         Script s = getScript(id);
-        return s != null ? s.execute(this,id) : UNDEFINED;
+        return s != null ? s.execute(this) : UNDEFINED;
+    }
+    public final LPLValue executeScript(ScriptId id, LPLValue arg0)
+    {
+        Script s = getScript(id);
+        return s != null ? s.execute(this,arg0) : UNDEFINED;
+    }
+    public final LPLValue executeScript(ScriptId id, LPLValue arg0, LPLValue arg1)
+    {
+        Script s = getScript(id);
+        return s != null ? s.execute(this,arg0,arg1) : UNDEFINED;
+    }
+    public final LPLValue executeScript(ScriptId id, LPLValue arg0, LPLValue arg1, LPLValue arg2)
+    {
+        Script s = getScript(id);
+        return s != null ? s.execute(this,arg0,arg1,arg2) : UNDEFINED;
+    }
+    public final LPLValue executeScript(ScriptId id, LPLValue arg0, LPLValue arg1, LPLValue arg2, LPLValue arg3)
+    {
+        Script s = getScript(id);
+        return s != null ? s.execute(this,arg0,arg1,arg2,arg3) : UNDEFINED;
     }
     public final LPLValue executeScript(ScriptId id, LPLValue... args)
     {
         Script s = getScript(id);
-        return s != null ? s.execute(this,id,args) : UNDEFINED;
+        return s != null ? s.execute(this,args) : UNDEFINED;
     }
 }

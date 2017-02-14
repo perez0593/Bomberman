@@ -1,0 +1,8 @@
+function EndlessEvent(elapsedTime, closure)
+	local action;
+	action = function()
+		closure()
+		Event.delayed(elapsedTime,action)
+	end
+	Event.normal(action)
+end
