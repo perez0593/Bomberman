@@ -16,6 +16,8 @@ import md.games.bomberman.scenario.GameObject;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.Tile;
 import md.games.bomberman.scenario.TileManager;
+import md.games.bomberman.script.Script;
+import md.games.bomberman.script.ScriptId;
 import md.games.bomberman.sprites.Animation;
 import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.Constants;
@@ -36,6 +38,7 @@ public abstract class Creature extends GameObject
     protected Animation animation;
     private double speedRatio = 1f;
     private Direction walkDirection;
+    private Script onDamage, onHeal, onDie;
     
     @Override
     public final boolean isCreature() { return true; }
@@ -108,8 +111,18 @@ public abstract class Creature extends GameObject
     
     public abstract void die();
     
-    public final void damage(int amount) { hp.damage(amount); }
-    public final void heal(int amount) { hp.heal(amount); }
+    public final void damage(int amount)
+    {
+        int old = hp.getCurrentHitPoints();
+        hp.damage(amount);
+        executeScript(ScriptId.ON_DAMAGE,valueOf(hp.getCurrentHitPoints() - old));
+    }
+    public final void heal(int amount)
+    {
+        int old = hp.getCurrentHitPoints();
+        hp.heal(amount);
+        executeScript(ScriptId.ON_HEAL,valueOf(hp.getCurrentHitPoints() - old));
+    }
     public final void kill() { hp.kill(); }
     
     private Direction computeWalkingDirection()
@@ -214,6 +227,30 @@ public abstract class Creature extends GameObject
     }
     
     @Override
+    public void setScript(ScriptId id, Script script)
+    {
+        switch(id)
+        {
+            default: super.setScript(id,script);
+            case ON_DAMAGE: onDamage = script; break;
+            case ON_HEAL: onHeal = script; break;
+            case ON_DIE: onDie = script; break;
+        }
+    }
+    
+    @Override
+    public Script getScript(ScriptId id)
+    {
+        switch(id)
+        {
+            default: return super.getScript(id);
+            case ON_DAMAGE: return onDamage;
+            case ON_HEAL: return onHeal;
+            case ON_DIE: return onDie;
+        }
+    }
+    
+    @Override
     public void reloadSprites(SpriteManager sprites)
     {
         String tag = animation.getSpriteTag();
@@ -226,6 +263,9 @@ public abstract class Creature extends GameObject
         hp.serialize(gds);
         gds.writeDouble(speedRatio);
         gds.writeVector2(speed);
+        gds.writeIfNonNull(onDamage,() -> gds.writeScript(onDamage));
+        gds.writeIfNonNull(onHeal,() -> gds.writeScript(onHeal));
+        gds.writeIfNonNull(onDie,() -> gds.writeScript(onDie));
     }
 
     @Override
@@ -234,6 +274,9 @@ public abstract class Creature extends GameObject
         hp.unserialize(gdl);
         speedRatio = gdl.readDouble();
         speed.set(gdl.readVector2());
+        gdl.readIfNonNull(() -> onDamage = gdl.readScript());
+        gdl.readIfNonNull(() -> onHeal = gdl.readScript());
+        gdl.readIfNonNull(() -> onDie = gdl.readScript());
     }
     
     @Override

@@ -7,18 +7,25 @@ function main()
 
 	for c in Scenario->findObjectByUserCriteria(function(obj)
 		return obj->getObjectType() == 0 and obj->isPlayerCreature()
-	end)
+	end) do
+		c->setTag("Owner")
 		print c->getTag()..": "..c->getObjectType()
 	end
 
 	local count = 0
-	for obj in Scenario->findObjectByUserCriteria(function(obj) return true end)
+	for obj in Scenario->findObjectByUserCriteria(function(obj) return true end) do
 		print count..": "..obj->getTag()..", "..obj->getObjectType()
 		count++
 	end
+	
+	local oPC = Scenario->getObjectByTag("Owner",1)
+	if oPC is null then
+		print "Player Character not found"
+		return
+	end
+	
+	oPC->setLocalValue("counter_test",0)
 
-
-	local externalCount = 0
 	/*local delayedEvent;
 	delayedEvent = function()
 		print "Count: "..externalCount
@@ -32,8 +39,11 @@ function main()
 	Scripts.includes_test()
 
 	EndlessEvent(1,function()
-		print "Count: "..externalCount
-		externalCount++
+		local oPC = Scenario->getObjectByTag("Owner",1)
+		local counter = oPC->getLocalValue("counter_test")
+		print "Count: "..counter
+		counter++
+		oPC->setLocalValue("counter_test",counter)
 	end)
 	
 	print typename GetObjectSelf()

@@ -30,6 +30,7 @@ import md.games.bomberman.scenario.action.ActionSender;
 import md.games.bomberman.scenario.event.ScenarioEvent;
 import md.games.bomberman.scenario.event.ScenarioEventManager;
 import md.games.bomberman.script.Script;
+import md.games.bomberman.script.ScriptId;
 import md.games.bomberman.script.ScriptManager;
 import md.games.bomberman.sprites.SpriteManager;
 import md.games.bomberman.util.CriteriaIterator;
@@ -216,6 +217,7 @@ public final class Scenario extends LPLObject
             if(!c.isAlive())
             {
                 c.die();
+                c.executeScript(ScriptId.ON_DIE);
                 if(!c.isDestroid())
                     c.destroy();
                 if(c.hasScenarioReference())
@@ -353,6 +355,8 @@ public final class Scenario extends LPLObject
             case "findObjectByUserCriteria": return FIND_OBJECT_BY_USER_CRITERIA;
             case "getObjectByTag": return GET_OBJECT_BY_TAG;
             case "getObjectByUserCriteria": return GET_OBJECT_BY_USER_CRITERIA;
+            case "getTile": return GET_TILE;
+            case "getTileFromPosition": return GET_TILE_FROM_POSITION;
         }
     }
     
@@ -366,7 +370,7 @@ public final class Scenario extends LPLObject
     private static final LPLValue FIND_OBJECT_BY_USER_CRITERIA = LPLFunction.createFunction((arg0, arg1) -> {
         return valueOf(arg0.<Scenario>toLPLObject().findGameObjectByUserCriteria(c -> arg1.callLimited(c).toJavaBoolean()));
     });
-    private static final LPLValue GET_OBJECT_BY_TAG = LPLFunction.createFunction((arg0, arg1, arg2) -> {
+    private static final LPLValue GET_OBJECT_BY_USER_CRITERIA = LPLFunction.createFunction((arg0, arg1, arg2) -> {
         int n = arg2 == UNDEFINED ? 1 : arg2.toJavaInt();
         int count = 0;
         GameObject first = null;
@@ -381,7 +385,7 @@ public final class Scenario extends LPLObject
         }
         return first == null ? NULL : first;
     });
-    private static final LPLValue GET_OBJECT_BY_USER_CRITERIA = LPLFunction.createFunction((arg0, arg1, arg2) -> {
+    private static final LPLValue GET_OBJECT_BY_TAG = LPLFunction.createFunction((arg0, arg1, arg2) -> {
         int n = arg2 == UNDEFINED ? 1 : arg2.toJavaInt();
         int count = 0;
         GameObject first = null;
@@ -395,5 +399,15 @@ public final class Scenario extends LPLObject
                 return go;
         }
         return first == null ? NULL : first;
+    });
+    private static final LPLValue GET_TILE = LPLFunction.createFunction((arg0, arg1, arg2) -> {
+        int row = arg1.toJavaInt();
+        int column = arg2.toJavaInt();
+        Tile tile = arg0.<Scenario>toLPLObject().tiles.getTile(row,column);
+        return tile == null ? NULL : tile;
+    });
+    private static final LPLValue GET_TILE_FROM_POSITION = LPLFunction.createFunction((arg0, arg1) -> {
+        Tile tile = arg0.<Scenario>toLPLObject().tiles.getTileByPosition(arg1.toLPLObject());
+        return tile == null ? NULL : tile;
     });
 }

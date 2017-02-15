@@ -30,6 +30,9 @@ public final class Constants
     public static final int TILE_WIDTH = 50;
     public static final int TILE_HEIGHT = 50;
     
+    public static final int BOMB_WIDTH = (int) (TILE_WIDTH * 0.8);
+    public static final int BOMB_HEIGHT = (int) (TILE_HEIGHT * 0.8);
+    
     
     
     public static final int CREATURE_ANIMATION_STOPPED = 0;

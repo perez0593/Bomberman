@@ -36,6 +36,7 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
     private Vector2 size;
     private Vector2 tileSize;
     private Scenario scenario;
+    private boolean enabledGrid;
     private final Explosion explosion = Explosion.getManager();
     
     public TileManager(int rows, int columns)
@@ -188,6 +189,9 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
             return null;
         return tiles[row * columns + column];
     }
+    
+    public final void setEnabledDrawGrid(boolean flag) { enabledGrid = flag; }
+    public final boolean isEnabledDrawGrid() { return enabledGrid; }
     
     public final void setPositionX(double x) { position.x = x; }
     public final void setPositionY(double y) { position.y = y; }
@@ -354,11 +358,14 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
                                 position.y + r * tileSize.y,
                                 tileSize.x,
                                 tileSize.y);
-                g.setColor(Color.red);
-                /*g.drawRect((int)(position.x + c * tileSize.x),
-                                (int)(position.y + r * tileSize.y),
-                                (int)tileSize.x,
-                                (int)tileSize.y);*/
+                if(enabledGrid)
+                {
+                    g.setColor(Color.red);
+                    g.drawRect((int)(position.x + c * tileSize.x),
+                                    (int)(position.y + r * tileSize.y),
+                                    (int)tileSize.x,
+                                    (int)tileSize.y);
+                }
             }
         }
     }

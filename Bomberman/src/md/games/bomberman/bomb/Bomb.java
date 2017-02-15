@@ -48,7 +48,7 @@ public class Bomb extends Placeable
         this.timeRemaining = 1d;
         this.sprite = sprite;
         
-        setSize(Constants.TILE_WIDTH,Constants.TILE_HEIGHT);
+        setSize(Constants.BOMB_WIDTH,Constants.BOMB_HEIGHT);
         createBoundingBox();
     }
     
@@ -63,7 +63,7 @@ public class Bomb extends Placeable
         this.timeRemaining = timeToExplode;
         this.sprite = sprite;
         
-        setSize(Constants.TILE_WIDTH,Constants.TILE_HEIGHT);
+        setSize(Constants.BOMB_WIDTH,Constants.BOMB_HEIGHT);
         createBoundingBox();
     }
     

@@ -15,7 +15,7 @@ import static nt.lpl.types.LPLValue.UNDEFINED;
  *
  * @author Asus
  */
-public class Script
+public class Script implements Comparable<Script>
 {
     private final ScriptManager manager;
     private String name;
@@ -104,6 +104,9 @@ public class Script
     final LPLValue execute(LPLValue[] args) { return compiledCode.execute(args); }
     
     public static final LPLObject OBJECT_INVALID = new LPLObject();
+
+    @Override
+    public final int compareTo(Script o) { return name.compareTo(o.name); }
     
     static final class CompiledData
     {

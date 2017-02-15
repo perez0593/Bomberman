@@ -7,6 +7,8 @@ package md.games.bomberman.script;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import md.games.bomberman.io.GameDataLoader;
@@ -60,6 +62,10 @@ public final class ScriptManager implements SerializableObject
     {
         return scripts.get(name);
     }
+    
+    public final Collection<Script> getAllScripts() { return Collections.unmodifiableCollection(scripts.values()); }
+    
+    public final int getScriptCount() { return scripts.size(); }
     
     public final void compileScript(String script) throws LPLCompilerException
     {
@@ -171,33 +177,81 @@ public final class ScriptManager implements SerializableObject
     
     final LPLValue executeScript(LPLObject executor, Script script)
     {
+        if(currentExecutor == null)
+        {
+            currentExecutor = executor;
+            return script.execute();
+        }
+        LPLObject self = currentExecutor;
         currentExecutor = executor;
-        return script.execute();
+        LPLValue res = script.execute();
+        currentExecutor = self;
+        return res;
     }
     final LPLValue executeScript(LPLObject executor, Script script, LPLValue arg0)
     {
+        if(currentExecutor == null)
+        {
+            currentExecutor = executor;
+            return script.execute(arg0);
+        }
+        LPLObject self = currentExecutor;
         currentExecutor = executor;
-        return script.execute(arg0);
+        LPLValue res = script.execute(arg0);
+        currentExecutor = self;
+        return res;
     }
     final LPLValue executeScript(LPLObject executor, Script script, LPLValue arg0, LPLValue arg1)
     {
+        if(currentExecutor == null)
+        {
+            currentExecutor = executor;
+            return script.execute(arg0,arg1);
+        }
+        LPLObject self = currentExecutor;
         currentExecutor = executor;
-        return script.execute(arg0,arg1);
+        LPLValue res = script.execute(arg0,arg1);
+        currentExecutor = self;
+        return res;
     }
     final LPLValue executeScript(LPLObject executor, Script script, LPLValue arg0, LPLValue arg1, LPLValue arg2)
     {
+        if(currentExecutor == null)
+        {
+            currentExecutor = executor;
+            return script.execute(arg0,arg1,arg2);
+        }
+        LPLObject self = currentExecutor;
         currentExecutor = executor;
-        return script.execute(arg0,arg1,arg2);
+        LPLValue res = script.execute(arg0,arg1,arg2);
+        currentExecutor = self;
+        return res;
     }
     final LPLValue executeScript(LPLObject executor, Script script, LPLValue arg0, LPLValue arg1, LPLValue arg2, LPLValue arg3)
     {
+        if(currentExecutor == null)
+        {
+            currentExecutor = executor;
+            return script.execute(arg0,arg1,arg2,arg3);
+        }
+        LPLObject self = currentExecutor;
         currentExecutor = executor;
-        return script.execute(arg0,arg1,arg2,arg3);
+        LPLValue res = script.execute(arg0,arg1,arg2,arg3);
+        currentExecutor = self;
+        return res;
     }
     final LPLValue executeScript(LPLObject executor, Script script, LPLValue[] args)
     {
+        if(currentExecutor == null)
+        {
+            currentExecutor = executor;
+            return script.execute(args);
+        }
+        LPLObject self = currentExecutor;
         currentExecutor = executor;
-        return script.execute(args);
+        LPLValue res = script.execute(args);
+        currentExecutor = self;
+        return res;
     }
     
     final LPLObject getCurrentExecutor() { return currentExecutor; }

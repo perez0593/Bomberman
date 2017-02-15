@@ -17,6 +17,8 @@ public enum ScriptId
     ON_CREATE,
     ON_DESTROY,
     ON_DIE,
+    ON_DAMAGE,
+    ON_HEAL,
     ON_COLLIDE,
     ON_COLLECT,
     ON_EXPLODE;
