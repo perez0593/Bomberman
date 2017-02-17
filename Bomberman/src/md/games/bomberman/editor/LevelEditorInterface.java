@@ -9,10 +9,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import md.games.bomberman.font.DefaultFont;
+import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.scenario.Camera;
 import md.games.bomberman.scenario.Scenario;
 import md.games.bomberman.scenario.ScenarioManager;
@@ -56,6 +58,7 @@ public class LevelEditorInterface extends JFrame
         scenarioManager.draw(g2);
         //bubbles.draw(g,0,0,w,h);
         drawMouseTilePosition(g2);
+        glowPointeredTile(g2);
     }
     
     private void drawMouseTilePosition(Graphics2D g)
@@ -74,6 +77,25 @@ public class LevelEditorInterface extends JFrame
         font.printFinal(g,"[row: " + tile.getRow() + ", column: " + tile.getColumn() + "]",x,y);
     }
     
+    private void glowPointeredTile(Graphics2D g)
+    {
+        MousePosition pos = computeMousePosition();
+        if(pos == null)
+            return;
+        Scenario scenario = scenarioManager.getScenario();
+        Tile tile = scenario.getTileManager().getTileByPosition(pos.getPositionInScenario(scenario));
+        if(tile == null)
+            return;
+        
+        Vector2 position = tile.getPosition();
+        Vector2 size = scenario.getTileManager().getTileSize();
+        AffineTransform oldTransform = g.getTransform();
+        g.setTransform(scenario.getCamera().getAffineTransform());
+        g.setColor(new Color(0f,1f,1f,0.2f));
+        g.fillRect((int)position.x + 1,(int)position.y + 1,(int)size.x + 1,(int)size.y + 1);
+        g.setTransform(oldTransform);
+    }
+    
     private void mainThread()
     {
         while(true)
@@ -88,6 +110,8 @@ public class LevelEditorInterface extends JFrame
     
     public final MousePosition computeMousePosition()
     {
+        //if(scenarioManager != null)
+            //return MousePosition.get(canvas,scenarioManager.getScenario().getCamera());
         return MousePosition.get(canvas);
     }
     
@@ -137,6 +161,11 @@ public class LevelEditorInterface extends JFrame
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
 
         jSplitPane1.setDividerLocation(512);
         jSplitPane1.setResizeWeight(1.0);
@@ -190,6 +219,18 @@ public class LevelEditorInterface extends JFrame
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        if(scenarioManager != null)
+        {
+            Scenario scenario = scenarioManager.getScenario();
+            if(scenario != null)
+            {
+                Camera cam = scenario.getCamera();
+                cam.setCustomViewport(canvas.getWidth(),canvas.getHeight());
+            }
+        }
+    }//GEN-LAST:event_formComponentResized
+
     /**
      * @param args the command line arguments
      */
@@ -223,6 +264,7 @@ public class LevelEditorInterface extends JFrame
             lei.scenarioManager.getScenario().getTileManager().setEnabledDrawGrid(true);
             Camera cam = lei.scenarioManager.getScenario().getCamera();
             cam.setCustomViewport(lei.canvas.getWidth(),lei.canvas.getHeight());
+            cam.setPosition(lei.canvas.getWidth()/2,lei.canvas.getHeight()/2);
             
             lei.setVisible(true);
         });

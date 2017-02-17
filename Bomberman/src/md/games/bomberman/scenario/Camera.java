@@ -6,7 +6,9 @@
 package md.games.bomberman.scenario;
 
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import md.games.bomberman.geom.BoundingBox;
 import md.games.bomberman.geom.Matrix33;
@@ -72,12 +74,19 @@ public final class Camera
     public final void setNativeViewport()
     {
         nativeViewport = true;
+        modif = true;
     }
     
     public final void setCustomViewport(float x, float y)
     {
         nativeViewport = false;
         viewport.set(x,y);
+        modif = true;
+    }
+    
+    public final Vector2 getCustomViewport()
+    {
+        return !nativeViewport ? viewport.copy() : null;
     }
     
     public final void copyViewport(Camera cam)
@@ -317,6 +326,63 @@ public final class Camera
     public final double getAngle() { return rotation; }
     public final double getX() { return pos.x; }
     public final double getY() { return pos.y; }
+    
+    public final Vector2 vectorToWorld(Vector2 v)
+    {
+        Point2D dest = new Point2D.Double();
+        at_transform.transform(new Point2D.Double(v.x,v.y),dest);
+        return new Vector2(dest);
+    }
+    
+    public final Point2D pointToWorld(Point2D p)
+    {
+        Point2D dest = new Point2D.Double();
+        at_transform.transform(p,dest);
+        return dest;
+    }
+    
+    public final Point integerPointToWorld(Point2D p)
+    {
+        Point dest = new Point();
+        at_transform.transform(p,dest);
+        return dest;
+    }
+    
+    public final Vector2 vectorToLocal(Vector2 v)
+    {
+        try
+        {
+            AffineTransform inv = at_transform.createInverse();
+            Point dest = new Point();
+            inv.transform(new Point2D.Double(v.x,v.y),dest);
+            return new Vector2(dest);
+        }
+        catch(NoninvertibleTransformException ex) { return v.copy(); }
+    }
+    
+    public final Point2D pointToLocal(Point2D p)
+    {
+        try
+        {
+            AffineTransform inv = at_transform.createInverse();
+            Point dest = new Point();
+            inv.transform(p,dest);
+            return dest;
+        }
+        catch(NoninvertibleTransformException ex) { return p; }
+    }
+    
+    public final Point integerPointToLocal(Point2D p)
+    {
+        try
+        {
+            AffineTransform inv = at_transform.createInverse();
+            Point dest = new Point();
+            inv.transform(p,dest);
+            return dest;
+        }
+        catch(NoninvertibleTransformException ex) { return (Point) p; }
+    }
     
     /*public final CameraTrackingEvent createCameraTracking(Vector2 to, float speed, float zoom, float rotation)
     {

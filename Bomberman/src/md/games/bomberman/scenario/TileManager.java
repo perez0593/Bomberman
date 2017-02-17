@@ -78,6 +78,8 @@ public final class TileManager implements SerializableObject, Iterable<Tile>
     }
     public final Tile getTileByPosition(double x, double y)
     {
+        if(y - position.y < 0 || x - position.x < 0)
+            return null;
         int row = (int) ((y - position.y) / tileSize.y);
         int column = (int) ((x - position.x) / tileSize.x);
         return row < 0 || row >= rows || column < 0 || column >= columns

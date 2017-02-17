@@ -8,9 +8,7 @@ package md.games.bomberman.editor;
 import java.awt.Component;
 import java.awt.Point;
 import md.games.bomberman.geom.Vector2;
-import md.games.bomberman.scenario.Camera;
 import md.games.bomberman.scenario.Scenario;
-import md.games.bomberman.scenario.TileManager;
 
 /**
  *
@@ -34,6 +32,20 @@ public final class MousePosition
         height = component.getHeight();
     }
     
+    /*public static final MousePosition get(Component component, Camera cam)
+    {
+        Point p = component.getMousePosition();
+        if(p == null)
+            return null;
+        Vector2 view = cam.getCustomViewport();
+        if(view != null)
+        {
+            p = cam.integerPointToWorld(p);
+            //p.x -= (int) (view.x / 2);
+            //p.y -= (int) (view.y / 2);
+        }
+        return new MousePosition(p,component);
+    }*/
     public static final MousePosition get(Component component)
     {
         Point p = component.getMousePosition();
@@ -47,12 +59,6 @@ public final class MousePosition
     
     public final Vector2 getPositionInScenario(Scenario scenario)
     {
-        Camera cam = scenario.getCamera();
-        TileManager tiles = scenario.getTileManager();
-        Vector2 pos = new Vector2(x,y);
-        double scale = 1d / cam.getZoom();
-        pos.x = (x + tiles.getPositionX() + cam.getX()) * scale;
-        pos.y = (y + tiles.getPositionY() + cam.getY()) * scale;
-        return pos;
+        return scenario.getCamera().vectorToLocal(new Vector2(x,y));
     }
 }
