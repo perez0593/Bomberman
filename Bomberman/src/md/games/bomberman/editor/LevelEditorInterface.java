@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import javax.swing.JFrame;
@@ -28,6 +30,8 @@ public class LevelEditorInterface extends JFrame
 {
     private ScenarioManager scenarioManager;
     private ScriptEditor scriptEditor;
+    private final DragManager dragger = new DragManager();
+    private boolean controlPressed;
     
     public LevelEditorInterface()
     {
@@ -64,7 +68,7 @@ public class LevelEditorInterface extends JFrame
     private void drawMouseTilePosition(Graphics2D g)
     {
         MousePosition pos = computeMousePosition();
-        if(pos == null)
+        if(pos.isOutOfRange())
             return;
         Scenario scenario = scenarioManager.getScenario();
         Tile tile = scenario.getTileManager().getTileByPosition(pos.getPositionInScenario(scenario));
@@ -80,7 +84,7 @@ public class LevelEditorInterface extends JFrame
     private void glowPointeredTile(Graphics2D g)
     {
         MousePosition pos = computeMousePosition();
-        if(pos == null)
+        if(pos.isOutOfRange())
             return;
         Scenario scenario = scenarioManager.getScenario();
         Tile tile = scenario.getTileManager().getTileByPosition(pos.getPositionInScenario(scenario));
@@ -92,7 +96,7 @@ public class LevelEditorInterface extends JFrame
         AffineTransform oldTransform = g.getTransform();
         g.setTransform(scenario.getCamera().getAffineTransform());
         g.setColor(new Color(0f,1f,1f,0.2f));
-        g.fillRect((int)position.x + 1,(int)position.y + 1,(int)size.x + 1,(int)size.y + 1);
+        g.fillRect((int)position.x + 1,(int)position.y + 1,(int)size.x,(int)size.y);
         g.setTransform(oldTransform);
     }
     
@@ -102,6 +106,8 @@ public class LevelEditorInterface extends JFrame
         {
             if(scenarioManager != null && scriptEditor == null)
             {
+                if(dragger.isDragging())
+                    dragger.updateCamera(scenarioManager.getScenario(),computeMousePosition());
                 canvas.paintImmediately(0,0,canvas.getWidth(),canvas.getHeight());
             }
             sleep(SLEEP_TIME,SLEEP_TIME_NANOS);
@@ -166,10 +172,32 @@ public class LevelEditorInterface extends JFrame
                 formComponentResized(evt);
             }
         });
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                formKeyReleased(evt);
+            }
+        });
 
         jSplitPane1.setDividerLocation(512);
         jSplitPane1.setResizeWeight(1.0);
         jSplitPane1.setContinuousLayout(true);
+
+        canvas.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                canvasMouseWheelMoved(evt);
+            }
+        });
+        canvas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                canvasMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                canvasMouseReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout canvasLayout = new javax.swing.GroupLayout(canvas);
         canvas.setLayout(canvasLayout);
@@ -230,6 +258,60 @@ public class LevelEditorInterface extends JFrame
             }
         }
     }//GEN-LAST:event_formComponentResized
+
+    private void canvasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMousePressed
+        int ibutton = evt.getButton();
+        
+        switch(ibutton)
+        {
+            case MouseEvent.BUTTON1: {
+                if(scenarioManager != null && !dragger.isDragging() && controlPressed)
+                    dragger.start(scenarioManager.getScenario(),computeMousePosition());
+            } break;
+            case MouseEvent.BUTTON2: {
+                if(scenarioManager != null && !dragger.isDragging())
+                    dragger.start(scenarioManager.getScenario(),computeMousePosition());
+            } break;
+        }
+    }//GEN-LAST:event_canvasMousePressed
+
+    private void canvasMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseReleased
+        int ibutton = evt.getButton();
+        
+        switch(ibutton)
+        {
+            case MouseEvent.BUTTON1: {
+                if(scenarioManager != null && dragger.isDragging())
+                    dragger.stop();
+            } break;
+            case MouseEvent.BUTTON2: {
+                if(scenarioManager != null && dragger.isDragging())
+                    dragger.stop();
+            } break;
+        }
+    }//GEN-LAST:event_canvasMouseReleased
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        int code = evt.getKeyCode();
+        
+        controlPressed = code == KeyEvent.VK_CONTROL ? true : controlPressed;
+    }//GEN-LAST:event_formKeyPressed
+
+    private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
+        int code = evt.getKeyCode();
+        
+        controlPressed = code == KeyEvent.VK_CONTROL ? false : controlPressed;
+    }//GEN-LAST:event_formKeyReleased
+
+    private void canvasMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_canvasMouseWheelMoved
+        int units = evt.getWheelRotation();
+        
+        if(scenarioManager != null)
+        {
+            Camera cam = scenarioManager.getScenario().getCamera();
+            cam.translateZ(0.1 * units);
+        }
+    }//GEN-LAST:event_canvasMouseWheelMoved
 
     /**
      * @param args the command line arguments

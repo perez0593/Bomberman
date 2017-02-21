@@ -326,6 +326,7 @@ public final class Camera
     public final double getAngle() { return rotation; }
     public final double getX() { return pos.x; }
     public final double getY() { return pos.y; }
+    public final Vector2 getPosition() { return pos.copy(); }
     
     public final Vector2 vectorToWorld(Vector2 v)
     {

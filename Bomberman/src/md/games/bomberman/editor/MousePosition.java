@@ -6,6 +6,7 @@
 package md.games.bomberman.editor;
 
 import java.awt.Component;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import md.games.bomberman.geom.Vector2;
 import md.games.bomberman.scenario.Scenario;
@@ -16,20 +17,20 @@ import md.games.bomberman.scenario.Scenario;
  */
 public final class MousePosition
 {
-    public final int x, y, width, height;
+    public final int x, y;
+    private final boolean isOutX, isOutY;
     
-    public MousePosition(Point p, Component component)
+    private MousePosition(Point p, boolean isOutX, boolean isOutY)
     {
-        this(p.x,p.y,component);
+        this(p.x,p.y,isOutX,isOutY);
     }
     
-    public MousePosition(int x, int y, Component component)
+    private MousePosition(int x, int y, boolean isOutX, boolean isOutY)
     {
         this.x = x;
         this.y = y;
-        
-        width = component.getWidth();
-        height = component.getHeight();
+        this.isOutX = isOutX;
+        this.isOutY = isOutY;
     }
     
     /*public static final MousePosition get(Component component, Camera cam)
@@ -48,14 +49,21 @@ public final class MousePosition
     }*/
     public static final MousePosition get(Component component)
     {
-        Point p = component.getMousePosition();
-        return p == null ? null : new MousePosition(p,component);
+        Point p = MouseInfo.getPointerInfo().getLocation();
+        Point cp = component.getLocationOnScreen();
+        int x = p.x - cp.x;
+        int y = p.y - cp.y;
+        return new MousePosition(
+                x,
+                y,
+                x < 0 || x > component.getWidth(),
+                y < 0 || y > component.getHeight()
+        );
     }
     
-    public final float getRatio(boolean isX, int base)
-    {
-        return (float) base / (isX ? width : height);
-    }
+    public final boolean isOutOfRangeX() { return isOutX; }
+    public final boolean isOutOfRangeY() { return isOutY; }
+    public final boolean isOutOfRange() { return isOutX || isOutY; }
     
     public final Vector2 getPositionInScenario(Scenario scenario)
     {
